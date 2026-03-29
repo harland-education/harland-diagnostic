@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harland Diagnostics</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#F7F5F0;color:#1A1A20;font-size:14px;}
+#overlay{position:fixed;inset:0;background:#1B2A4A;display:flex;align-items:center;justify-content:center;z-index:100;}
+.box{background:#fff;border-radius:14px;padding:40px;width:460px;}
+.logo{font-family:'Libre Baskerville',serif;color:#C9A84C;font-size:16px;margin-bottom:6px;}
+.box h1{font-family:'Libre Baskerville',serif;font-size:24px;margin-bottom:10px;}
+.box p{font-size:13px;color:#6B6B7A;line-height:1.7;margin-bottom:24px;}
+.box label{display:block;font-size:12px;font-weight:500;color:#4A4A58;margin-bottom:4px;}
+.box input{width:100%;padding:9px 12px;border:1px solid #D0CBBF;border-radius:7px;font-size:13px;margin-bottom:14px;font-family:'DM Sans',sans-serif;background:#F7F5F0;color:#1A1A20;}
+.box input:focus{outline:none;border-color:#C9A84C;}
+#connect-btn{width:100%;padding:12px;background:#1B2A4A;color:white;border:none;border-radius:7px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+#connect-btn:hover{background:#243560;}
+#cfg-err{display:none;margin-top:12px;padding:10px 14px;background:#FEF2F2;border:1px solid #FECACA;border-radius:7px;font-size:12.5px;color:#991B1B;}
+.clr-link{display:block;text-align:center;margin-top:10px;font-size:12px;color:#9090A0;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;width:100%;}
+#app{display:none;min-height:100vh;flex-direction:column;}
+nav{background:#1B2A4A;padding:0 24px;height:52px;display:flex;align-items:center;gap:0;}
+.navlogo{font-family:'Libre Baskerville',serif;color:#C9A84C;font-size:15px;padding-right:20px;border-right:1px solid rgba(255,255,255,0.1);margin-right:4px;}
+.navtab{padding:0 16px;height:52px;display:flex;align-items:center;font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;border-bottom:2px solid transparent;}
+.navtab:hover{color:rgba(255,255,255,0.8);}
+.navtab.on{color:#C9A84C;border-bottom-color:#C9A84C;}
+.navright{margin-left:auto;font-size:12px;color:rgba(255,255,255,0.4);}
+main{max-width:900px;margin:0 auto;padding:28px 20px;flex:1;}
+.page{display:none;}
+.page.on{display:block;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat{background:#fff;border:1px solid #E4E0D8;border-radius:10px;padding:14px 16px;}
+.stat-l{font-size:11px;color:#9090A0;margin-bottom:4px;}
+.stat-v{font-family:'Libre Baskerville',serif;font-size:28px;}
+.filter-row{display:flex;gap:8px;margin-bottom:14px;}
+.search{font-size:13px;padding:7px 10px;border:1px solid #D0CBBF;border-radius:6px;font-family:'DM Sans',sans-serif;width:220px;background:#fff;}
+.search:focus{outline:none;border-color:#C9A84C;}
+.refresh-btn{font-size:12px;padding:7px 14px;border:1px solid #D0CBBF;border-radius:6px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.card{background:#fff;border:1px solid #E4E0D8;border-radius:10px;margin-bottom:10px;}
+.card-top{padding:14px 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.card-name{font-size:14px;font-weight:500;}
+.card-sub{font-size:12px;color:#9090A0;margin-top:2px;}
+.badge{display:inline-block;font-size:10.5px;padding:2px 9px;border-radius:10px;font-weight:500;margin-top:5px;}
+.b-pending{background:rgba(176,112,32,0.1);color:#B07020;}
+.b-reviewed{background:rgba(46,107,158,0.1);color:#2E6B9E;}
+.b-sent{background:rgba(46,125,92,0.1);color:#2E7D5C;}
+.card-btns{display:flex;gap:6px;flex-shrink:0;}
+.cbtn{font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid #D0CBBF;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;color:#4A4A58;}
+.cbtn:hover{background:#F7F5F0;}
+.cbtn-g{background:rgba(46,125,92,0.1);color:#2E7D5C;border-color:rgba(46,125,92,0.3);}
+.empty{text-align:center;padding:40px;color:#9090A0;font-size:13px;}
+#modal{display:none;position:fixed;inset:0;background:rgba(27,42,74,0.6);z-index:200;align-items:flex-start;justify-content:center;padding:24px;}
+#modal.on{display:flex;}
+.mbox{background:#fff;border-radius:12px;width:100%;max-width:1100px;max-height:88vh;display:flex;flex-direction:column;}
+.mhdr{padding:14px 18px;border-bottom:1px solid #E4E0D8;display:flex;justify-content:space-between;align-items:center;}
+.mhdr h3{font-size:14px;font-weight:500;}
+.mclose{background:none;border:none;font-size:22px;cursor:pointer;color:#9090A0;line-height:1;}
+.mbody{flex:1;overflow-y:auto;padding:18px;display:flex;gap:14px;}
+.mleft{flex:1;display:flex;flex-direction:column;gap:6px;}
+.mright{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;}
+.mlabel{font-size:10.5px;font-weight:500;color:#9090A0;text-transform:uppercase;letter-spacing:0.06em;}
+.mta{width:100%;font-size:13px;padding:9px 10px;border:1px solid #E4E0D8;border-radius:6px;font-family:'DM Sans',sans-serif;resize:none;flex:1;min-height:340px;line-height:1.7;background:#F7F5F0;}
+.mta:focus{outline:none;border-color:#C9A84C;}
+.mbox-meta{background:#F7F5F0;border-radius:7px;padding:9px 12px;}
+.mml{font-size:10px;color:#9090A0;margin-bottom:2px;}
+.mmv{font-size:13px;font-weight:500;}
+.mta-sm{min-height:70px;flex:none;}
+.mftr{padding:12px 18px;border-top:1px solid #E4E0D8;display:flex;gap:8px;justify-content:flex-end;}
+.mbtn{font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid #D0CBBF;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;color:#4A4A58;}
+.mbtn-gold{background:rgba(201,168,76,0.1);color:#C9A84C;border-color:rgba(201,168,76,0.3);}
+.mbtn-g{background:rgba(46,125,92,0.1);color:#2E7D5C;border-color:rgba(46,125,92,0.3);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:500;color:#4A4A58;margin-bottom:4px;}
+.fi{width:100%;font-size:13px;padding:8px 10px;border:1px solid #D0CBBF;border-radius:6px;font-family:'DM Sans',sans-serif;background:#F7F5F0;}
+.fi:focus{outline:none;border-color:#C9A84C;}
+.add-btn{padding:10px 20px;background:#1B2A4A;color:white;border:none;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.ok-msg{font-size:12.5px;color:#2E7D5C;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div id="overlay">
+  <div class="box">
+    <div class="logo">Harland</div>
+    <h1>Diagnostics Dashboard</h1>
+    <p>Enter your Supabase credentials to connect. Saved locally — one time per device.</p>
+    <label>Supabase Project URL</label>
+    <input type="url" id="f-url" placeholder="https://xxxx.supabase.co">
+    <label>Anon Key</label>
+    <input type="password" id="f-key" placeholder="eyJh... or sb_publishable_...">
+    <label>Anthropic API Key <span style="font-size:11px;color:#9090A0;font-weight:400;">(optional — enables AI report drafts)</span></label>
+    <input type="password" id="f-ak" placeholder="sk-ant-api03-...">
+    <label>Proxy URL <span style="font-size:11px;color:#9090A0;font-weight:400;">(Cloudflare Worker URL)</span></label>
+    <input type="text" id="f-proxy" placeholder="https://harland-ai.yourname.workers.dev">
+    <label>Your name</label>
+    <input type="text" id="f-name" placeholder="Phil">
+    <button id="connect-btn">Connect</button>
+    <div id="cfg-err"></div>
+    <button class="clr-link" onclick="doClear()">Clear saved credentials</button>
+  </div>
+</div>
+
+<div id="app">
+  <nav>
+    <div class="navlogo">Harland Diagnostics</div>
+    <div class="navtab on" id="tab-reports" onclick="showPage('reports',this)">Reports</div>
+    <div class="navtab" id="tab-students" onclick="showPage('students',this)">Students</div>
+    <div class="navtab" id="tab-add" onclick="showPage('add',this)">+ Add student</div>
+    <div class="navright" id="nav-user"></div>
+  </nav>
+  <main>
+    <div class="page on" id="page-reports">
+      <div class="stats">
+        <div class="stat"><div class="stat-l">Total</div><div class="stat-v" id="s-total">—</div></div>
+        <div class="stat"><div class="stat-l">Pending</div><div class="stat-v" id="s-pend" style="color:#B07020">—</div></div>
+        <div class="stat"><div class="stat-l">Reviewed</div><div class="stat-v" id="s-rev" style="color:#2E6B9E">—</div></div>
+        <div class="stat"><div class="stat-l">Sent</div><div class="stat-v" id="s-sent" style="color:#2E7D5C">—</div></div>
+      </div>
+      <div class="filter-row">
+        <input class="search" type="text" placeholder="Search by student name…" oninput="searchR(this.value)">
+        <button class="refresh-btn" onclick="loadReports()">↻ Refresh</button>
+      </div>
+      <div id="rlist"><div class="empty">Loading…</div></div>
+    </div>
+    <div class="page" id="page-students">
+      <div class="filter-row">
+        <input class="search" type="text" placeholder="Search students…" oninput="searchS(this.value)">
+        <button class="refresh-btn" onclick="loadStudents()">↻ Refresh</button>
+      </div>
+      <div id="slist"><div class="empty">Loading…</div></div>
+    </div>
+    <div class="page" id="page-add">
+      <div class="card" style="padding:20px 20px 16px;">
+        <div style="font-size:16px;font-weight:500;margin-bottom:14px;">Add new student</div>
+        <div class="form-grid">
+          <div class="field"><label>Full name *</label><input class="fi" id="ns-n" placeholder="e.g. Yeh, Ted"></div>
+          <div class="field"><label>Grade</label><input class="fi" id="ns-g" placeholder="9"></div>
+          <div class="field"><label>School</label><input class="fi" id="ns-sc" placeholder="AEI Prep"></div>
+          <div class="field"><label>Head Teacher</label><input class="fi" id="ns-ht" placeholder="Chris Judkins"></div>
+          <div class="field"><label>Parent name</label><input class="fi" id="ns-p" placeholder="倩淳"></div>
+          <div class="field"><label>Parent email</label><input class="fi" id="ns-e" type="email"></div>
+          <div class="field"><label>Parent Line</label><input class="fi" id="ns-l"></div>
+          <div class="field"><label>Notes</label><input class="fi" id="ns-no"></div>
+        </div>
+        <button class="add-btn" onclick="addStudent()">Add student</button>
+        <div class="ok-msg" id="add-ok"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modal">
+  <div class="mbox">
+    <div class="mhdr">
+      <h3 id="m-title">Report</h3>
+      <button class="mclose" onclick="closeModal()">×</button>
+    </div>
+    <div class="mbody">
+      <div style="width:230px;flex-shrink:0;overflow-y:auto;border-right:1px solid #E4E0D8;padding-right:14px;">
+        <div class="mlabel" style="margin-bottom:8px;">Student responses</div>
+        <div id="m-responses"><div style="color:#9090A0;font-size:12px;">Loading...</div></div>
+      </div>
+      <div class="mleft">
+        <div class="mlabel">Report text — edit before sending</div>
+        <textarea class="mta" id="m-text"></textarea>
+      </div>
+      <div class="mright">
+        <div class="mbox-meta"><div class="mml">Student</div><div class="mmv" id="m-st"></div></div>
+        <div class="mbox-meta"><div class="mml">Diagnostic</div><div class="mmv" id="m-dg"></div></div>
+        <div class="mbox-meta"><div class="mml">Date</div><div class="mmv" id="m-dt"></div></div>
+        <div class="mbox-meta"><div class="mml">Status</div><div class="mmv" id="m-sx"></div></div>
+        <div class="mlabel" style="margin-top:4px;">Send notes</div>
+        <textarea class="mta mta-sm" id="m-notes" placeholder="e.g. Sent via Line 28/3"></textarea>
+        <button class="mbtn" style="width:100%;" onclick="doCopy()">Copy report text</button>
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="mbtn" onclick="closeModal()">Cancel</button>
+      <button class="mbtn" onclick="generateAI()" id="gen-btn" style="background:rgba(46,107,158,0.1);color:#2E6B9E;border-color:rgba(46,107,158,0.3);">Generate AI draft</button>
+      <button class="mbtn mbtn-gold" onclick="saveR('reviewed')">Save as reviewed</button>
+      <button class="mbtn mbtn-g" onclick="saveR('sent')">Mark as sent</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var U='',K='',AK='',PROXY='',W='',reports=[],students=[],activeId=null,activeDiag=null;
+
+function doConnect(){
+  var u=document.getElementById('f-url').value.trim();
+  var k=document.getElementById('f-key').value.trim();
+  var ak=document.getElementById('f-ak').value.trim();
+  var proxy=document.getElementById('f-proxy').value.trim();
+  var w=document.getElementById('f-name').value.trim()||'Unknown';
+  var e=document.getElementById('cfg-err');
+  e.style.display='none';
+  if(!u||!k){e.textContent='Please enter both URL and key.';e.style.display='block';return;}
+  if(u[u.length-1]==='/')u=u.slice(0,-1);
+  U=u;K=k;AK=ak;PROXY=proxy;W=w;
+  try{localStorage.setItem('hd_u',u);localStorage.setItem('hd_k',k);localStorage.setItem('hd_ak',ak);if(proxy)localStorage.setItem('hd_proxy',proxy);else localStorage.removeItem('hd_proxy');localStorage.setItem('hd_w',w);}catch(ex){}
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('nav-user').textContent=w+(AK?' · AI '+(PROXY?'ready':'no proxy'):'');
+  loadReports();
+  loadStudents();
+}
+
+function doClear(){
+  try{localStorage.removeItem('hd_u');localStorage.removeItem('hd_k');localStorage.removeItem('hd_ak');localStorage.removeItem('hd_proxy');localStorage.removeItem('hd_w');}catch(e){}
+  document.getElementById('f-url').value='';
+  document.getElementById('f-key').value='';
+  document.getElementById('f-ak').value='';
+  document.getElementById('f-proxy').value='';
+  document.getElementById('f-name').value='';
+}
+
+function api(path,method,body){
+  method=method||'GET';
+  return fetch(U+'/rest/v1/'+path,{
+    method:method,
+    headers:{'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:body?JSON.stringify(body):undefined
+  }).then(function(r){
+    if(!r.ok)return r.text().then(function(t){throw new Error(t);});
+    return r.status===204?null:r.json();
+  });
+}
+
+function loadReports(){
+  document.getElementById('rlist').innerHTML='<div class="empty">Loading…</div>';
+  api('reports?order=created_at.desc&select=*').then(function(d){
+    reports=d||[];renderReports(reports);updateStats();
+  }).catch(function(e){
+    document.getElementById('rlist').innerHTML='<div class="empty">Error loading reports:<br>'+e.message+'</div>';
+  });
+}
+
+function renderReports(list){
+  var el=document.getElementById('rlist');
+  if(!list.length){el.innerHTML='<div class="empty">No reports yet.</div>';return;}
+  el.innerHTML=list.map(function(r){
+    var d=new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    var sent=r.status==='reviewed'?'<button class="cbtn cbtn-g" onclick="quickSent(\''+r.id+'\')">Mark sent</button>':'';
+    var linkBtn=r.student_id
+      ?'<span style="font-size:11px;background:rgba(46,125,92,0.1);color:#2E7D5C;padding:3px 9px;border-radius:4px;font-weight:500;border:1px solid rgba(46,125,92,0.2);">&#10003; Linked</span>'
+      :'<button class="cbtn" onclick="openLinkModal(\''+r.id+'\',\''+escJs(r.student_name||'')+'\')">Link student</button>';
+    return '<div class="card"><div class="card-top"><div><div class="card-name">'+(r.student_name||'Unknown')+'</div><div class="card-sub">'+(r.diagnostic_label||'Diagnostic')+' &middot; '+d+'</div><span class="badge b-'+r.status+'">'+r.status+'</span></div><div class="card-btns">'+linkBtn+'<button class="cbtn" onclick="openModal(\''+r.id+'\')">Review</button>'+sent+'</div></div></div>';
+  }).join('');
+}
+
+function escJs(str){ return (str||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+function updateStats(){
+  var p=0,rv=0,s=0;
+  reports.forEach(function(r){if(r.status==='pending')p++;else if(r.status==='reviewed')rv++;else if(r.status==='sent')s++;});
+  document.getElementById('s-total').textContent=reports.length;
+  document.getElementById('s-pend').textContent=p;
+  document.getElementById('s-rev').textContent=rv;
+  document.getElementById('s-sent').textContent=s;
+}
+
+function searchR(q){
+  renderReports(q?reports.filter(function(r){return(r.student_name||'').toLowerCase().indexOf(q.toLowerCase())>-1;}):reports);
+}
+
+function openModal(id){
+  var r=reports.find(function(x){return x.id===id;});
+  if(!r)return;
+  activeId=id;
+  document.getElementById('m-title').textContent='Report — '+(r.student_name||'');
+  document.getElementById('m-text').value=r.edited_report||r.ai_report||'';
+  document.getElementById('m-notes').value=r.send_notes||'';
+  document.getElementById('m-st').textContent=r.student_name||'—';
+  document.getElementById('m-dg').textContent=r.diagnostic_label||'—';
+  document.getElementById('m-dt').textContent=new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('m-sx').textContent=r.status;
+  document.getElementById('m-responses').innerHTML='<div style="color:#9090A0;font-size:12px;">Loading responses...</div>';
+  document.getElementById('modal').className='on';
+
+  // Fetch diagnostic record to show raw responses
+  activeDiag=null;
+  var q=r.diagnostic_id
+    ?'diagnostics?id=eq.'+r.diagnostic_id+'&select=*'
+    :'diagnostics?student_id=eq.'+r.student_id+'&order=created_at.desc&limit=1&select=*';
+  api(q).then(function(d){
+    var diag=d&&d.length?d[0]:null;
+    activeDiag=diag;
+    var el=document.getElementById('m-responses');
+    if(!diag){el.innerHTML='<div style="color:#9090A0;font-size:12px;">No response data.</div>';return;}
+    var html='';
+    var raw=diag.raw_responses||{};
+    if(typeof raw==='string'){try{raw=JSON.parse(raw);}catch(e){raw={};}}
+
+    // ---- MCQ scores (new template format: diag.mcq_scores) ----
+    var newMcq=diag.mcq_scores||{};
+    var newMcqKeys=Object.keys(newMcq);
+    if(newMcqKeys.length){
+      var cr=0,tot=0;
+      newMcqKeys.forEach(function(k){var q=newMcq[k];if(q.correct!==null&&q.correct!==undefined){tot++;if(q.correct)cr++;}});
+      html+='<div style="margin-bottom:10px;padding:7px 9px;background:#F7F5F0;border-radius:5px;">';
+      html+='<div style="font-size:10px;font-weight:500;color:#9090A0;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">MCQ'+(tot?' &mdash; '+cr+'/'+tot+' correct':'')+'</div>';
+      newMcqKeys.forEach(function(k){
+        var q=newMcq[k];
+        var isOp=(q.correct===null||q.correct===undefined);
+        var col=isOp?'#9090A0':(q.correct?'#2E7D5C':'#B83030');
+        var icon=isOp?'':( q.correct?' ✓':' ✗');
+        html+='<div style="font-size:12px;margin-bottom:2px;padding:3px 6px;border-radius:4px;background:#fff;display:flex;justify-content:space-between;">';
+        html+='<span style="color:#4A4A58;">'+k+'</span>';
+        html+='<strong style="color:'+col+';">'+q.chosen+icon+'</strong></div>';
+      });
+      html+='</div>';
+    }
+
+    // ---- MCQ answers (old AP Science format: raw.mcq) ----
+    var mcqAnswers=raw.mcq||{};
+    if(!newMcqKeys.length&&Object.keys(mcqAnswers).length){
+      var CORRECT_ANS={A1:'b',A2:'b',A4:'b',B2:'b',B4:'b',C2:'b',C4:'c',D3:'a'};
+      var MCQ_LABELS={A1:'Newton 1st Law (rocket)',A2:'Net force at constant speed',A4:'Ball at peak of throw',B2:'Conservation of mass (rusting)',B4:'Carbon loses electron',C2:'Photosynthesis inputs/outputs',C4:'Energy transfer 10% rule',D3:'Learning style'};
+      html+='<div style="margin-bottom:10px;">';
+      html+='<div style="font-size:10px;font-weight:500;color:#9090A0;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">MCQ Answers</div>';
+      Object.keys(mcqAnswers).forEach(function(k){
+        if(!mcqAnswers[k])return;
+        var correct=CORRECT_ANS[k];var given=mcqAnswers[k];var isRight=(given===correct);
+        var col=isRight?'#2E7D5C':'#B83030';var icon=isRight?'✓':'✗';
+        html+='<div style="font-size:12px;margin-bottom:4px;padding:4px 7px;border-radius:4px;background:#F7F5F0;display:flex;justify-content:space-between;align-items:center;">';
+        html+='<span style="color:#4A4A58;">'+(MCQ_LABELS[k]||k)+'</span>';
+        html+='<span style="font-weight:600;color:'+col+';">'+given.toUpperCase()+' '+icon+'</span></div>';
+      });
+      html+='</div>';
+    }
+
+    // ---- Text responses (new format: flat strings in raw_responses) ----
+    var textItems=[];
+    Object.keys(raw).forEach(function(k){var val=raw[k];if(typeof val==='string'&&val.trim())textItems.push({k:k,v:val});});
+    // Old format fallback
+    var oldOpen=raw.open||{};
+    Object.keys(oldOpen).forEach(function(k){if(oldOpen[k])textItems.push({k:k,v:oldOpen[k]});});
+    var OPEN_LABELS={A3_fma_and_lift:'Physics maths (F=ma + lift)',A5_vt_graph:'Velocity-time graph',B1_element_compound_mixture:'Element / compound / mixture',B3_acid_base:'Acids and bases',B5_balance_equation:'Equation balancing',C1_plant_animal_cell:'Plant vs animal cell',C3_dna_protein:'DNA to protein',D1_reaction_rate_temp:'Reaction rate and temperature',D2_blood_acidity:'Exercise physiology',E2_genuine_interest:'Genuine science interest',E3_biggest_concern:'Biggest concern',E4_other_notes:'Other notes'};
+    if(textItems.length){
+      html+='<div style="margin-bottom:10px;">';
+      html+='<div style="font-size:10px;font-weight:500;color:#9090A0;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Written Responses</div>';
+      textItems.forEach(function(item){
+        var label=OPEN_LABELS[item.k]||item.k.replace(/_/g,' ');
+        html+='<div style="margin-bottom:8px;"><div style="font-size:10px;font-weight:500;color:#9090A0;margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em;">'+label+'</div>';
+        html+='<div style="font-size:12.5px;color:#1A1A20;line-height:1.55;background:#F7F5F0;padding:6px 8px;border-radius:4px;border-left:2px solid #C9A84C;">'+item.v+'</div></div>';
+      });
+      html+='</div>';
+    }
+
+    // ---- Self-ratings (new: diag.self_ratings; old: raw.scales) ----
+    var ratings=diag.self_ratings||raw.scales||{};
+    var rKeys=Object.keys(ratings).filter(function(k){return ratings[k]!==null&&ratings[k]!==undefined;});
+    if(rKeys.length){
+      html+='<div style="margin-bottom:10px;">';
+      html+='<div style="font-size:10px;font-weight:500;color:#9090A0;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Self-ratings</div>';
+      rKeys.forEach(function(k){
+        var val=ratings[k];var col=val>=4?'#2E7D5C':val>=3?'#B07020':'#B83030';
+        html+='<div style="font-size:12px;margin-bottom:3px;padding:4px 7px;border-radius:4px;background:#F7F5F0;display:flex;justify-content:space-between;">';
+        html+='<span style="color:#4A4A58;">'+k.replace(/_/g,' ')+'</span><strong style="color:'+col+';">'+val+'/'+( diag.self_ratings?'5':'5')+'</strong></div>';
+      });
+      html+='</div>';
+    }
+
+    // ---- Preferences / rankings ----
+    var prefs=diag.preferences||{};
+    var prefKeys=Object.keys(prefs);
+    if(prefKeys.length){
+      html+='<div style="padding:7px 9px;background:#F7F5F0;border-radius:5px;">';
+      html+='<div style="font-size:10px;font-weight:500;color:#9090A0;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">Preferences / Rankings</div>';
+      prefKeys.forEach(function(k){
+        var val=prefs[k];
+        html+='<div style="font-size:12px;color:#4A4A58;margin-bottom:2px;">'+k.replace(/_/g,' ')+': <strong>'+(Array.isArray(val)?val.join(' > '):val)+'</strong></div>';
+      });
+      html+='</div>';
+    }
+
+    el.innerHTML=html||'<div style="color:#9090A0;font-size:12px;">No written responses.</div>';
+  }).catch(function(e){
+    document.getElementById('m-responses').innerHTML='<div style="color:#B83030;font-size:12px;">Error: '+e.message+'</div>';
+  });
+}
+
+function closeModal(){document.getElementById('modal').className='';activeId=null;}
+
+function saveR(status){
+  if(!activeId)return;
+  var b={edited_report:document.getElementById('m-text').value,status:status,reviewed_by:W,reviewed_at:new Date().toISOString(),send_notes:document.getElementById('m-notes').value};
+  if(status==='sent')b.sent_at=new Date().toISOString();
+  api('reports?id=eq.'+activeId,'PATCH',b).then(function(){closeModal();loadReports();}).catch(function(e){alert('Save failed: '+e.message);});
+}
+
+function quickSent(id){
+  api('reports?id=eq.'+id,'PATCH',{status:'sent',sent_at:new Date().toISOString(),reviewed_by:W}).then(function(){loadReports();}).catch(function(e){alert('Error: '+e.message);});
+}
+
+function doCopy(){
+  navigator.clipboard.writeText(document.getElementById('m-text').value).catch(function(){});
+}
+
+function loadStudents(){
+  api('students?order=full_name.asc&select=*').then(function(d){
+    students=d||[];renderStudents(students);
+  }).catch(function(){});
+}
+
+function renderStudents(list){
+  var el=document.getElementById('slist');
+  if(!list.length){el.innerHTML='<div class="empty">No students yet. Add one using the tab above.</div>';return;}
+  el.innerHTML=list.map(function(s){
+    return '<div class="card"><div class="card-top"><div><div class="card-name">'+s.full_name+'</div><div class="card-sub">Grade '+(s.grade||'—')+' &middot; '+(s.school||'—')+'</div></div><div class="card-btns"><button class="cbtn" onclick="copyId(\''+s.id+'\')">Copy UUID</button></div></div></div>';
+  }).join('');
+}
+
+function searchS(q){
+  renderStudents(q?students.filter(function(s){return s.full_name.toLowerCase().indexOf(q.toLowerCase())>-1;}):students);
+}
+
+function copyId(id){
+  navigator.clipboard.writeText(id).catch(function(){});
+  alert('UUID copied to clipboard:\n'+id+'\n\nPaste this as STUDENT_ID in the diagnostic file.');
+}
+
+function addStudent(){
+  var name=document.getElementById('ns-n').value.trim();
+  if(!name){alert('Student name is required.');return;}
+  var b={full_name:name,grade:v('ns-g'),school:v('ns-sc'),head_teacher:v('ns-ht'),parent_name:v('ns-p'),parent_email:v('ns-e'),parent_line:v('ns-l'),notes:v('ns-no')};
+  api('students','POST',b).then(function(){
+    document.getElementById('add-ok').textContent='Student added.';
+    ['ns-n','ns-g','ns-sc','ns-ht','ns-p','ns-e','ns-l','ns-no'].forEach(function(i){document.getElementById(i).value='';});
+    loadStudents();
+    setTimeout(function(){document.getElementById('add-ok').textContent='';},3000);
+  }).catch(function(e){alert('Error: '+e.message);});
+}
+
+function v(id){return document.getElementById(id).value.trim()||null;}
+
+
+function buildDiagPrompt(diag, studentName, diagnosticLabel){
+  var lines=[];
+  lines.push('Student: '+studentName);
+  lines.push('Diagnostic: '+diagnosticLabel);
+  lines.push('');
+  var mcq=diag.mcq_scores||{};
+  var mcqKeys=Object.keys(mcq);
+  if(mcqKeys.length){
+    lines.push('MCQ RESULTS:');
+    mcqKeys.forEach(function(k){
+      var s=mcq[k];
+      if(s&&typeof s==='object'){
+        var result=s.correct===true?'correct':s.correct===false?'incorrect':'no key';
+        lines.push('  '+k+': chose option '+(s.chosen!==undefined?String(s.chosen):'?')+' -- '+result);
+      } else { lines.push('  '+k+': '+JSON.stringify(s)); }
+    });
+    lines.push('');
+  }
+  var raw=diag.raw_responses||{};
+  if(typeof raw==='string'){try{raw=JSON.parse(raw);}catch(e){raw={};}}
+  var openKeys=Object.keys(raw).filter(function(k){ return !mcq[k]&&typeof raw[k]==='string'&&raw[k].trim(); });
+  if(openKeys.length){
+    lines.push('WRITTEN RESPONSES:');
+    openKeys.forEach(function(k){ lines.push('  '+k+': '+raw[k]); });
+    lines.push('');
+  }
+  var ratings=diag.self_ratings||{};
+  var ratingKeys=Object.keys(ratings);
+  if(ratingKeys.length){
+    lines.push('SELF-RATINGS:');
+    ratingKeys.forEach(function(k){ if(ratings[k]!==null&&ratings[k]!==undefined) lines.push('  '+k+': '+ratings[k]); });
+    lines.push('');
+  }
+  var prefs=diag.preferences||{};
+  var prefKeys=Object.keys(prefs);
+  if(prefKeys.length){
+    lines.push('RANKINGS / PREFERENCES:');
+    prefKeys.forEach(function(k){ var val=prefs[k]; lines.push('  '+k+': '+(Array.isArray(val)?val.join(' > '):val)); });
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
+function generateAI(){
+  var r=reports.find(function(x){return x.id===activeId;});
+  if(!r) return;
+  var btn=document.getElementById('gen-btn');
+
+  if(!AK){
+    alert('No Anthropic API key found.\n\nPlease clear credentials and log in again with your sk-ant-... key.');
+    return;
+  }
+  if(!PROXY){
+    alert('No Proxy URL found.\n\nPlease clear credentials and log in again with your Cloudflare Worker URL.');
+    return;
+  }
+  if(!activeDiag){
+    alert('Diagnostic data is still loading. Please wait a moment and try again.');
+    return;
+  }
+
+  btn.textContent='Generating...';
+  btn.disabled=true;
+
+  var dataBlock=buildDiagPrompt(activeDiag, r.student_name||'the student', r.diagnostic_label||'Diagnostic');
+
+  var userPrompt='Write an internal diagnostic report for Harland Education.\n\n'
+    +dataBlock
+    +'\nReport structure -- use exactly these headings:\n\n'
+    +'OVERALL SUMMARY\n'
+    +'2-3 sentences. Direct statement of the student\'s current level and key finding.\n\n'
+    +'STRENGTHS\n'
+    +'Specific areas of competence, referenced to the actual data above.\n\n'
+    +'AREAS FOR DEVELOPMENT\n'
+    +'Specific gaps or misconceptions, referenced to the actual data. Be honest.\n\n'
+    +'PROGRAMME RECOMMENDATION\n'
+    +'Which Harland programme and level to recommend (Advanced or Expert), which subject(s), '
+    +'and estimated unit count. Justify briefly.\n\n'
+    +'Write like a knowledgeable teacher, not AI. Be direct and specific.';
+
+  // Send to Cloudflare Worker proxy (avoids CORS restriction on direct browser->Anthropic calls)
+  // The Worker extracts _apiKey and forwards to Anthropic with it as a header
+  fetch(PROXY, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      _apiKey: AK,
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1200,
+      system:'You are a Head Teacher at Harland Education, a premium 1-on-1 tutoring company in Taipei serving international school students. '
+        +'You write internal diagnostic reports reviewed and edited by the teacher before being sent to parents. '
+        +'Harland programmes: Academic English K-12, Science/Maths/Humanities tutoring, Test Prep (SAT, AP, IB, IELTS, TOEFL). '
+        +'Levels: Advanced (high school content) and Expert (AP/IB). Each unit = 11 lessons. '
+        +'Write with the authority of a professional educator. Be specific and evidence-based. Do not sound like AI.',
+      messages:[{role:'user',content:userPrompt}]
+    })
+  })
+  .then(function(res){
+    if(!res.ok)return res.text().then(function(t){throw new Error(t);});
+    return res.json();
+  })
+  .then(function(d){
+    var text=(d.content&&d.content[0]&&d.content[0].text)||'Could not generate report.';
+    document.getElementById('m-text').value=text;
+    btn.textContent='Generate AI draft';
+    btn.disabled=false;
+  })
+  .catch(function(e){
+    var msg=e.message||'Unknown error';
+    if(msg.indexOf('401')>-1||msg.indexOf('invalid_api_key')>-1)
+      alert('API key rejected. Please check your Anthropic key.');
+    else
+      alert('AI generation failed: '+msg+'\n\nYou can still write the report manually.');
+    btn.textContent='Generate AI draft';
+    btn.disabled=false;
+  });
+}
+
+
+var linkReportId = null;
+
+function openLinkModal(reportId, studentName){
+  linkReportId = reportId;
+  document.getElementById('link-new-name').value = studentName || '';
+  // Populate student dropdown
+  var sel = document.getElementById('link-select');
+  sel.innerHTML = '<option value="">-- choose student --</option>';
+  students.forEach(function(s){
+    sel.innerHTML += '<option value="'+s.id+'">'+s.full_name+(s.grade?' (G'+s.grade+')':'')+'</option>';
+  });
+  document.getElementById('link-modal').style.display='flex';
+}
+
+function closeLinkModal(){
+  document.getElementById('link-modal').style.display='none';
+  linkReportId = null;
+}
+
+function linkExisting(){
+  var sid = document.getElementById('link-select').value;
+  if(!sid){alert('Please select a student.');return;}
+  var student = students.find(function(s){return s.id===sid;});
+  api('reports?id=eq.'+linkReportId,'PATCH',{student_id:sid,student_name:student?student.full_name:undefined})
+    .then(function(){
+      api('diagnostics?student_id=eq.null&student_name=eq.'+encodeURIComponent(document.getElementById('link-new-name').value)+'&limit=1','PATCH',{student_id:sid}).catch(function(){});
+      closeLinkModal();
+      loadReports();
+    })
+    .catch(function(e){alert('Error: '+e.message);});
+}
+
+function linkNew(){
+  var name = document.getElementById('link-new-name').value.trim();
+  if(!name){alert('Name is required.');return;}
+  var body={
+    full_name:name,
+    grade:document.getElementById('link-new-grade').value.trim()||null,
+    school:document.getElementById('link-new-school').value.trim()||null,
+    parent_line:document.getElementById('link-new-line').value.trim()||null,
+    parent_name:document.getElementById('link-new-parent').value.trim()||null
+  };
+  api('students','POST',body)
+    .then(function(d){
+      var newStudent = Array.isArray(d)?d[0]:d;
+      return api('reports?id=eq.'+linkReportId,'PATCH',{student_id:newStudent.id});
+    })
+    .then(function(){
+      closeLinkModal();
+      loadReports();
+      loadStudents();
+    })
+    .catch(function(e){alert('Error: '+e.message);});
+}
+
+function showPage(name,tab){
+  document.querySelectorAll('.page').forEach(function(p){p.className='page';});
+  document.querySelectorAll('.navtab').forEach(function(t){t.className='navtab';});
+  document.getElementById('page-'+name).className='page on';
+  if(tab)tab.className='navtab on';
+}
+
+// Wire up buttons via addEventListener (more reliable than onclick)
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('connect-btn').addEventListener('click', doConnect);
+
+  // Pre-fill saved credentials
+  try {
+    var su=localStorage.getItem('hd_u');
+    var sk=localStorage.getItem('hd_k');
+    var sw=localStorage.getItem('hd_w');
+    var sak=localStorage.getItem('hd_ak');
+    var sproxy=localStorage.getItem('hd_proxy');
+    if(su)document.getElementById('f-url').value=su;
+    if(sk)document.getElementById('f-key').value=sk;
+    if(sw)document.getElementById('f-name').value=sw;
+    if(sak)document.getElementById('f-ak').value=sak;
+    if(sproxy)document.getElementById('f-proxy').value=sproxy;
+  } catch(e) {}
+
+  // Confirm JS is running — show green dot on button
+  var btn = document.getElementById('connect-btn');
+  btn.textContent = 'Connect ✓';
+  btn.style.background = '#1B2A4A';
+});
+</script>
+
+<!-- LINK STUDENT MODAL -->
+<div id="link-modal" style="display:none;position:fixed;inset:0;background:rgba(27,42,74,0.6);z-index:300;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;width:100%;max-width:480px;padding:28px 32px;">
+    <div style="font-size:16px;font-weight:500;margin-bottom:6px;">Link to student record</div>
+    <div style="font-size:13px;color:#9090A0;margin-bottom:20px;">Select an existing student or create a new one. This links the diagnostic to their full profile.</div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:12px;font-weight:500;color:#4A4A58;display:block;margin-bottom:5px;">Select existing student</label>
+      <select id="link-select" style="width:100%;font-size:13px;padding:8px 10px;border:1px solid #D0CBBF;border-radius:6px;font-family:'DM Sans',sans-serif;background:#F7F5F0;">
+        <option value="">-- choose student --</option>
+      </select>
+    </div>
+    <div style="text-align:center;font-size:12px;color:#9090A0;margin:10px 0;">or</div>
+    <div style="margin-bottom:20px;">
+      <label style="font-size:12px;font-weight:500;color:#4A4A58;display:block;margin-bottom:5px;">Create new student record</label>
+      <input type="text" id="link-new-name" style="width:100%;font-size:13px;padding:8px 10px;border:1px solid #D0CBBF;border-radius:6px;font-family:'DM Sans',sans-serif;background:#F7F5F0;margin-bottom:8px;" placeholder="Full name (pre-filled from submission)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <input type="text" id="link-new-grade" style="font-size:13px;padding:7px 10px;border:1px solid #D0CBBF;border-radius:6px;font-family:'DM Sans',sans-serif;background:#F7F5F0;" placeholder="Grade">
+        <input type="text" id="link-new-school" style="font-size:13px;padding:7px 10px;border:1px solid #D0CBBF;border-radius:6px;font-family:'DM Sans',sans-serif;background:#F7F5F0;" placeholder="School">
+        <input type="text" id="link-new-parent" style="font-size:13px;padding:7px 10px;border:1px solid #D0CBBF;border-radius:6px;font-family:'DM Sans',sans-serif;background:#F7F5F0;" placeholder="Parent name">
+        <input type="text" id="link-new-line" style="font-size:13px;padding:7px 10px;border:1px solid #D0CBBF;border-radius:6px;font-family:'DM Sans',sans-serif;background:#F7F5F0;" placeholder="Parent Line ID">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="closeLinkModal()" style="font-size:13px;padding:8px 16px;border-radius:6px;border:1px solid #D0CBBF;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;">Cancel</button>
+      <button onclick="linkExisting()" style="font-size:13px;padding:8px 16px;border-radius:6px;border:none;background:#2E6B9E;color:white;cursor:pointer;font-family:'DM Sans',sans-serif;">Link existing</button>
+      <button onclick="linkNew()" style="font-size:13px;padding:8px 16px;border-radius:6px;border:none;background:#1B2A4A;color:white;cursor:pointer;font-family:'DM Sans',sans-serif;">Create &amp; link</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
