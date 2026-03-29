@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harland — AP Science Readiness Diagnostic</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F5F0;--white:#FFFFFF;--ink:#1A1A20;--slate:#4A4A58;
+  --mist:#9090A0;--border:#E4E0D8;--border2:#D0CBBF;
+  --gold:#C9A84C;--gold-bg:rgba(201,168,76,0.08);--gold-bd:rgba(201,168,76,0.25);
+  --navy:#1B2A4A;--navy-lt:rgba(27,42,74,0.06);
+  --phys:#2E6B9E;--phys-bg:rgba(46,107,158,0.09);--phys-bd:rgba(46,107,158,0.3);
+  --chem:#6B4DA0;--chem-bg:rgba(107,77,160,0.09);--chem-bd:rgba(107,77,160,0.3);
+  --bio:#2E7D5C;--bio-bg:rgba(46,125,92,0.09);--bio-bd:rgba(46,125,92,0.3);
+  --meta:#B07020;--meta-bg:rgba(176,112,32,0.09);--meta-bd:rgba(176,112,32,0.3);
+  --green:#2E7D5C;--green-bg:rgba(46,125,92,0.1);
+  --red:#B83030;--red-bg:rgba(184,48,48,0.08);
+  --amber:#B07020;--amber-bg:rgba(176,112,32,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6;}
+
+.hdr{background:var(--navy);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hdr-logo{font-family:'Libre Baskerville',serif;font-size:15px;color:var(--gold);}
+.progress-bar{height:3px;background:rgba(255,255,255,0.1);}
+.progress-fill{height:100%;background:var(--gold);transition:width 0.3s ease;width:0%;}
+
+.wrap{max-width:740px;margin:0 auto;padding:36px 20px 80px;}
+
+.intro{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin-bottom:28px;}
+.intro-tag{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;font-weight:500;}
+.intro-title{font-family:'Libre Baskerville',serif;font-size:24px;color:var(--ink);margin-bottom:10px;}
+.intro-body{font-size:13.5px;color:var(--slate);line-height:1.75;}
+.intro-pills{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.pill{font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);color:var(--slate);}
+
+/* section headers with colour coding per science */
+.sec-hdr{margin:32px 0 16px;}
+.sec-tag{display:flex;align-items:center;gap:7px;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;font-weight:500;margin-bottom:6px;}
+.sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.sec-title{font-family:'Libre Baskerville',serif;font-size:19px;color:var(--ink);}
+.sec-sub{font-size:12.5px;color:var(--mist);margin-top:3px;}
+
+/* domain band — coloured left border on section header */
+.domain-band{border-left:3px solid var(--border);padding-left:12px;margin-bottom:4px;}
+
+.qc{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:12px;transition:border-color 0.12s;}
+.qc.answered{border-color:var(--border2);}
+.qnum{font-size:10px;font-family:'DM Mono',monospace;color:var(--mist);margin-bottom:7px;}
+.qtag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:500;}
+.qstem{font-size:14px;color:var(--ink);line-height:1.65;margin-bottom:14px;}
+.qstem em{font-style:italic;color:var(--slate);}
+.qctx{font-size:12.5px;color:var(--slate);line-height:1.7;background:var(--navy-lt);border-left:2px solid var(--navy);padding:9px 13px;border-radius:0 5px 5px 0;margin-bottom:14px;font-family:'Libre Baskerville',serif;}
+.qctx.warn{border-left-color:var(--amber);background:var(--amber-bg);font-family:'DM Sans',sans-serif;font-size:12px;}
+
+.choices{display:flex;flex-direction:column;gap:6px;}
+.ch{display:flex;align-items:flex-start;gap:9px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.1s;font-size:13.5px;color:var(--slate);background:transparent;text-align:left;width:100%;font-family:'DM Sans',sans-serif;}
+.ch:hover{border-color:var(--border2);color:var(--ink);}
+.ch.sel{border-color:var(--navy);background:var(--navy-lt);color:var(--ink);}
+.ch-l{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0;margin-top:1px;color:var(--mist);transition:all 0.1s;}
+.ch.sel .ch-l{border-color:var(--navy);background:var(--navy);color:white;}
+.ch-t{flex:1;line-height:1.5;}
+
+.scale-wrap{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
+.sb{width:38px;height:38px;border-radius:5px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--mist);transition:all 0.1s;font-family:'DM Sans',sans-serif;}
+.sb:hover{border-color:var(--border2);color:var(--ink);}
+.sb.sel{border-color:var(--navy);background:var(--navy);color:white;}
+.scale-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--mist);margin-top:5px;}
+
+.sta{width:100%;font-size:13px;padding:9px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;resize:vertical;min-height:68px;line-height:1.6;}
+.sta:focus{outline:none;border-color:var(--border2);background:var(--white);}
+.sta::placeholder{color:var(--mist);}
+
+/* ranking widget */
+.rank-list{display:flex;flex-direction:column;gap:7px;}
+.rank-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--white);border:1px solid var(--border);border-radius:7px;cursor:grab;user-select:none;}
+.rank-item.dragging{opacity:0.5;border-style:dashed;}
+.rank-handle{color:var(--mist);font-size:14px;flex-shrink:0;}
+.rank-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--mist);flex-shrink:0;width:20px;}
+.rank-label{flex:1;font-size:13.5px;color:var(--ink);}
+.rank-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;flex-shrink:0;}
+
+.submit-area{margin-top:36px;padding:24px 28px;background:var(--white);border:1px solid var(--border);border-radius:12px;}
+.submit-note{font-size:12.5px;color:var(--mist);margin-bottom:14px;line-height:1.65;}
+.submit-btn{width:100%;padding:13px;border-radius:7px;border:none;background:var(--navy);color:white;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s;}
+.submit-btn:hover{background:#243560;}
+.submit-btn:disabled{background:var(--border2);cursor:not-allowed;color:var(--mist);}
+
+/* results */
+#results{display:none;}
+.res-hdr{background:var(--navy);border-radius:12px;padding:28px 32px;margin-bottom:24px;}
+.rh-tag{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.rh-name{font-family:'Libre Baskerville',serif;font-size:26px;color:white;margin-bottom:3px;}
+.rh-sub{font-size:13px;color:rgba(255,255,255,0.45);}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;}
+.sc{background:rgba(255,255,255,0.09);border-radius:7px;padding:12px 14px;}
+.sc-lbl{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:5px;}
+.sc-val{font-family:'Libre Baskerville',serif;font-size:22px;color:white;line-height:1;}
+.sc-sub{font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;}
+
+.report-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:14px;}
+.rc-tag{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:500;}
+.rc-title{font-family:'Libre Baskerville',serif;font-size:17px;color:var(--ink);margin-bottom:12px;}
+.rc-body{font-size:13px;color:var(--slate);line-height:1.8;white-space:pre-wrap;}
+
+/* science ranking result cards */
+.sci-rank-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+.sci-card{border-radius:10px;padding:16px 18px;border:1px solid var(--border);}
+.sci-card.rank1{border-color:var(--gold-bd);background:var(--gold-bg);}
+.sci-card.rank2{border-color:var(--border2);background:var(--white);}
+.sci-card.rank3{border-color:var(--border);background:var(--bg);opacity:0.85;}
+.sci-rank-num{font-family:'Libre Baskerville',serif;font-size:28px;color:var(--gold);line-height:1;margin-bottom:4px;}
+.sci-card.rank2 .sci-rank-num{color:var(--slate);}
+.sci-card.rank3 .sci-rank-num{color:var(--mist);}
+.sci-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+.sci-verdict{font-size:12px;color:var(--slate);line-height:1.5;}
+
+.db-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.db-label{font-size:12px;color:var(--slate);width:110px;flex-shrink:0;}
+.db-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.db-fill{height:100%;border-radius:4px;}
+.db-val{font-size:12px;font-weight:500;color:var(--ink);width:32px;text-align:right;flex-shrink:0;}
+
+.pathway-card{background:var(--gold-bg);border:1px solid var(--gold-bd);border-radius:12px;padding:24px 28px;margin-bottom:14px;}
+.pw-title{font-family:'Libre Baskerville',serif;font-size:17px;color:var(--ink);margin-bottom:16px;}
+.pw-step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--gold-bd);}
+.pw-step:last-child{border-bottom:none;padding-bottom:0;}
+.pw-num{font-family:'Libre Baskerville',serif;font-size:22px;color:var(--gold);flex-shrink:0;width:22px;line-height:1;}
+.pw-body .pw-label{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.pw-body .pw-desc{font-size:12px;color:var(--slate);line-height:1.6;}
+
+.export-btn{width:100%;padding:11px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:14px;transition:all 0.15s;}
+.export-btn:hover{background:var(--white);border-color:var(--navy);}
+.thinking{font-size:12.5px;color:var(--mist);text-align:center;padding:18px;font-style:italic;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo">Harland</div>
+  <div style="text-align:right">
+    <div style="font-size:13px;color:rgba(255,255,255,0.7);">AP Science Readiness Diagnostic</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.06em;" id="hdr-name">Multi-Science Assessment</div>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+
+<div class="wrap">
+
+<!-- NAME ENTRY -->
+<div id="name-screen">
+  <div class="intro" style="max-width:480px;margin:40px auto;">
+    <div class="intro-tag">Harland Education · Science Programme</div>
+    <div class="intro-title" style="font-size:22px;margin-bottom:8px;">AP Science Readiness Diagnostic</div>
+    <div class="intro-body" style="margin-bottom:20px;">Before you begin, please enter your name so your Head Teacher can identify your responses.</div>
+    <label style="display:block;font-size:12px;font-weight:500;color:var(--slate);margin-bottom:6px;">Your full name</label>
+    <input type="text" id="student-name-input" placeholder="e.g. Jane Smith" style="width:100%;font-size:14px;padding:10px 12px;border:1px solid var(--border2);border-radius:7px;font-family:'DM Sans',sans-serif;background:var(--bg);margin-bottom:16px;" onkeydown="if(event.key==='Enter')startDiagnostic()">
+    <button onclick="startDiagnostic()" style="width:100%;padding:12px;background:var(--navy);color:white;border:none;border-radius:7px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">Begin diagnostic →</button>
+    <div id="name-err" style="display:none;margin-top:8px;font-size:12.5px;color:#B83030;">Please enter your name to continue.</div>
+  </div>
+</div>
+
+<div id="diagnostic" style="display:none;">
+
+<div class="intro">
+  <div class="intro-tag">Harland Education · Science Programme</div>
+  <div class="intro-title">AP Science Readiness Diagnostic</div>
+  <div class="intro-body">This assessment maps your current knowledge across Physics, Chemistry, and Biology — the three AP science options — so your Head Teacher can recommend which one to start with and how long the preparation pathway will be.<br><br>The questions cover all three subjects at different levels of difficulty. Some will feel easy, some hard, some completely unfamiliar. All of that is useful information. Answer as honestly as you can — "I don't know" tells us just as much as a correct answer.</div>
+  <div class="intro-pills">
+    <span class="pill">~45–50 minutes</span>
+    <span class="pill">5 domains</span>
+    <span class="pill">Physics · Chemistry · Biology</span>
+    <span class="pill">No notes or calculator</span>
+  </div>
+</div>
+
+<!-- ══ DOMAIN A: PHYSICS ══ -->
+<div class="sec-hdr">
+  <div class="domain-band" style="border-left-color:var(--phys)">
+    <div class="sec-tag" style="color:var(--phys)"><span class="sec-dot" style="background:var(--phys)"></span>Domain A · Physics</div>
+    <div class="sec-title">Physics — Concepts &amp; Calculation</div>
+    <div class="sec-sub">Covers G8 foundations through G9–12 high school physics.</div>
+  </div>
+</div>
+
+<div class="qc" id="qc-A1">
+  <div class="qnum">A1</div>
+  <div class="qstem">A rocket in deep space fires its engines briefly then shuts them off. What happens to the rocket's motion afterwards?</div>
+  <div class="choices">
+    <button class="ch" onclick="pick('A1','a',this)"><span class="ch-l">A</span><span class="ch-t">It slows down and stops — nothing is pushing it</span></button>
+    <button class="ch" onclick="pick('A1','b',this)"><span class="ch-l">B</span><span class="ch-t">It continues at constant speed in the same direction — no force to slow it</span></button>
+    <button class="ch" onclick="pick('A1','c',this)"><span class="ch-l">C</span><span class="ch-t">It speeds up, then returns to its original speed</span></button>
+    <button class="ch" onclick="pick('A1','d',this)"><span class="ch-l">D</span><span class="ch-t">It slows down because the fuel combustion creates a backward force</span></button>
+  </div>
+</div>
+
+<div class="qc" id="qc-A2">
+  <div class="qnum">A2</div>
+  <div class="qstem">You push a heavy box across the floor at constant speed. A friend says "there must be a net force since it's moving." Are they right?</div>
+  <div class="choices">
+    <button class="ch" onclick="pick('A2','a',this)"><span class="ch-l">A</span><span class="ch-t">Yes — any moving object requires a net force</span></button>
+    <button class="ch" onclick="pick('A2','b',this)"><span class="ch-l">B</span><span class="ch-t">No — constant speed means net force is zero; your push equals friction</span></button>
+    <button class="ch" onclick="pick('A2','c',this)"><span class="ch-l">C</span><span class="ch-t">Yes — your push must always exceed friction to maintain motion</span></button>
+    <button class="ch" onclick="pick('A2','d',this)"><span class="ch-l">D</span><span class="ch-t">No — once moving, no force is needed</span></button>
+  </div>
+</div>
+
+<div class="qc" id="qc-A3">
+  <div class="qnum">A3</div>
+  <div class="qstem">Using F = ma, calculate the net force on a 6 kg object that accelerates at 5 m/s². Show your working.<br><br><em style="color:#9090A0;font-size:13px;">Extension (attempt if you can): A 50 kg person stands on a scale in a lift accelerating upward at 2 m/s² (g = 10 m/s²). What does the scale read, and why is it different from their normal weight?</em></div>
+  <textarea class="sta" id="A3" placeholder="F = ma:&#10;Net force = &#10;&#10;Extension (if attempting):&#10;Lift scale reading =" oninput="markTa('A3');upd()"></textarea>
+</div>
+<div class="qc" id="qc-A4">
+  <div class="qnum">A4</div>
+  <div class="qstem">A ball thrown upward reaches its highest point. At that exact moment, which is correct?</div>
+  <div class="choices">
+    <button class="ch" onclick="pick('A4','a',this)"><span class="ch-l">A</span><span class="ch-t">Velocity = 0, acceleration = 0</span></button>
+    <button class="ch" onclick="pick('A4','b',this)"><span class="ch-l">B</span><span class="ch-t">Velocity = 0, acceleration = 9.8 m/s² downward</span></button>
+    <button class="ch" onclick="pick('A4','c',this)"><span class="ch-l">C</span><span class="ch-t">Velocity is at maximum, acceleration = 0</span></button>
+    <button class="ch" onclick="pick('A4','d',this)"><span class="ch-l">D</span><span class="ch-t">Both velocity and acceleration are upward</span></button>
+  </div>
+</div>
+
+<div class="qc" id="qc-A5">
+  <div class="qnum">A5</div>
+  <div class="qstem">In your own words, explain what a velocity-time graph tells you. What does the slope represent? What does the area under the line represent?</div>
+  <textarea class="sta" id="A5" placeholder="Slope represents:&#10;Area represents:&#10;What a horizontal line means:" oninput="markTa('A5');upd()"></textarea>
+</div>
+
+<div class="qc" id="qc-A6">
+  <div class="qnum">A6</div>
+  <div class="qstem">How comfortable do you feel with physics maths — setting up and solving equations?</div>
+  <div class="scale-wrap">
+    <button class="sb" onclick="pickScale('phys_comfort',1,this)">1</button>
+    <button class="sb" onclick="pickScale('phys_comfort',2,this)">2</button>
+    <button class="sb" onclick="pickScale('phys_comfort',3,this)">3</button>
+    <button class="sb" onclick="pickScale('phys_comfort',4,this)">4</button>
+    <button class="sb" onclick="pickScale('phys_comfort',5,this)">5</button>
+  </div>
+  <div class="scale-lbl" style="max-width:220px;"><span>Very uncomfortable</span><span>Very comfortable</span></div>
+</div>
+
+<!-- ══ DOMAIN B: CHEMISTRY ══ -->
+<div class="sec-hdr">
+  <div class="domain-band" style="border-left-color:var(--chem)">
+    <div class="sec-tag" style="color:var(--chem)"><span class="sec-dot" style="background:var(--chem)"></span>Domain B · Chemistry</div>
+    <div class="sec-title">Chemistry — Concepts &amp; Reasoning</div>
+    <div class="sec-sub">Covers topics from your AEI Physical Science course through G9–12 chemistry concepts.</div>
+  </div>
+</div>
+
+<div class="qc" id="qc-B1">
+  <div class="qnum">B1</div>
+  <div class="qstem">What is the difference between an element, a compound, and a mixture? Give a real-world example of each.</div>
+  <textarea class="sta" id="B1" placeholder="Element:&#10;Compound:&#10;Mixture:&#10;&#10;Examples:" oninput="markTa('B1');upd()"></textarea>
+</div>
+
+<div class="qc" id="qc-B2">
+  <div class="qnum">B2</div>
+  <div class="qstem">When iron rusts, it reacts with oxygen to form iron oxide. The total mass of iron + oxygen before the reaction equals the mass of iron oxide after. What law does this illustrate, and what does it tell us about atoms during the reaction?</div>
+  <div class="choices">
+    <button class="ch" onclick="pick('B2','a',this)"><span class="ch-l">A</span><span class="ch-t">Law of Conservation of Energy — energy is neither created nor destroyed</span></button>
+    <button class="ch" onclick="pick('B2','b',this)"><span class="ch-l">B</span><span class="ch-t">Law of Conservation of Mass — atoms are rearranged, not created or destroyed</span></button>
+    <button class="ch" onclick="pick('B2','c',this)"><span class="ch-l">C</span><span class="ch-t">Periodic Law — elements repeat their properties in a pattern</span></button>
+    <button class="ch" onclick="pick('B2','d',this)"><span class="ch-l">D</span><span class="ch-t">Avogadro's Law — equal volumes of gas contain equal numbers of molecules</span></button>
+  </div>
+</div>
+
+<div class="qc" id="qc-B3">
+  <div class="qnum">B3</div>
+  <div class="qstem">Without using a textbook definition, explain in your own words what an acid does and what a base does in a solution. Give one real-world example of each.</div>
+  <textarea class="sta" id="B3" placeholder="Acid:&#10;Base:&#10;&#10;Real-world examples:" oninput="markTa('B3');upd()"></textarea>
+</div>
+
+<div class="qc" id="qc-B4">
+  <div class="qnum">B4</div>
+  <div class="qstem">An atom of carbon has 6 protons, 6 neutrons, and 6 electrons. If you remove one electron, what happens to the atom's charge? What is this particle now called?</div>
+  <div class="choices">
+    <button class="ch" onclick="pick('B4','a',this)"><span class="ch-l">A</span><span class="ch-t">It becomes negatively charged — it's now an anion</span></button>
+    <button class="ch" onclick="pick('B4','b',this)"><span class="ch-l">B</span><span class="ch-t">It becomes positively charged — it's now a cation</span></button>
+    <button class="ch" onclick="pick('B4','c',this)"><span class="ch-l">C</span><span class="ch-t">It stays neutral — electrons don't affect charge</span></button>
+    <button class="ch" onclick="pick('B4','d',this)"><span class="ch-l">D</span><span class="ch-t">It becomes an isotope</span></button>
+  </div>
+</div>
+
+<div class="qc" id="qc-B5">
+  <div class="qnum">B5</div>
+  <div class="qstem">Balance this chemical equation: H₂ + O₂ → H₂O. Write the balanced equation and explain in one sentence why balancing is necessary.</div>
+  <textarea class="sta" id="B5" placeholder="Balanced equation (fill in the numbers): _H2 + _O2 -> _H2O&#10;&#10;Why balancing is necessary (one sentence):" oninput="markTa('B5');upd()" style="min-height:55px;"></textarea>
+</div>
+
+<div class="qc" id="qc-B6">
+  <div class="qnum">B6</div>
+  <div class="qstem">How comfortable do you feel with chemistry concepts — understanding how and why substances behave the way they do?</div>
+  <div class="scale-wrap">
+    <button class="sb" onclick="pickScale('chem_comfort',1,this)">1</button>
+    <button class="sb" onclick="pickScale('chem_comfort',2,this)">2</button>
+    <button class="sb" onclick="pickScale('chem_comfort',3,this)">3</button>
+    <button class="sb" onclick="pickScale('chem_comfort',4,this)">4</button>
+    <button class="sb" onclick="pickScale('chem_comfort',5,this)">5</button>
+  </div>
+  <div class="scale-lbl" style="max-width:220px;"><span>Very uncomfortable</span><span>Very comfortable</span></div>
+</div>
+
+<!-- ══ DOMAIN C: BIOLOGY ══ -->
+<div class="sec-hdr">
+  <div class="domain-band" style="border-left-color:var(--bio)">
+    <div class="sec-tag" style="color:var(--bio)"><span class="sec-dot" style="background:var(--bio)"></span>Domain C · Biology</div>
+    <div class="sec-title">Biology — Concepts &amp; Systems Thinking</div>
+    <div class="sec-sub">You haven't formally studied biology at AEI — answer based on what you already know from any source.</div>
+  </div>
+</div>
+
+<div class="qc" id="qc-C1">
+  <div class="qnum">C1</div>
+  <div class="qstem">What is the main difference between a plant cell and an animal cell? Name one structure found in plant cells that is not found in animal cells, and explain what it does.</div>
+  <textarea class="sta" id="C1" placeholder="Main difference:&#10;Structure unique to plant cells:&#10;What it does:" oninput="markTa('C1');upd()"></textarea>
+</div>
+
+<div class="qc" id="qc-C2">
+  <div class="qnum">C2</div>
+  <div class="qstem">During photosynthesis, plants convert light energy into stored chemical energy. What are the two main inputs to this process, and what is the main output?</div>
+  <div class="choices">
+    <button class="ch" onclick="pick('C2','a',this)"><span class="ch-l">A</span><span class="ch-t">Inputs: oxygen + water → Output: carbon dioxide</span></button>
+    <button class="ch" onclick="pick('C2','b',this)"><span class="ch-l">B</span><span class="ch-t">Inputs: carbon dioxide + water (+ light energy) → Output: glucose + oxygen</span></button>
+    <button class="ch" onclick="pick('C2','c',this)"><span class="ch-l">C</span><span class="ch-t">Inputs: glucose + oxygen → Output: carbon dioxide + water</span></button>
+    <button class="ch" onclick="pick('C2','d',this)"><span class="ch-l">D</span><span class="ch-t">Inputs: carbon dioxide + glucose → Output: water + light</span></button>
+  </div>
+</div>
+
+<div class="qc" id="qc-C3">
+  <div class="qnum">C3</div>
+  <div class="qstem">DNA carries genetic information. In your own words, explain how the information in DNA leads to the production of a protein. You don't need exact terminology — explain the process as best you can.</div>
+  <textarea class="sta" id="C3" placeholder="How does DNA code for a protein?" oninput="markTa('C3');upd()"></textarea>
+</div>
+
+<div class="qc" id="qc-C4">
+  <div class="qnum">C4</div>
+  <div class="qstem">In an ecosystem, energy flows from producers to consumers. A rabbit eats grass, and a fox eats the rabbit. If the grass contains 10,000 units of energy, approximately how much energy does the fox receive, assuming 10% efficiency at each level?</div>
+  <div class="choices">
+    <button class="ch" onclick="pick('C4','a',this)"><span class="ch-l">A</span><span class="ch-t">10,000 units — energy is conserved through the food chain</span></button>
+    <button class="ch" onclick="pick('C4','b',this)"><span class="ch-l">B</span><span class="ch-t">1,000 units — one transfer at 10% efficiency</span></button>
+    <button class="ch" onclick="pick('C4','c',this)"><span class="ch-l">C</span><span class="ch-t">100 units — two transfers, each at 10% efficiency</span></button>
+    <button class="ch" onclick="pick('C4','d',this)"><span class="ch-l">D</span><span class="ch-t">1 unit — each transfer loses 99% of energy</span></button>
+  </div>
+</div>
+
+<div class="qc" id="qc-C5">
+  <div class="qnum">C5</div>
+  <div class="qstem">How comfortable do you feel with biology — remembering terms, understanding how living systems work?</div>
+  <div class="scale-wrap">
+    <button class="sb" onclick="pickScale('bio_comfort',1,this)">1</button>
+    <button class="sb" onclick="pickScale('bio_comfort',2,this)">2</button>
+    <button class="sb" onclick="pickScale('bio_comfort',3,this)">3</button>
+    <button class="sb" onclick="pickScale('bio_comfort',4,this)">4</button>
+    <button class="sb" onclick="pickScale('bio_comfort',5,this)">5</button>
+  </div>
+  <div class="scale-lbl" style="max-width:220px;"><span>Very uncomfortable</span><span>Very comfortable</span></div>
+</div>
+
+<!-- ══ DOMAIN D: CROSS-SCIENCE REASONING ══ -->
+<div class="sec-hdr">
+  <div class="domain-band" style="border-left-color:var(--meta)">
+    <div class="sec-tag" style="color:var(--meta)"><span class="sec-dot" style="background:var(--meta)"></span>Domain D · Cross-Science</div>
+    <div class="sec-title">Cross-Science Reasoning</div>
+    <div class="sec-sub">Questions that blend subjects or test how you apply scientific thinking generally.</div>
+  </div>
+</div>
+
+<div class="qc" id="qc-D1">
+  <div class="qnum">D1</div>
+  <div class="qstem">A scientist measures the speed of a chemical reaction at different temperatures and finds it doubles for every 10°C increase. This involves both chemistry and physics concepts. Explain why temperature affects reaction rate using what you know about particles and energy.</div>
+  <textarea class="sta" id="D1" placeholder="Your explanation:" oninput="markTa('D1');upd()"></textarea>
+</div>
+
+<div class="qc" id="qc-D2">
+  <div class="qnum">D2</div>
+  <div class="qstem">When you exercise hard, your heart beats faster and you breathe more quickly. Using what you know about both biology and chemistry, explain why this happens. What is your body trying to do, and what chemical changes are driving it?</div>
+  <textarea class="sta" id="D2" placeholder="What your body needs during exercise:&#10;The chemical changes happening:&#10;Why heart rate and breathing increase:" oninput="markTa('D2');upd()"></textarea>
+</div>
+
+<div class="qc" id="qc-D3">
+  <div class="qnum">D3</div>
+  <div class="qstem">Which of these descriptions best matches how you think about science problems?</div>
+  <div class="choices">
+    <button class="ch" onclick="pick('D3','a',this)"><span class="ch-l">A</span><span class="ch-t">I prefer understanding the big concept and then seeing how the maths follows from it</span></button>
+    <button class="ch" onclick="pick('D3','b',this)"><span class="ch-l">B</span><span class="ch-t">I prefer working through the numbers and equations first, then seeing the pattern</span></button>
+    <button class="ch" onclick="pick('D3','c',this)"><span class="ch-l">C</span><span class="ch-t">I prefer memorising the key facts and being able to recall them accurately</span></button>
+    <button class="ch" onclick="pick('D3','d',this)"><span class="ch-l">D</span><span class="ch-t">I prefer seeing how science connects to real-world situations before studying the theory</span></button>
+  </div>
+</div>
+
+<!-- ══ DOMAIN E: PREFERENCES & METACOGNITION ══ -->
+<div class="sec-hdr">
+  <div class="domain-band" style="border-left-color:var(--gold)">
+    <div class="sec-tag" style="color:var(--meta)"><span class="sec-dot" style="background:var(--gold)"></span>Domain E · Your Perspective</div>
+    <div class="sec-title">Your Preferences &amp; Goals</div>
+    <div class="sec-sub">No right answers here — your honest input directly shapes the programme recommendation.</div>
+  </div>
+</div>
+
+<div class="qc" id="qc-E1">
+  <div class="qnum">E1</div>
+  <div class="qstem">Read these brief descriptions of the three AP sciences. Then rank them 1 (most interested) to 3 (least interested) by dragging the items.</div>
+  <div style="font-size:12.5px;color:var(--mist);margin-bottom:14px;margin-top:-6px;">Drag to reorder — most interested at the top.</div>
+  <div class="rank-list" id="rank-list">
+    <div class="rank-item" draggable="true" data-subject="physics">
+      <span class="rank-handle">⠿</span>
+      <span class="rank-num" id="rn-physics">1</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);">AP Physics 1</div>
+        <div style="font-size:12px;color:var(--slate);line-height:1.5;margin-top:2px;">Forces, motion, energy, waves. Heavy on maths and equations. Requires strong algebra and logical reasoning. Very little memorisation.</div>
+      </div>
+      <span class="rank-badge" style="background:var(--phys-bg);color:var(--phys);">Algebra-based</span>
+    </div>
+    <div class="rank-item" draggable="true" data-subject="chemistry">
+      <span class="rank-handle">⠿</span>
+      <span class="rank-num" id="rn-chemistry">2</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);">AP Chemistry</div>
+        <div style="font-size:12px;color:var(--slate);line-height:1.5;margin-top:2px;">Atomic structure, reactions, thermodynamics, kinetics. Mix of abstract theory and calculation. Harder conceptually than Physics, significant maths.</div>
+      </div>
+      <span class="rank-badge" style="background:var(--chem-bg);color:var(--chem);">Conceptual + calc</span>
+    </div>
+    <div class="rank-item" draggable="true" data-subject="biology">
+      <span class="rank-handle">⠿</span>
+      <span class="rank-num" id="rn-biology">3</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);">AP Biology</div>
+        <div style="font-size:12px;color:var(--slate);line-height:1.5;margin-top:2px;">Cells, genetics, evolution, ecology. Heavy reading and memorisation. Less maths than Physics or Chemistry. Requires strong recall.</div>
+      </div>
+      <span class="rank-badge" style="background:var(--bio-bg);color:var(--bio);">Reading-intensive</span>
+    </div>
+  </div>
+</div>
+
+<div class="qc" id="qc-E2">
+  <div class="qnum">E2</div>
+  <div class="qstem">Which science subject do you find most naturally interesting — not which you think you should study, but which genuinely captures your curiosity?</div>
+  <textarea class="sta" id="E2" placeholder="Your honest answer, and why…" oninput="markTa('E2');upd()" style="min-height:55px;"></textarea>
+</div>
+
+<div class="qc" id="qc-E3">
+  <div class="qnum">E3</div>
+  <div class="qstem">What is your biggest worry or concern about starting an AP science course?</div>
+  <textarea class="sta" id="E3" placeholder="Be honest — this helps us plan support…" oninput="markTa('E3');upd()" style="min-height:55px;"></textarea>
+</div>
+
+<div class="qc" id="qc-E4">
+  <div class="qnum">E4</div>
+  <div class="qstem">Is there anything else you want your Head Teacher to know before they design your science programme?</div>
+  <textarea class="sta" id="E4" placeholder="Anything at all…" oninput="markTa('E4');upd()" style="min-height:55px;"></textarea>
+</div>
+
+<div class="submit-area">
+  <div class="submit-note">Once you submit, your Head Teacher will produce a written report recommending which AP science to start with, in what order, and how many preparation units are needed. This typically takes two working days.</div>
+  <button class="submit-btn" id="subBtn" onclick="submit()">Submit diagnostic →</button>
+</div>
+
+</div></div><!-- /diagnostic -->
+
+<!-- RESULTS -->
+<div id="results" style="display:none;">
+  <div style="max-width:600px;margin:60px auto;text-align:center;padding:40px;">
+    <div style="font-size:48px;margin-bottom:20px;">&#10003;</div>
+    <div style="font-family:'Libre Baskerville',serif;font-size:26px;color:#1B2A4A;margin-bottom:12px;">Thank you, <span id="thankyou-name">there</span>.</div>
+    <div style="font-size:15px;color:#4A4A58;line-height:1.8;margin-bottom:24px;">Your responses have been submitted successfully.<br>Your Head Teacher will review your results and be in touch shortly with a personalised report and programme recommendation.</div>
+    <div style="font-size:13px;color:#9090A0;">Harland Education &nbsp;&middot;&nbsp; Academic Science Programme</div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+
+// SUPABASE CONFIG - fill in your values here
+var SB_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
+var STUDENT_NAME = 'Unknown';
+
+function startDiagnostic(){
+  var name = document.getElementById('student-name-input').value.trim();
+  if(!name){document.getElementById('name-err').style.display='block';return;}
+  STUDENT_NAME = name;
+  document.getElementById('name-err').style.display='none';
+  document.getElementById('name-screen').style.display='none';
+  document.getElementById('diagnostic').style.display='block';
+  document.getElementById('hdr-name').textContent = name + ' - Multi-Science Assessment';
+}
+
+function postToSupabase(rawData, scores, aiReport) {
+  if (!SB_URL) { return; }
+  var headers = {
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+  var studentName = STUDENT_NAME || 'Unknown';
+  var diagBody = {
+    student_id: null,
+    student_name: studentName,
+    diagnostic_type: 'ap_science',
+    diagnostic_label: 'AP Science Readiness',
+    raw_responses: {
+      open: rawData.open || {},
+      mcq: rawData.mcq || {},
+      scales: rawData.scales || {}
+    },
+    mcq_scores: scores,
+    self_ratings: rawData.scales || {},
+    preferences: rawData.preferences || {}
+  };
+  console.log('Posting to Supabase:', SB_URL);
+  console.log('Diagnostic body:', JSON.stringify(diagBody).slice(0,200));
+  fetch(SB_URL + '/rest/v1/diagnostics', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(diagBody)
+  })
+  .then(function(r) {
+    console.log('Diagnostics response status:', r.status);
+    if (!r.ok) {
+      return r.text().then(function(t) { throw new Error('Diagnostics save failed: ' + t); });
+    }
+    return r.json();
+  })
+  .then(function(diagData) {
+    console.log('Diagnostic saved:', JSON.stringify(diagData).slice(0,100));
+    var diagId = Array.isArray(diagData) ? diagData[0].id : diagData.id;
+    var reportBody = {
+      diagnostic_id: diagId,
+      student_id: null,
+      student_name: studentName,
+      diagnostic_label: 'AP Science Readiness',
+      ai_report: aiReport || 'Pending HT review',
+      status: 'pending'
+    };
+    return fetch(SB_URL + '/rest/v1/reports', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(reportBody)
+    });
+  })
+  .then(function(r) {
+    console.log('Reports response status:', r.status);
+    if (!r.ok) {
+      return r.text().then(function(t) { throw new Error('Report save failed: ' + t); });
+    }
+    console.log('Successfully saved to Supabase.');
+    return r.json();
+  })
+  .catch(function(e) {
+    console.error('Supabase error:', e.message);
+    alert('Save error: ' + e.message);
+  });
+}
+
+const ANS={}, SCALES={};
+let rankOrder = ['physics','chemistry','biology'];
+
+// -- Correct MCQ answers --
+const CORRECT = {
+  A1:'b', // Newton 1st law
+  A2:'b', // constant velocity = zero net force
+  A4:'b', // top of throw: v=0, a=9.8 down
+  B2:'b', // conservation of mass
+  B4:'b', // carbon loses electron -> positive cation
+  C2:'b', // photosynthesis inputs/outputs
+  C4:'c', // 10% efficiency x 2 = 100 units
+};
+
+// Drag to rank
+(function(){
+  let dragged = null;
+  document.addEventListener('DOMContentLoaded',()=>{
+    const list = document.getElementById('rank-list');
+    list.querySelectorAll('.rank-item').forEach(item=>{
+      item.addEventListener('dragstart',e=>{dragged=item;item.classList.add('dragging');});
+      item.addEventListener('dragend',()=>{dragged.classList.remove('dragging');updateRankNums();});
+      item.addEventListener('dragover',e=>{
+        e.preventDefault();
+        const after = getDragAfter(list,e.clientY);
+        if(after==null) list.appendChild(dragged);
+        else list.insertBefore(dragged,after);
+      });
+    });
+  });
+  function getDragAfter(container,y){
+    const els=[...container.querySelectorAll('.rank-item:not(.dragging)')];
+    return els.reduce((closest,child)=>{
+      const box=child.getBoundingClientRect();
+      const offset=y-box.top-box.height/2;
+      if(offset<0&&offset>closest.offset) return{offset,element:child};
+      return closest;
+    },{offset:Number.NEGATIVE_INFINITY}).element||null;
+  }
+  function updateRankNums(){
+    const list=document.getElementById('rank-list');
+    rankOrder=[];
+    list.querySelectorAll('.rank-item').forEach((item,i)=>{
+      const subj=item.dataset.subject;
+      rankOrder.push(subj);
+      document.getElementById('rn-'+subj).textContent=(i+1);
+    });
+    document.getElementById('qc-E1').classList.add('answered');
+    upd();
+  }
+})();
+
+function pick(key,val,btn){
+  btn.closest('.choices').querySelectorAll('.ch').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel'); ANS[key]=val;
+  document.getElementById('qc-'+key)?.classList.add('answered'); upd();
+}
+function pickScale(key,val,btn){
+  btn.closest('.scale-wrap').querySelectorAll('.sb').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel'); SCALES[key]=val;
+  btn.closest('.qc')?.classList.add('answered'); upd();
+}
+function markTa(id){
+  const el=document.getElementById(id);
+  if(el?.value.trim()) document.getElementById('qc-'+id)?.classList.add('answered');
+}
+function upd(){
+  const total=document.querySelectorAll('.qc').length;
+  const done=document.querySelectorAll('.qc.answered').length;
+  document.getElementById('prog').style.width=(done/total*100)+'%';
+}
+function tv(id){return(document.getElementById(id)?.value||'').trim();}
+
+function collectAll(){
+  return {
+    mcq: Object.fromEntries(Object.keys(CORRECT).map(k=>[k,ANS[k]])),
+    open:{
+      A3_fma_and_lift: tv('A3'),
+      A5_vt_graph: tv('A5'),
+      B1_element_compound_mixture: tv('B1'),
+      B3_acid_base: tv('B3'),
+      B5_balance_equation: tv('B5'),
+      C1_plant_animal_cell: tv('C1'),
+      C3_dna_protein: tv('C3'),
+      D1_reaction_rate_temp: tv('D1'),
+      D2_blood_acidity: tv('D2'),
+      E2_genuine_interest: tv('E2'),
+      E3_biggest_concern: tv('E3'),
+      E4_other_notes: tv('E4'),
+    },
+    scales:{
+      physics_comfort: SCALES.phys_comfort,
+      chemistry_comfort: SCALES.chem_comfort,
+      biology_comfort: SCALES.bio_comfort,
+    },
+    preferences:{
+      science_rank: rankOrder,
+      learning_style: ANS.D3,
+    }
+  };
+}
+
+function scoreMCQ(mcq){
+  let correct=0,attempted=0;
+  Object.entries(CORRECT).forEach(([k,v])=>{
+    if(mcq[k]){attempted++;if(mcq[k]===v)correct++;}
+  });
+  return{correct,attempted,total:Object.keys(CORRECT).length};
+}
+
+function submit(){
+  var btn=document.getElementById('subBtn');
+  btn.disabled=true;
+  btn.textContent='Submitting...';
+
+  var data=collectAll();
+  var mcq=scoreMCQ(data.mcq);
+
+  var physMCQ=[ANS.A1===CORRECT.A1,ANS.A2===CORRECT.A2,ANS.A4===CORRECT.A4].filter(Boolean).length;
+  var physOpen=[tv('A3'),tv('A5')].filter(function(v){return v.length>15;}).length;
+  var physPct=Math.round((physMCQ/3*0.6 + physOpen/2*0.4)*100);
+
+  var chemMCQ=[ANS.B2===CORRECT.B2,ANS.B4===CORRECT.B4].filter(Boolean).length;
+  var chemOpen=[tv('B1'),tv('B3'),tv('B5')].filter(function(v){return v.length>15;}).length;
+  var chemPct=Math.round((chemMCQ/2*0.5 + chemOpen/3*0.5)*100);
+
+  var bioMCQ=[ANS.C2===CORRECT.C2,ANS.C4===CORRECT.C4].filter(Boolean).length;
+  var bioOpen=[tv('C1'),tv('C3')].filter(function(v){return v.length>15;}).length;
+  var bioPct=Math.round((bioMCQ/2*0.5 + bioOpen/2*0.5)*100);
+
+  var scores={physics_pct:physPct,chem_pct:chemPct,bio_pct:bioPct};
+
+  // Save to Supabase
+  postToSupabase(data, scores, '');
+
+  // Show clean thank-you screen
+  document.getElementById('diagnostic').style.display='none';
+  document.getElementById('results').style.display='block';
+  var tn=document.getElementById('thankyou-name');if(tn)tn.textContent=STUDENT_NAME||'there';
+  window.scrollTo(0,0);
+}
+
+</script>
+</body>
+</html>
