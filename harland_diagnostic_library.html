@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnostic Library | Harland Education</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:       #1B2A4A;
+      --navy-light: #263D6A;
+      --gold:       #C9A84C;
+      --gold-light: #EDD98A;
+      --cream:      #F7F5F0;
+      --white:      #FFFFFF;
+      --grey:       #6B7280;
+      --light-grey: #E5E3DF;
+      --error:      #C0392B;
+      --success:    #27AE60;
+      --font-serif: 'Libre Baskerville', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--cream); color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ===== HEADER ===== */
+    .site-header { background: var(--navy); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+    .logo-mark { width: 38px; height: 38px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; font-size: 18px; color: var(--navy); flex-shrink: 0; }
+    .brand-name { font-family: var(--font-serif); font-size: 18px; color: var(--white); letter-spacing: 0.02em; }
+    .brand-sub { font-size: 11px; color: var(--gold); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+    .header-right { margin-left: auto; }
+    .header-admin-link { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 14px; transition: color 0.15s, border-color 0.15s; }
+    .header-admin-link:hover { color: var(--gold); border-color: rgba(201,168,76,0.4); }
+
+    /* ===== HERO ===== */
+    .hero { background: var(--navy); padding: 40px 32px 48px; border-bottom: 3px solid var(--gold); }
+    .hero-inner { max-width: 900px; margin: 0 auto; }
+    .hero h1 { font-family: var(--font-serif); font-size: 30px; color: var(--white); margin-bottom: 10px; }
+    .hero p { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.6; max-width: 560px; }
+    .hero-stats { display: flex; gap: 32px; margin-top: 28px; }
+    .hero-stat-v { font-family: var(--font-serif); font-size: 28px; color: var(--gold); }
+    .hero-stat-l { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+
+    /* ===== MAIN ===== */
+    .main-wrap { max-width: 900px; width: 100%; margin: 0 auto; padding: 36px 24px 60px; flex: 1; }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+    .search-input { font-family: var(--font-sans); font-size: 14px; color: var(--navy); background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 8px; padding: 9px 14px; outline: none; width: 240px; transition: border-color 0.15s; }
+    .search-input:focus { border-color: var(--gold); }
+    .filter-btn { font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--light-grey); background: var(--white); color: var(--grey); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+    .filter-btn:hover { border-color: var(--navy); color: var(--navy); }
+    .filter-btn.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+    .filter-count { font-size: 12px; color: var(--grey); margin-left: auto; }
+
+    /* ===== DIAGNOSTIC CARDS ===== */
+    .cards-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+
+    .diag-card { background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 12px; padding: 22px 24px; display: flex; align-items: flex-start; gap: 18px; transition: border-color 0.15s, box-shadow 0.15s; }
+    .diag-card:hover { border-color: #C9C5BE; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+    .diag-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+    .icon-science  { background: rgba(46,107,158,0.1); }
+    .icon-econ     { background: rgba(46,125,92,0.1); }
+    .icon-cs       { background: rgba(107,46,158,0.1); }
+    .icon-english  { background: rgba(176,112,32,0.1); }
+    .icon-maths    { background: rgba(158,46,46,0.1); }
+    .icon-default  { background: rgba(27,42,74,0.08); }
+
+    .diag-body { flex: 1; min-width: 0; }
+    .diag-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+    .diag-name { font-family: var(--font-serif); font-size: 16px; color: var(--navy); line-height: 1.3; }
+    .status-badge { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 10px; flex-shrink: 0; margin-top: 3px; }
+    .status-live     { background: rgba(46,125,92,0.1); color: #2E7D5C; }
+    .status-draft    { background: rgba(176,112,32,0.1); color: #B07020; }
+    .status-planned  { background: rgba(107,107,125,0.1); color: #6B6B7A; }
+
+    .diag-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+    .meta-item { font-size: 12px; color: var(--grey); display: flex; align-items: center; gap: 5px; }
+    .meta-item svg { opacity: 0.5; }
+
+    .diag-desc { font-size: 13px; color: var(--grey); line-height: 1.55; margin-bottom: 14px; }
+
+    .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tag { font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 4px; background: var(--cream); color: var(--grey); border: 1px solid var(--light-grey); }
+
+    .diag-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .btn-open { font-family: var(--font-sans); font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 6px; border: none; background: var(--navy); color: var(--white); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s; }
+    .btn-open:hover { background: var(--navy-light); }
+    .btn-copy { font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 6px; border: 1.5px solid var(--light-grey); background: var(--white); color: var(--grey); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: border-color 0.15s, color 0.15s; }
+    .btn-copy:hover { border-color: var(--navy); color: var(--navy); }
+    .btn-copy.copied { border-color: var(--success); color: var(--success); }
+    .updated-label { font-size: 11px; color: var(--light-grey); margin-left: auto; }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state { text-align: center; padding: 60px 0; color: var(--grey); }
+    .empty-state p { font-size: 15px; margin-top: 10px; }
+
+    /* ===== DIVIDER ===== */
+    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; margin-top: 32px; }
+    .section-label:first-child { margin-top: 0; }
+
+    /* ===== FOOTER ===== */
+    .site-footer { background: var(--navy); padding: 20px 32px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.04em; }
+
+    /* ===== TOAST ===== */
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--navy); color: var(--white); font-size: 14px; font-weight: 500; padding: 12px 24px; border-radius: 8px; z-index: 100; transition: transform 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2); white-space: nowrap; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 600px) {
+      .hero { padding: 28px 20px 36px; }
+      .hero h1 { font-size: 22px; }
+      .hero-stats { gap: 20px; }
+      .diag-card { flex-direction: column; gap: 12px; }
+      .diag-top { flex-direction: column; gap: 6px; }
+      .updated-label { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="logo-mark">H</div>
+  <div>
+    <div class="brand-name">Harland Education</div>
+    <div class="brand-sub">Diagnostic Library</div>
+  </div>
+  <div class="header-right">
+    <a class="header-admin-link" href="https://harland-education.github.io/harland-diagnostic/harland_diagnostics_admin.html" target="_blank">Admin Dashboard &rarr;</a>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1>Diagnostic Library</h1>
+    <p>All Harland Education student diagnostics in one place. Copy a link and send it directly to a student -- no login required on their end.</p>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-v" id="statLive">—</div>
+        <div class="hero-stat-l">Live</div>
+      </div>
+      <div>
+        <div class="hero-stat-v" id="statDraft">—</div>
+        <div class="hero-stat-l">Draft</div>
+      </div>
+      <div>
+        <div class="hero-stat-v" id="statPlanned">—</div>
+        <div class="hero-stat-l">Planned</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<main class="main-wrap">
+  <div class="filter-bar">
+    <input class="search-input" type="text" id="searchInput" placeholder="Search diagnostics..." oninput="filterCards()">
+    <button class="filter-btn active" data-filter="all"    onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn"        data-filter="live"   onclick="setFilter('live',this)">Live</button>
+    <button class="filter-btn"        data-filter="draft"  onclick="setFilter('draft',this)">Draft</button>
+    <button class="filter-btn"        data-filter="planned" onclick="setFilter('planned',this)">Planned</button>
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+  <div id="cardContainer">
+    <!-- Rendered by JS -->
+  </div>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  &copy; Harland Education &mdash; Xinyi District, Taipei &mdash; Internal Use Only
+</footer>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+
+  /* ==========================================================
+     DIAGNOSTIC CATALOGUE
+     Add a new entry here whenever a new diagnostic is created.
+
+     Fields:
+       name        {string}  Full display name
+       subject     {string}  Subject area e.g. 'Science', 'Economics'
+       category    {string}  Used for section grouping: 'AP', 'SAT', 'English', 'General'
+       icon        {string}  Emoji icon
+       iconClass   {string}  CSS class for icon background colour:
+                             icon-science | icon-econ | icon-cs | icon-english | icon-maths | icon-default
+       level       {string}  Target student level e.g. 'Grade 9-10'
+       time        {string}  Estimated completion time e.g. '20 min'
+       description {string}  One sentence description
+       tags        {array}   Short keyword tags
+       url         {string}  Full GitHub Pages URL. Set to null if not live yet.
+       status      {string}  'live' | 'draft' | 'planned'
+       updated     {string}  Last updated date e.g. 'Mar 2026'
+  ========================================================== */
+  var DIAGNOSTICS = [
+
+    /* ----- AP PROGRAMME ----- */
+    {
+      name:        'AP Science Readiness',
+      subject:     'Physics, Chemistry, Biology',
+      category:    'AP',
+      icon:        '&#128300;',
+      iconClass:   'icon-science',
+      level:       'Grade 9-10',
+      time:        '25 min',
+      description: 'Assesses readiness across Physics, Chemistry, and Biology to determine which AP science to begin and at what level.',
+      tags:        ['AP Physics', 'AP Chemistry', 'AP Biology', 'Admissions'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_ap_science_diagnostic.html',
+      status:      'live',
+      updated:     'Mar 2026'
+    },
+    {
+      name:        'AP Economics Readiness',
+      subject:     'Microeconomics, Macroeconomics',
+      category:    'AP',
+      icon:        '&#128200;',
+      iconClass:   'icon-econ',
+      level:       'Grade 10-11',
+      time:        '25 min',
+      description: 'Assesses conceptual understanding of micro and macro economics, quantitative skills, and reasoning ability for AP Economics placement.',
+      tags:        ['AP Micro', 'AP Macro', 'Admissions', 'Placement'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_ap_economics_diagnostic.html',
+      status:      'live',
+      updated:     'Mar 2026'
+    },
+    {
+      name:        'AP Computer Science A Readiness',
+      subject:     'Java, Algorithms, OOP',
+      category:    'AP',
+      icon:        '&#128187;',
+      iconClass:   'icon-cs',
+      level:       'Grade 10-11',
+      time:        '25 min',
+      description: 'Assesses programming logic, object-oriented thinking, and algorithmic reasoning for AP Computer Science A placement.',
+      tags:        ['AP CS A', 'Java', 'Algorithms', 'Admissions'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_ap_cs_a_diagnostic.html',
+      status:      'live',
+      updated:     'Mar 2026'
+    },
+
+    /* ----- PLANNED ----- */
+    {
+      name:        'SAT Readiness',
+      subject:     'Reading/Writing, Math',
+      category:    'SAT',
+      icon:        '&#128221;',
+      iconClass:   'icon-default',
+      level:       'Grade 9-10',
+      time:        '30 min',
+      description: 'Assesses starting level for SAT preparation across Reading/Writing and Math sections.',
+      tags:        ['SAT', 'Reading', 'Writing', 'Math', 'Admissions'],
+      url:         null,
+      status:      'planned',
+      updated:     '—'
+    },
+    {
+      name:        'Academic English Placement',
+      subject:     'Academic English K-12',
+      category:    'English',
+      icon:        '&#128218;',
+      iconClass:   'icon-english',
+      level:       'All levels',
+      time:        '20 min',
+      description: 'Determines which Academic English unit and level a new student should begin from.',
+      tags:        ['Academic English', 'Placement', 'All levels'],
+      url:         null,
+      status:      'planned',
+      updated:     '—'
+    },
+    {
+      name:        'WIDA English Proficiency',
+      subject:     'EAL, Academic English',
+      category:    'English',
+      icon:        '&#127760;',
+      iconClass:   'icon-english',
+      level:       'Grade 6',
+      time:        '20 min',
+      description: 'WIDA level assessment for G6 students applying to TYAS Grade 7, with EAL placement recommendation.',
+      tags:        ['WIDA', 'EAL', 'Grade 6', 'TYAS'],
+      url:         null,
+      status:      'planned',
+      updated:     '—'
+    }
+
+  ];
+
+  /* ==========================================================
+     RENDER
+  ========================================================== */
+  var activeFilter = 'all';
+
+  function getIconHtml(d) {
+    return '<div class="diag-icon ' + d.iconClass + '">' + d.icon + '</div>';
+  }
+
+  function getStatusBadge(status) {
+    var labels = { live: 'Live', draft: 'Draft', planned: 'Planned' };
+    return '<span class="status-badge status-' + status + '">' + (labels[status] || status) + '</span>';
+  }
+
+  function buildCard(d) {
+    var actionsHtml = '';
+    if (d.url) {
+      actionsHtml += '<a class="btn-open" href="' + d.url + '" target="_blank">Open &#8599;</a>';
+      actionsHtml += '<button class="btn-copy" onclick="copyLink(\'' + d.url + '\', this)">&#128279; Copy link</button>';
+    } else {
+      actionsHtml += '<span style="font-size:12px;color:var(--grey);font-style:italic;">Not yet available</span>';
+    }
+    actionsHtml += '<span class="updated-label">Updated ' + d.updated + '</span>';
+
+    var tagsHtml = d.tags.map(function(t) { return '<span class="tag">' + escHtml(t) + '</span>'; }).join('');
+
+    return '<div class="diag-card" data-status="' + d.status + '" data-search="' + escAttr((d.name + ' ' + d.subject + ' ' + d.tags.join(' ')).toLowerCase()) + '">'
+      + getIconHtml(d)
+      + '<div class="diag-body">'
+        + '<div class="diag-top"><div class="diag-name">' + escHtml(d.name) + '</div>' + getStatusBadge(d.status) + '</div>'
+        + '<div class="diag-meta">'
+          + '<span class="meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>' + escHtml(d.level) + '</span>'
+          + '<span class="meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + escHtml(d.time) + '</span>'
+          + '<span class="meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' + escHtml(d.subject) + '</span>'
+        + '</div>'
+        + '<div class="diag-desc">' + escHtml(d.description) + '</div>'
+        + '<div class="tag-row">' + tagsHtml + '</div>'
+        + '<div class="diag-actions">' + actionsHtml + '</div>'
+      + '</div>'
+    + '</div>';
+  }
+
+  function renderCards() {
+    var container = document.getElementById('cardContainer');
+    var query = document.getElementById('searchInput').value.toLowerCase().trim();
+    var categories = ['AP', 'SAT', 'English', 'General'];
+    var html = '';
+    var visibleCount = 0;
+
+    categories.forEach(function(cat) {
+      var cardsInCat = DIAGNOSTICS.filter(function(d) {
+        if (d.category !== cat) return false;
+        if (activeFilter !== 'all' && d.status !== activeFilter) return false;
+        if (query && d.name.toLowerCase().indexOf(query) === -1 && d.subject.toLowerCase().indexOf(query) === -1 && d.tags.join(' ').toLowerCase().indexOf(query) === -1) return false;
+        return true;
+      });
+      if (cardsInCat.length === 0) return;
+      html += '<div class="section-label">' + escHtml(cat) + ' Programme</div>';
+      cardsInCat.forEach(function(d) { html += buildCard(d); visibleCount++; });
+    });
+
+    if (visibleCount === 0) {
+      html = '<div class="empty-state"><div style="font-size:36px;opacity:0.2;">&#128270;</div><p>No diagnostics match your search.</p></div>';
+    }
+
+    container.innerHTML = html;
+    document.getElementById('filterCount').textContent = visibleCount + ' diagnostic' + (visibleCount === 1 ? '' : 's');
+    updateStats();
+  }
+
+  function updateStats() {
+    var live = DIAGNOSTICS.filter(function(d) { return d.status === 'live'; }).length;
+    var draft = DIAGNOSTICS.filter(function(d) { return d.status === 'draft'; }).length;
+    var planned = DIAGNOSTICS.filter(function(d) { return d.status === 'planned'; }).length;
+    document.getElementById('statLive').textContent    = live;
+    document.getElementById('statDraft').textContent   = draft;
+    document.getElementById('statPlanned').textContent = planned;
+  }
+
+  function setFilter(filter, btn) {
+    activeFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    renderCards();
+  }
+
+  function filterCards() { renderCards(); }
+
+  /* ==========================================================
+     COPY LINK
+  ========================================================== */
+  function copyLink(url, btn) {
+    navigator.clipboard.writeText(url).then(function() {
+      btn.textContent = '&#10003; Copied!';
+      btn.classList.add('copied');
+      showToast('Link copied to clipboard');
+      setTimeout(function() { btn.innerHTML = '&#128279; Copy link'; btn.classList.remove('copied'); }, 2000);
+    }).catch(function() {
+      prompt('Copy this link:', url);
+    });
+  }
+
+  /* ==========================================================
+     TOAST
+  ========================================================== */
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2000);
+  }
+
+  /* ==========================================================
+     UTILS
+  ========================================================== */
+  function escHtml(str) {
+    if (!str && str !== 0) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function escAttr(str) { return escHtml(str); }
+
+  /* ==========================================================
+     INIT
+  ========================================================== */
+  renderCards();
+
+</script>
+</body>
+</html>
