@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harland Diagnostic Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:       #1B2A4A;
+      --navy-light: #263D6A;
+      --gold:       #C9A84C;
+      --gold-light: #EDD98A;
+      --cream:      #F7F5F0;
+      --white:      #FFFFFF;
+      --grey:       #6B7280;
+      --light-grey: #E5E3DF;
+      --mid-grey:   #9CA3AF;
+      --error:      #C0392B;
+      --error-bg:   #FDECEA;
+      --success:    #27AE60;
+      --font-serif: 'Libre Baskerville', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+      --sidebar-w:  260px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--cream);
+      color: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== HEADER ===== */
+    .app-header {
+      background: var(--navy);
+      padding: 0 28px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+    .logo-mark {
+      width: 34px; height: 34px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-serif);
+      font-weight: 700; font-size: 16px; color: var(--navy);
+      flex-shrink: 0;
+    }
+    .header-title {
+      font-family: var(--font-serif);
+      font-size: 17px; color: var(--white);
+    }
+    .header-badge {
+      margin-left: 10px;
+      background: rgba(201,168,76,0.25);
+      color: var(--gold-light);
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .header-right {
+      margin-left: auto;
+      font-size: 12px; color: rgba(255,255,255,0.35);
+    }
+
+    /* ===== TAB BAR ===== */
+    .tab-bar {
+      background: var(--navy-light);
+      display: flex;
+      padding: 0 28px;
+      gap: 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .tab-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 13px; font-weight: 500;
+      color: rgba(255,255,255,0.45);
+      padding: 12px 20px 11px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      letter-spacing: 0.02em;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .tab-btn:hover { color: rgba(255,255,255,0.75); }
+    .tab-btn.active { color: var(--white); border-bottom-color: var(--gold); }
+    .tab-num {
+      width: 20px; height: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tab-btn.active .tab-num { background: var(--gold); color: var(--navy); }
+    .q-count-badge {
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 10px; font-weight: 700;
+      border-radius: 10px;
+      padding: 1px 7px;
+      margin-left: 4px;
+    }
+
+    /* ===== LAYOUT ===== */
+    .app-body {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== TAB PANELS ===== */
+    .tab-panel {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .tab-panel.active { display: flex; flex-direction: column; }
+
+    /* ===== SECTION STYLES (shared) ===== */
+    .panel-inner {
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 28px 60px;
+    }
+    .panel-inner.wide { max-width: 980px; }
+
+    .section-heading {
+      font-family: var(--font-serif);
+      font-size: 16px; color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .section-sub {
+      font-size: 13px; color: var(--grey);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .form-section {
+      background: var(--white);
+      border: 1px solid var(--light-grey);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .form-section-title {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--light-grey);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-row.third { grid-template-columns: 1fr 1fr 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    label.fl {
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--navy);
+    }
+    label.fl span.opt {
+      font-weight: 400; text-transform: none;
+      letter-spacing: 0; color: var(--grey);
+      font-size: 11px;
+    }
+
+    input[type="text"], input[type="number"], input[type="password"],
+    select, textarea {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--navy);
+      background: var(--white);
+      border: 1.5px solid var(--light-grey);
+      border-radius: 7px;
+      padding: 10px 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+    textarea { resize: vertical; line-height: 1.5; }
+    .field-hint { font-size: 12px; color: var(--grey); margin-top: 3px; }
+
+    /* ===== QUESTIONS TAB ===== */
+    .qs-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .qs-empty {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--grey);
+    }
+    .qs-empty-icon {
+      font-size: 40px; margin-bottom: 12px; opacity: 0.3;
+    }
+    .qs-empty p { font-size: 15px; margin-bottom: 18px; }
+
+    .q-card {
+      background: var(--white);
+      border: 1.5px solid var(--light-grey);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: border-color 0.15s;
+    }
+    .q-card:hover { border-color: #C9C5BE; }
+    .q-num {
+      font-size: 12px; font-weight: 700;
+      color: var(--gold);
+      min-width: 26px;
+      margin-top: 3px;
+    }
+    .q-body { flex: 1; min-width: 0; }
+    .q-meta {
+      display: flex; gap: 8px; align-items: center;
+      margin-bottom: 5px;
+    }
+    .type-badge {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .type-badge.mcq     { background: #EEF0F5; color: var(--navy); }
+    .type-badge.text    { background: #EBF5EB; color: #1A6B34; }
+    .type-badge.scale   { background: #FFF8E6; color: #8B6914; }
+    .type-badge.ranking { background: #FDF0E5; color: #A0460A; }
+    .q-domain {
+      font-size: 11px; color: var(--grey);
+      font-weight: 500;
+    }
+    .q-text-preview {
+      font-size: 14px; color: var(--navy);
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .q-actions {
+      display: flex; gap: 6px; align-items: center;
+      flex-shrink: 0;
+    }
+    .icon-btn {
+      background: none; border: 1px solid var(--light-grey);
+      border-radius: 6px; cursor: pointer;
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--grey);
+      transition: background 0.1s, color 0.1s, border-color 0.1s;
+    }
+    .icon-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .icon-btn:disabled { opacity: 0.2; cursor: default; }
+    .icon-btn:disabled:hover { background: none; color: var(--grey); border-color: var(--light-grey); }
+    .icon-btn.danger:hover { background: var(--error); border-color: var(--error); }
+    .icon-btn.edit-btn:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 13px; font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 7px; border: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--navy); color: var(--white); }
+    .btn-primary:hover { background: var(--navy-light); }
+    .btn-gold { background: var(--gold); color: var(--navy); }
+    .btn-gold:hover { background: var(--gold-light); }
+    .btn-outline { background: var(--white); color: var(--navy); border: 1.5px solid var(--light-grey); }
+    .btn-outline:hover { border-color: var(--navy); }
+    .btn-lg { font-size: 15px; padding: 14px 32px; }
+    .btn-sm { font-size: 12px; padding: 7px 14px; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* ===== MODAL ===== */
+    .modal-backdrop {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(15, 22, 38, 0.6);
+      z-index: 100;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--white);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+    .modal-header {
+      background: var(--navy);
+      padding: 18px 24px;
+      border-radius: 12px 12px 0 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title {
+      font-family: var(--font-serif);
+      font-size: 17px; color: var(--white);
+    }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.5); font-size: 20px;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px;
+      transition: background 0.1s, color 0.1s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+    .modal-body { padding: 24px; }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--light-grey);
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+
+    /* Type selector in modal */
+    .type-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .type-opt {
+      border: 1.5px solid var(--light-grey);
+      border-radius: 8px;
+      padding: 12px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .type-opt:hover { border-color: var(--navy); }
+    .type-opt.selected { border-color: var(--navy); background: #EEF0F5; }
+    .type-opt-icon { font-size: 20px; margin-bottom: 5px; }
+    .type-opt-label { font-size: 12px; font-weight: 600; color: var(--navy); }
+    .type-opt-sub { font-size: 11px; color: var(--grey); margin-top: 2px; }
+
+    /* MCQ options builder */
+    .mcq-option-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 8px;
+    }
+    .option-letter-badge {
+      font-size: 12px; font-weight: 700; color: var(--gold);
+      width: 22px; flex-shrink: 0; text-align: center;
+    }
+    .correct-radio { width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+    .correct-col-header {
+      font-size: 11px; color: var(--grey);
+      text-align: center; min-width: 50px;
+    }
+    .mcq-options-header {
+      display: flex; gap: 8px; align-items: center;
+      margin-bottom: 6px;
+    }
+    .mcq-options-header span:first-child { width: 22px; }
+    .mcq-options-header span:nth-child(2) { flex: 1; font-size: 11px; color: var(--grey); }
+
+    /* Items list (ranking) */
+    .items-hint { font-size: 12px; color: var(--grey); margin-top: 4px; }
+
+    /* ===== EXPORT TAB ===== */
+    .export-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .export-stat-card {
+      background: var(--white);
+      border: 1px solid var(--light-grey);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .stat-label { font-size: 11px; color: var(--grey); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+    .stat-value { font-family: var(--font-serif); font-size: 24px; color: var(--navy); }
+    .stat-value.small { font-size: 15px; margin-top: 4px; }
+
+    .export-actions {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .validation-errors {
+      background: var(--error-bg);
+      border: 1px solid #F5C6C2;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .validation-errors p { font-size: 14px; color: var(--error); font-weight: 600; margin-bottom: 8px; }
+    .validation-errors ul { padding-left: 18px; }
+    .validation-errors li { font-size: 13px; color: var(--error); line-height: 1.7; }
+
+    .export-preview {
+      background: var(--navy);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .export-preview-bar {
+      background: rgba(255,255,255,0.08);
+      padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .export-preview-label { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.06em; text-transform: uppercase; }
+    .export-preview pre {
+      padding: 16px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.6;
+      overflow-x: auto;
+      max-height: 260px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* ===== MISC ===== */
+    .divider { height: 1px; background: var(--light-grey); margin: 24px 0; }
+    .toast {
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--navy);
+      color: var(--white);
+      font-size: 14px; font-weight: 500;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 200;
+      transition: transform 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .save-indicator {
+      font-size: 11px; color: var(--success);
+      margin-left: auto; font-weight: 500;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .save-indicator.visible { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="app-header">
+  <div class="logo-mark">H</div>
+  <div class="header-title">Harland Education</div>
+  <div class="header-badge">Diagnostic Builder</div>
+  <div class="header-right" id="saveIndicator">Saved</div>
+</header>
+
+<!-- ===== TAB BAR ===== -->
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="setup" onclick="switchTab('setup')">
+    <span class="tab-num">1</span> Setup
+  </button>
+  <button class="tab-btn" data-tab="questions" onclick="switchTab('questions')">
+    <span class="tab-num">2</span> Questions
+    <span class="q-count-badge" id="qCountBadge">0</span>
+  </button>
+  <button class="tab-btn" data-tab="export" onclick="switchTab('export')">
+    <span class="tab-num">3</span> Export
+  </button>
+</nav>
+
+<!-- ===== APP BODY ===== -->
+<div class="app-body">
+
+  <!-- ===================== TAB 1: SETUP ===================== -->
+  <div class="tab-panel active" id="panel-setup">
+    <div class="panel-inner">
+
+      <!-- Supabase Credentials -->
+      <div class="form-section">
+        <div class="form-section-title">Supabase Credentials</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="fl" for="cfg_sbUrl">Project URL</label>
+            <input type="text" id="cfg_sbUrl" placeholder="https://xxxx.supabase.co">
+          </div>
+          <div class="form-group">
+            <label class="fl" for="cfg_sbKey">Anon Key <span class="opt">(legacy eyJhbG... key)</span></label>
+            <input type="text" id="cfg_sbKey" placeholder="eyJhbGciOiJIUzI1NiIs...">
+            <div class="field-hint">Find this under Supabase Settings &rarr; API &rarr; Legacy anon tab</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="fl">Student Linking</label>
+            <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:7px;padding:11px 14px;font-size:13px;color:var(--navy);line-height:1.5;">
+              Student linking now happens <strong>after submission</strong> in the Admin Dashboard via the &ldquo;Link student&rdquo; button. No student ID is needed here.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diagnostic Identity -->
+      <div class="form-section">
+        <div class="form-section-title">Diagnostic Identity</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="fl" for="cfg_diagnosticType">Type Key <span class="opt">(machine-readable, no spaces)</span></label>
+            <input type="text" id="cfg_diagnosticType" placeholder="sat_readiness_2025">
+            <div class="field-hint">Used as the key in the database. Lowercase, underscores only.</div>
+          </div>
+          <div class="form-group">
+            <label class="fl" for="cfg_diagnosticLabel">Label <span class="opt">(shown in Admin Dashboard)</span></label>
+            <input type="text" id="cfg_diagnosticLabel" placeholder="SAT Readiness Diagnostic 2025">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="fl" for="cfg_diagnosticTitle">Page Title <span class="opt">(shown to student)</span></label>
+            <input type="text" id="cfg_diagnosticTitle" placeholder="SAT Readiness Assessment">
+          </div>
+          <div class="form-group">
+            <label class="fl" for="cfg_diagnosticSubtitle">Subtitle <span class="opt">(optional)</span></label>
+            <input type="text" id="cfg_diagnosticSubtitle" placeholder="Grade 9 -- Spring 2025">
+          </div>
+        </div>
+      </div>
+
+      <!-- Intro Screen -->
+      <div class="form-section">
+        <div class="form-section-title">Intro &amp; Name Entry Screen</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="fl" for="cfg_introHeading">Heading</label>
+            <input type="text" id="cfg_introHeading" placeholder="Welcome to Your Assessment">
+          </div>
+          <div class="form-group">
+            <label class="fl" for="cfg_nameLabel">Name Field Label</label>
+            <input type="text" id="cfg_nameLabel" placeholder="Your Full Name">
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label class="fl" for="cfg_introDescription">Intro Paragraph</label>
+            <textarea id="cfg_introDescription" rows="3" placeholder="This diagnostic helps your teacher understand your current strengths..."></textarea>
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label class="fl" for="cfg_infoPoints">Info Points <span class="opt">(one per line, shown as numbered list)</span></label>
+            <textarea id="cfg_infoPoints" rows="4" placeholder="This assessment takes approximately 20 minutes.&#10;Read each question carefully before answering.&#10;You cannot save and return -- please complete it in one sitting."></textarea>
+            <div class="field-hint">Each line becomes one numbered point on the intro screen. Use -- instead of em dashes.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="fl" for="cfg_nameHint">Name Field Hint</label>
+            <input type="text" id="cfg_nameHint" placeholder="Please enter your name exactly as you want it to appear on your report.">
+          </div>
+          <div class="form-group">
+            <label class="fl" for="cfg_submitButtonLabel">Submit Button Label</label>
+            <input type="text" id="cfg_submitButtonLabel" placeholder="Submit My Responses">
+          </div>
+        </div>
+      </div>
+
+      <!-- Thank-You Screen -->
+      <div class="form-section">
+        <div class="form-section-title">Thank-You Screen</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="fl" for="cfg_thankyouTitle">Title</label>
+            <input type="text" id="cfg_thankyouTitle" placeholder="Assessment Complete">
+          </div>
+          <div class="form-group">
+            <label class="fl" for="cfg_thankyouNext">Closing Line</label>
+            <input type="text" id="cfg_thankyouNext" placeholder="You may close this window.">
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label class="fl" for="cfg_thankyouBody">Body Text</label>
+            <textarea id="cfg_thankyouBody" rows="2" placeholder="Thank you for completing the diagnostic. Your teacher will review your responses..."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== TAB 2: QUESTIONS ===================== -->
+  <div class="tab-panel" id="panel-questions">
+    <div class="panel-inner wide">
+      <div class="qs-toolbar">
+        <div>
+          <h2 class="section-heading">Questions</h2>
+          <p class="section-sub" style="margin-bottom:0">Build your question list. Use the arrows to reorder, the pencil to edit, the bin to delete.</p>
+        </div>
+        <button class="btn btn-gold" onclick="openModal(-1)">
+          + Add Question
+        </button>
+      </div>
+      <div id="questionsList">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TAB 3: EXPORT ===================== -->
+  <div class="tab-panel" id="panel-export">
+    <div class="panel-inner">
+      <h2 class="section-heading">Export Diagnostic</h2>
+      <p class="section-sub">Review your diagnostic summary below, then download the HTML file. Upload it to your GitHub repository to make it live.</p>
+
+      <!-- Stats grid -->
+      <div class="export-grid" id="exportStats">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Validation errors -->
+      <div class="validation-errors" id="validationErrors">
+        <p>Please fix the following before exporting:</p>
+        <ul id="validationList"></ul>
+      </div>
+
+      <!-- Actions -->
+      <div class="export-actions">
+        <button class="btn btn-primary btn-lg" onclick="doExport()">
+          &#8595; Download HTML File
+        </button>
+        <button class="btn btn-outline btn-lg" onclick="doPreview()">
+          &#9654; Preview in New Tab
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="doCopyHtml()">
+          Copy HTML
+        </button>
+      </div>
+
+      <!-- Filename preview -->
+      <div class="form-section">
+        <div class="form-section-title">Output File</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="fl" for="exportFilename">Filename</label>
+            <input type="text" id="exportFilename" placeholder="harland_sat_readiness.html">
+            <div class="field-hint">This is what the file will be named when downloaded. Use lowercase and underscores.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HTML preview pane -->
+      <div class="export-preview">
+        <div class="export-preview-bar">
+          <span class="export-preview-label">Generated HTML Preview (first 50 lines)</span>
+        </div>
+        <pre id="exportPreviewCode">Click "Download HTML File" or "Preview in New Tab" to generate the output.</pre>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end app-body -->
+
+<!-- ===================== QUESTION MODAL ===================== -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="handleBackdropClick(event)">
+  <div class="modal" id="modalEl">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add Question</div>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- Rendered by JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveFromModal()">Save Question</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== MAIN SCRIPT ===== -->
+<script>
+
+// ============================================================
+// STATE
+// ============================================================
+const DEFAULTS = {
+  sbUrl:             'https://takuuqvpyqvomcfmcjoz.supabase.co',
+  sbKey:             '',
+  diagnosticType:    '',
+  diagnosticLabel:   '',
+  diagnosticTitle:   'Harland Diagnostic',
+  diagnosticSubtitle:'',
+  introHeading:      'Welcome to Your Assessment',
+  introDescription:  'This diagnostic helps your teacher understand your current strengths and identify the best starting point for your programme. Please respond honestly.',
+  infoPoints:        'This assessment takes approximately 20 minutes.\nRead each question carefully before answering.\nYou cannot save and return -- please complete it in one sitting.',
+  nameLabel:         'Your Full Name',
+  nameHint:          'Please enter your name exactly as you want it to appear on your report.',
+  thankyouTitle:     'Assessment Complete',
+  thankyouBody:      'Thank you for completing the diagnostic. Your teacher will review your responses and prepare a personalised report within the next few days.',
+  thankyouNext:      'You may close this window.',
+  submitButtonLabel: 'Submit My Responses'
+};
+
+let state = {
+  config: Object.assign({}, DEFAULTS),
+  questions: []
+};
+let editingIndex = -1; // -1 = new question
+
+// ============================================================
+// PERSISTENCE
+// ============================================================
+function saveState() {
+  try {
+    localStorage.setItem('harland_builder_state', JSON.stringify(state));
+    const ind = document.getElementById('saveIndicator');
+    ind.classList.add('visible');
+    setTimeout(() => ind.classList.remove('visible'), 1500);
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('harland_builder_state');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state.config = Object.assign({}, DEFAULTS, parsed.config || {});
+      state.questions = parsed.questions || [];
+    }
+  } catch(e) {}
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tabId));
+  if (tabId === 'questions') renderQuestionsList();
+  if (tabId === 'export')    renderExportTab();
+}
+
+// ============================================================
+// SETUP TAB: bind inputs to state
+// ============================================================
+const CONFIG_FIELDS = [
+  'sbUrl','sbKey','diagnosticType','diagnosticLabel',
+  'diagnosticTitle','diagnosticSubtitle','introHeading','introDescription',
+  'infoPoints','nameLabel','nameHint','thankyouTitle','thankyouBody',
+  'thankyouNext','submitButtonLabel'
+];
+
+function initSetupTab() {
+  CONFIG_FIELDS.forEach(field => {
+    const el = document.getElementById('cfg_' + field);
+    if (!el) return;
+    el.value = state.config[field] || '';
+    el.addEventListener('input', () => {
+      state.config[field] = el.value;
+      saveState();
+    });
+  });
+}
+
+// ============================================================
+// QUESTIONS TAB
+// ============================================================
+function renderQuestionsList() {
+  const container = document.getElementById('questionsList');
+  document.getElementById('qCountBadge').textContent = state.questions.length;
+
+  if (state.questions.length === 0) {
+    container.innerHTML = `
+      <div class="qs-empty">
+        <div class="qs-empty-icon">&#9998;</div>
+        <p>No questions yet. Click <strong>Add Question</strong> to get started.</p>
+        <button class="btn btn-gold" onclick="openModal(-1)">+ Add Your First Question</button>
+      </div>`;
+    return;
+  }
+
+  let html = '';
+  state.questions.forEach((q, i) => {
+    const preview = q.text ? (q.text.length > 85 ? q.text.slice(0, 82) + '...' : q.text) : '(no text)';
+    html += `
+      <div class="q-card">
+        <div class="q-num">Q${i+1}</div>
+        <div class="q-body">
+          <div class="q-meta">
+            <span class="type-badge ${q.type}">${q.type.toUpperCase()}</span>
+            <span class="q-domain">${q.domain || 'No domain'}</span>
+          </div>
+          <div class="q-text-preview">${escHtml(preview)}</div>
+        </div>
+        <div class="q-actions">
+          <button class="icon-btn" title="Move up" onclick="moveQuestion(${i},-1)" ${i===0?'disabled':''}>&#9650;</button>
+          <button class="icon-btn" title="Move down" onclick="moveQuestion(${i},1)" ${i===state.questions.length-1?'disabled':''}>&#9660;</button>
+          <button class="icon-btn edit-btn" title="Edit" onclick="openModal(${i})">&#9998;</button>
+          <button class="icon-btn danger" title="Delete" onclick="deleteQuestion(${i})">&#128465;</button>
+        </div>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function moveQuestion(index, dir) {
+  const qs = state.questions;
+  const newIdx = index + dir;
+  if (newIdx < 0 || newIdx >= qs.length) return;
+  const tmp = qs[index]; qs[index] = qs[newIdx]; qs[newIdx] = tmp;
+  saveState();
+  renderQuestionsList();
+}
+
+function deleteQuestion(index) {
+  if (!confirm('Delete this question? This cannot be undone.')) return;
+  state.questions.splice(index, 1);
+  saveState();
+  renderQuestionsList();
+}
+
+// ============================================================
+// QUESTION MODAL
+// ============================================================
+function openModal(index) {
+  editingIndex = index;
+  const isNew = index === -1;
+  document.getElementById('modalTitle').textContent = isNew ? 'Add Question' : 'Edit Question';
+
+  const q = isNew
+    ? { type: 'mcq', domain: '', text: '', options: ['','','',''], answer: null, hint: '', minLength: 30, min: 1, max: 5, labelLow: 'Not confident', labelHigh: 'Very confident', items: '', required: true }
+    : Object.assign({ options: ['','','',''], items: '' }, state.questions[index]);
+
+  // Normalise: options array always 4 slots
+  while (q.options.length < 4) q.options.push('');
+  // Normalise: items as newline string
+  if (Array.isArray(q.items)) q.items = q.items.join('\n');
+
+  renderModalBody(q);
+  document.getElementById('modalBackdrop').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+}
+
+function handleBackdropClick(e) {
+  if (e.target === document.getElementById('modalBackdrop')) closeModal();
+}
+
+function renderModalBody(q) {
+  const body = document.getElementById('modalBody');
+
+  // Type selector icons and labels
+  const types = [
+    { id: 'mcq',     icon: '&#9744;', label: 'MCQ',     sub: 'Multiple choice' },
+    { id: 'text',    icon: '&#9997;', label: 'Text',    sub: 'Open response' },
+    { id: 'scale',   icon: '&#11835;',label: 'Scale',   sub: 'Self-rating' },
+    { id: 'ranking', icon: '&#8645;', label: 'Ranking', sub: 'Order items' }
+  ];
+  let typeHtml = '<div class="type-selector">';
+  types.forEach(t => {
+    typeHtml += `<div class="type-opt ${q.type === t.id ? 'selected' : ''}" onclick="changeType('${t.id}')">
+      <div class="type-opt-icon">${t.icon}</div>
+      <div class="type-opt-label">${t.label}</div>
+      <div class="type-opt-sub">${t.sub}</div>
+    </div>`;
+  });
+  typeHtml += '</div>';
+
+  // Common fields
+  let commonHtml = `
+    <div class="form-row" style="margin-bottom:14px;">
+      <div class="form-group">
+        <label class="fl" for="mf_domain">Domain / Section</label>
+        <input type="text" id="mf_domain" value="${escAttr(q.domain)}" list="domainSuggestions" placeholder="e.g. Physics, Reading and Writing">
+        <datalist id="domainSuggestions">${getDomainOptions()}</datalist>
+      </div>
+      <div class="form-group">
+        <label class="fl" for="mf_required">Required?</label>
+        <select id="mf_required">
+          <option value="true"  ${q.required ? 'selected' : ''}>Yes (student must answer)</option>
+          <option value="false" ${!q.required ? 'selected' : ''}>No (optional)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label class="fl" for="mf_text">Question Text</label>
+      <textarea id="mf_text" rows="3" placeholder="Enter the full question text...">${escHtml(q.text)}</textarea>
+    </div>`;
+
+  // Type-specific fields
+  let typeSpecificHtml = '';
+  if (q.type === 'mcq') {
+    typeSpecificHtml = `
+      <div class="form-group">
+        <label class="fl">Answer Options</label>
+        <div class="mcq-options-header">
+          <span></span>
+          <span style="flex:1; font-size:11px; color:var(--grey);">Option Text (leave blank to exclude)</span>
+          <span class="correct-col-header">Correct?</span>
+        </div>`;
+    ['A','B','C','D'].forEach((letter, i) => {
+      typeSpecificHtml += `
+        <div class="mcq-option-row">
+          <span class="option-letter-badge">${letter}</span>
+          <input type="text" id="mf_opt${i}" value="${escAttr(q.options[i] || '')}" placeholder="Option ${letter}" style="flex:1;">
+          <input type="radio" class="correct-radio" name="correctAnswer" value="${i}" id="mf_ans${i}" ${q.answer === i ? 'checked' : ''} title="Mark as correct answer">
+        </div>`;
+    });
+    typeSpecificHtml += `
+        <div style="margin-top:10px; font-size:12px; color:var(--grey);">
+          Select the radio button next to the correct answer. Leave all unselected for opinion/preference questions (no correct answer).
+        </div>
+        <div class="mcq-option-row" style="margin-top:8px;">
+          <input type="radio" class="correct-radio" name="correctAnswer" value="-1" id="mf_ans_none" ${q.answer === null || q.answer === undefined ? 'checked' : ''}>
+          <label for="mf_ans_none" style="font-size:13px; color:var(--grey); cursor:pointer; margin-left:6px;">No correct answer (opinion question)</label>
+        </div>
+      </div>`;
+  }
+  else if (q.type === 'text') {
+    typeSpecificHtml = `
+      <div class="form-row" style="margin-bottom:14px;">
+        <div class="form-group">
+          <label class="fl" for="mf_hint">Placeholder Hint <span class="opt">(optional)</span></label>
+          <input type="text" id="mf_hint" value="${escAttr(q.hint || '')}" placeholder="e.g. Write 3 to 5 sentences. There is no right or wrong answer.">
+        </div>
+        <div class="form-group">
+          <label class="fl" for="mf_minLength">Minimum Characters</label>
+          <input type="number" id="mf_minLength" value="${q.minLength || 0}" min="0" max="2000">
+          <div class="field-hint">Set to 0 for no minimum. Recommended: 30 for a short answer, 100 for extended.</div>
+        </div>
+      </div>`;
+  }
+  else if (q.type === 'scale') {
+    typeSpecificHtml = `
+      <div class="form-row" style="margin-bottom:14px;">
+        <div class="form-group">
+          <label class="fl" for="mf_min">Scale Min</label>
+          <input type="number" id="mf_min" value="${q.min || 1}" min="1" max="5">
+        </div>
+        <div class="form-group">
+          <label class="fl" for="mf_max">Scale Max</label>
+          <input type="number" id="mf_max" value="${q.max || 5}" min="2" max="10">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="fl" for="mf_labelLow">Low End Label</label>
+          <input type="text" id="mf_labelLow" value="${escAttr(q.labelLow || '')}" placeholder="Not confident">
+        </div>
+        <div class="form-group">
+          <label class="fl" for="mf_labelHigh">High End Label</label>
+          <input type="text" id="mf_labelHigh" value="${escAttr(q.labelHigh || '')}" placeholder="Very confident">
+        </div>
+      </div>`;
+  }
+  else if (q.type === 'ranking') {
+    const itemsVal = Array.isArray(q.items) ? q.items.join('\n') : (q.items || '');
+    typeSpecificHtml = `
+      <div class="form-group">
+        <label class="fl" for="mf_items">Items to Rank <span class="opt">(one per line, min 2)</span></label>
+        <textarea id="mf_items" rows="5" placeholder="Physics\nChemistry\nBiology\nEnvironmental Science">${escHtml(itemsVal)}</textarea>
+        <div class="items-hint">Each line becomes one draggable item. Items start in the order listed here.</div>
+      </div>`;
+  }
+
+  body.innerHTML = typeHtml + commonHtml + typeSpecificHtml;
+
+  // Store current type on body for retrieval
+  body.dataset.type = q.type;
+}
+
+function changeType(newType) {
+  // Read current form values before re-rendering
+  const current = readModalFields();
+  current.type = newType;
+  renderModalBody(current);
+}
+
+function readModalFields() {
+  const body = document.getElementById('modalBody');
+  const type = body.dataset.type || 'mcq';
+  const q = {
+    type:     type,
+    domain:   val('mf_domain'),
+    text:     val('mf_text'),
+    required: val('mf_required') !== 'false'
+  };
+  if (type === 'mcq') {
+    q.options = [val('mf_opt0'), val('mf_opt1'), val('mf_opt2'), val('mf_opt3')];
+    const answerEl = document.querySelector('input[name="correctAnswer"]:checked');
+    const answerVal = answerEl ? parseInt(answerEl.value, 10) : -1;
+    q.answer = answerVal >= 0 ? answerVal : null;
+  }
+  else if (type === 'text') {
+    q.hint      = val('mf_hint');
+    q.minLength = parseInt(val('mf_minLength') || '0', 10);
+  }
+  else if (type === 'scale') {
+    q.min       = parseInt(val('mf_min') || '1', 10);
+    q.max       = parseInt(val('mf_max') || '5', 10);
+    q.labelLow  = val('mf_labelLow');
+    q.labelHigh = val('mf_labelHigh');
+  }
+  else if (type === 'ranking') {
+    q.items = val('mf_items');
+  }
+  return q;
+}
+
+function saveFromModal() {
+  const q = readModalFields();
+
+  // Validate
+  if (!q.domain.trim())   { alert('Please enter a domain / section name.'); return; }
+  if (!q.text.trim())     { alert('Please enter the question text.'); return; }
+  if (q.type === 'mcq') {
+    const nonEmpty = q.options.filter(o => o.trim());
+    if (nonEmpty.length < 2) { alert('Please enter at least 2 answer options.'); return; }
+  }
+  if (q.type === 'ranking') {
+    const items = q.items.split('\n').map(l => l.trim()).filter(Boolean);
+    if (items.length < 2)  { alert('Please enter at least 2 items to rank.'); return; }
+    q.items = items; // convert to array
+  }
+  // Clean MCQ options (filter blanks, but preserve indices for correct answer)
+  if (q.type === 'mcq') {
+    // Rebuild: keep only non-blank, but adjust answer index
+    const filtered = [];
+    let newAnswer = null;
+    q.options.forEach((opt, i) => {
+      if (opt.trim()) {
+        if (q.answer === i) newAnswer = filtered.length;
+        filtered.push(opt.trim());
+      }
+    });
+    q.options = filtered;
+    q.answer  = newAnswer;
+  }
+
+  if (editingIndex === -1) {
+    state.questions.push(q);
+  } else {
+    state.questions[editingIndex] = q;
+  }
+  saveState();
+  renderQuestionsList();
+  closeModal();
+  showToast(editingIndex === -1 ? 'Question added.' : 'Question saved.');
+}
+
+function getDomainOptions() {
+  const domains = [...new Set(state.questions.map(q => q.domain).filter(Boolean))];
+  return domains.map(d => `<option value="${escAttr(d)}">`).join('');
+}
+
+// ============================================================
+// EXPORT TAB
+// ============================================================
+function renderExportTab() {
+  const cfg = state.config;
+  const qs  = state.questions;
+  const mcqs     = qs.filter(q => q.type === 'mcq').length;
+  const texts    = qs.filter(q => q.type === 'text').length;
+  const scales   = qs.filter(q => q.type === 'scale').length;
+  const rankings = qs.filter(q => q.type === 'ranking').length;
+
+  document.getElementById('exportStats').innerHTML = `
+    <div class="export-stat-card">
+      <div class="stat-label">Total Questions</div>
+      <div class="stat-value">${qs.length}</div>
+    </div>
+    <div class="export-stat-card">
+      <div class="stat-label">Question Types</div>
+      <div class="stat-value small">
+        ${mcqs > 0 ? `${mcqs} MCQ` : ''}${mcqs > 0 && (texts+scales+rankings) > 0 ? ' &bull; ' : ''}
+        ${texts > 0 ? `${texts} Text` : ''}${texts > 0 && (scales+rankings) > 0 ? ' &bull; ' : ''}
+        ${scales > 0 ? `${scales} Scale` : ''}${scales > 0 && rankings > 0 ? ' &bull; ' : ''}
+        ${rankings > 0 ? `${rankings} Ranking` : ''}
+        ${qs.length === 0 ? 'None yet' : ''}
+      </div>
+    </div>
+    <div class="export-stat-card">
+      <div class="stat-label">Diagnostic Label</div>
+      <div class="stat-value small">${escHtml(cfg.diagnosticLabel || '(not set)')}</div>
+    </div>
+    <div class="export-stat-card">
+      <div class="stat-label">Student Link</div>
+      <div class="stat-value small">${cfg.studentId ? 'Linked to specific student' : 'Open link (any student)'}</div>
+    </div>`;
+
+  // Suggest filename
+  const filenameEl = document.getElementById('exportFilename');
+  if (!filenameEl.value && cfg.diagnosticType) {
+    filenameEl.value = 'harland_' + cfg.diagnosticType.replace(/\s+/g,'_').toLowerCase() + '.html';
+  }
+}
+
+function validateExport() {
+  const errors = [];
+  const cfg = state.config;
+  if (!cfg.sbKey.trim())             errors.push('Supabase anon key is required (Setup tab)');
+  if (!cfg.diagnosticType.trim())    errors.push('Diagnostic type key is required (Setup tab)');
+  if (!cfg.diagnosticLabel.trim())   errors.push('Diagnostic label is required (Setup tab)');
+  if (!cfg.diagnosticTitle.trim())   errors.push('Diagnostic title is required (Setup tab)');
+  if (state.questions.length === 0)  errors.push('You must add at least one question (Questions tab)');
+  return errors;
+}
+
+function doExport() {
+  const errors = validateExport();
+  const errEl  = document.getElementById('validationErrors');
+  const listEl = document.getElementById('validationList');
+  if (errors.length) {
+    listEl.innerHTML = errors.map(e => `<li>${escHtml(e)}</li>`).join('');
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  const html     = buildExportHtml();
+  const filename = document.getElementById('exportFilename').value.trim() || 'harland_diagnostic.html';
+  showPreviewCode(html);
+  downloadHtml(html, filename);
+  showToast('File downloaded: ' + filename);
+}
+
+function doPreview() {
+  const errors = validateExport();
+  if (errors.length) {
+    alert('Please fix these issues first:\n\n' + errors.join('\n'));
+    return;
+  }
+  const html = buildExportHtml();
+  showPreviewCode(html);
+  const blob = new Blob([html], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+
+function doCopyHtml() {
+  const errors = validateExport();
+  if (errors.length) { alert('Please fix validation errors first.'); return; }
+  const html = buildExportHtml();
+  showPreviewCode(html);
+  navigator.clipboard.writeText(html).then(() => showToast('HTML copied to clipboard.')).catch(() => alert('Copy failed. Please use Download instead.'));
+}
+
+function showPreviewCode(html) {
+  const lines = html.split('\n').slice(0, 50).join('\n');
+  document.getElementById('exportPreviewCode').textContent = lines + '\n... (truncated)';
+}
+
+function downloadHtml(html, filename) {
+  const blob = new Blob([html], { type: 'text/html' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+// ============================================================
+// EXPORT GENERATOR
+// Produces a complete, ES5-compatible diagnostic HTML file.
+// ============================================================
+function jsEsc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r/g, '')
+    .replace(/\n/g, '\\n');
+}
+
+function escHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escAttr(str) { return escHtml(str); }
+
+function buildConfigBlock(cfg, qs) {
+  const studentId = cfg.studentId.trim() ? `'${jsEsc(cfg.studentId.trim())}'` : 'null';
+
+  // Info points: split by newline, filter blank, serialize
+  const points = (cfg.infoPoints || '').split('\n').map(l => l.trim()).filter(Boolean);
+  const pointsJs = points.map(p => `      '${jsEsc(p)}'`).join(',\n');
+
+  // Questions array
+  const questionsJs = qs.map((q, i) => {
+    const qid = 'q' + (i + 1);
+    let s = `    {\n      id:     '${qid}',\n      domain: '${jsEsc(q.domain)}',\n      type:   '${q.type}',\n      text:   '${jsEsc(q.text)}',\n`;
+    if (q.type === 'mcq') {
+      const opts = q.options.map(o => `'${jsEsc(o)}'`).join(', ');
+      const ans  = (q.answer !== null && q.answer !== undefined) ? q.answer : 'null';
+      s += `      options:  [${opts}],\n      answer:   ${ans}\n`;
+    } else if (q.type === 'text') {
+      s += `      hint:      '${jsEsc(q.hint || '')}',\n      minLength: ${q.minLength || 0},\n      required:  ${q.required ? 'true' : 'false'}\n`;
+    } else if (q.type === 'scale') {
+      s += `      min:       ${q.min || 1},\n      max:       ${q.max || 5},\n      labelLow:  '${jsEsc(q.labelLow || '')}',\n      labelHigh: '${jsEsc(q.labelHigh || '')}',\n      required:  ${q.required ? 'true' : 'false'}\n`;
+    } else if (q.type === 'ranking') {
+      const items = Array.isArray(q.items) ? q.items : (q.items || '').split('\n').map(l=>l.trim()).filter(Boolean);
+      const itemsJs = items.map(item => `'${jsEsc(item)}'`).join(', ');
+      s += `      items:    [${itemsJs}],\n      required:  ${q.required ? 'true' : 'false'}\n`;
+    }
+    s += `    }`;
+    return s;
+  }).join(',\n');
+
+  return `  var SB_URL = '${jsEsc(cfg.sbUrl)}';
+  var SB_KEY = '${jsEsc(cfg.sbKey)}';
+
+  var STUDENT_ID = ${studentId};
+
+  var DIAGNOSTIC_TYPE  = '${jsEsc(cfg.diagnosticType)}';
+  var DIAGNOSTIC_LABEL = '${jsEsc(cfg.diagnosticLabel)}';
+
+  var CONFIG = {
+    diagnosticTitle:    '${jsEsc(cfg.diagnosticTitle)}',
+    diagnosticSubtitle: '${jsEsc(cfg.diagnosticSubtitle || '')}',
+    introHeading:    '${jsEsc(cfg.introHeading)}',
+    introDescription: '${jsEsc(cfg.introDescription)}',
+    infoPoints: [
+${pointsJs}
+    ],
+    nameLabel:        '${jsEsc(cfg.nameLabel)}',
+    nameHint:         '${jsEsc(cfg.nameHint)}',
+    thankyouTitle:    '${jsEsc(cfg.thankyouTitle)}',
+    thankyouBody:     '${jsEsc(cfg.thankyouBody)}',
+    thankyouNext:     '${jsEsc(cfg.thankyouNext)}',
+    submitButtonLabel: '${jsEsc(cfg.submitButtonLabel)}'
+  };
+
+  var QUESTIONS = [
+${questionsJs}
+  ];`;
+}
+
+function buildExportHtml() {
+  const cfg = state.config;
+  const qs  = state.questions;
+  const configBlock = buildConfigBlock(cfg, qs);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escHtml(cfg.diagnosticTitle)} | Harland Education</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:  #1B2A4A;
+      --gold:  #C9A84C;
+      --cream: #F7F5F0;
+      --white: #FFFFFF;
+      --light-gold: #EDD98A;
+      --grey:  #6B7280;
+      --light-grey: #E5E3DF;
+      --error: #C0392B;
+      --success: #27AE60;
+      --font-serif: 'Libre Baskerville', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background-color: var(--cream); color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+    .site-header { background-color: var(--navy); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+    .site-header .logo-mark { width: 38px; height: 38px; background-color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; font-size: 18px; color: var(--navy); flex-shrink: 0; }
+    .site-header .brand-name { font-family: var(--font-serif); font-size: 18px; color: var(--white); letter-spacing: 0.02em; }
+    .site-header .brand-sub { font-size: 11px; color: var(--gold); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+    .progress-bar-wrap { background-color: var(--navy); padding: 0 32px 16px; }
+    .progress-track { height: 3px; background-color: rgba(255,255,255,0.15); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background-color: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
+    .progress-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .main-wrap { flex: 1; max-width: 760px; width: 100%; margin: 0 auto; padding: 40px 24px 60px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .name-screen-title { font-family: var(--font-serif); font-size: 28px; color: var(--navy); line-height: 1.3; margin-bottom: 10px; }
+    .name-screen-desc { font-size: 15px; color: var(--grey); line-height: 1.6; margin-bottom: 36px; max-width: 540px; }
+    .info-card { background-color: var(--white); border: 1px solid var(--light-grey); border-left: 4px solid var(--gold); border-radius: 8px; padding: 20px 24px; margin-bottom: 32px; }
+    .info-card p { font-size: 14px; color: var(--grey); line-height: 1.6; }
+    .info-card p + p { margin-top: 8px; }
+    .info-card strong { color: var(--navy); font-weight: 600; }
+    .field-label { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; }
+    .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 16px; color: var(--navy); background: var(--white); outline: none; transition: border-color 0.2s; }
+    .field-input:focus { border-color: var(--gold); }
+    .field-error { font-size: 13px; color: var(--error); margin-top: 6px; display: none; }
+    .domain-header { margin: 36px 0 24px; padding-bottom: 12px; border-bottom: 2px solid var(--navy); }
+    .domain-header:first-of-type { margin-top: 0; }
+    .domain-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+    .domain-title { font-family: var(--font-serif); font-size: 20px; color: var(--navy); }
+    .question-card { background-color: var(--white); border: 1px solid var(--light-grey); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+    .question-number { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 8px; }
+    .question-text { font-family: var(--font-serif); font-size: 16px; line-height: 1.55; color: var(--navy); margin-bottom: 18px; }
+    .question-hint { font-size: 13px; color: var(--grey); margin-top: -12px; margin-bottom: 16px; font-style: italic; }
+    .mcq-options { list-style: none; }
+    .mcq-options li { margin-bottom: 10px; }
+    .mcq-options label { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; font-size: 15px; line-height: 1.45; color: var(--navy); }
+    .mcq-options label:hover { border-color: var(--gold); background-color: #FDFCF8; }
+    .mcq-options input[type="radio"] { display: none; }
+    .mcq-options input[type="radio"]:checked + label { border-color: var(--navy); background-color: #EEF0F4; font-weight: 500; }
+    .option-letter { font-weight: 700; color: var(--gold); flex-shrink: 0; min-width: 18px; }
+    .text-response { width: 100%; min-height: 110px; padding: 13px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 15px; color: var(--navy); background: var(--white); resize: vertical; outline: none; transition: border-color 0.2s; line-height: 1.5; }
+    .text-response:focus { border-color: var(--gold); }
+    .text-char-count { font-size: 12px; color: var(--grey); text-align: right; margin-top: 6px; }
+    .scale-wrap { padding: 4px 0; }
+    .scale-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--grey); margin-bottom: 12px; }
+    .scale-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .scale-btn { flex: 1; min-width: 36px; max-width: 60px; aspect-ratio: 1; border: 1.5px solid var(--light-grey); border-radius: 8px; background: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--navy); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; display: flex; align-items: center; justify-content: center; }
+    .scale-btn:hover { border-color: var(--gold); }
+    .scale-btn.selected { background-color: var(--navy); border-color: var(--navy); color: var(--white); }
+    .rank-list { list-style: none; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 8px; margin-bottom: 8px; font-size: 15px; color: var(--navy); user-select: none; }
+    .rank-position { font-size: 12px; font-weight: 700; color: var(--gold); min-width: 26px; text-align: center; }
+    .rank-text { flex: 1; line-height: 1.4; }
+    .rank-controls { display: flex; flex-direction: column; gap: 4px; }
+    .rank-btn { background: none; border: 1px solid var(--light-grey); border-radius: 4px; width: 26px; height: 22px; cursor: pointer; font-size: 11px; color: var(--grey); display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s; }
+    .rank-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .rank-btn:disabled { opacity: 0.25; cursor: default; }
+    .rank-btn:disabled:hover { background: none; color: var(--grey); border-color: var(--light-grey); }
+    .rank-hint { font-size: 12px; color: var(--grey); margin-top: -4px; margin-bottom: 10px; }
+    .btn-primary { display: inline-block; background-color: var(--navy); color: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; padding: 14px 36px; border: none; border-radius: 8px; cursor: pointer; letter-spacing: 0.02em; transition: background-color 0.2s, transform 0.1s; }
+    .btn-primary:hover { background-color: #263D6A; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { background-color: var(--light-grey); color: var(--grey); cursor: not-allowed; transform: none; }
+    .btn-row { margin-top: 36px; display: flex; justify-content: flex-end; }
+    .required-note { font-size: 13px; color: var(--grey); margin-bottom: 28px; }
+    .req { color: var(--error); }
+    .submit-error { background-color: #FDECEA; border: 1px solid #F5C6C2; border-radius: 8px; padding: 14px 18px; font-size: 14px; color: var(--error); margin-top: 16px; display: none; }
+    .thankyou-wrap { text-align: center; padding: 40px 0; }
+    .thankyou-icon { width: 72px; height: 72px; background-color: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; }
+    .thankyou-icon svg { width: 34px; height: 34px; }
+    .thankyou-title { font-family: var(--font-serif); font-size: 28px; color: var(--navy); margin-bottom: 16px; }
+    .thankyou-body { font-size: 16px; color: var(--grey); line-height: 1.7; max-width: 480px; margin: 0 auto 32px; }
+    .thankyou-divider { width: 60px; height: 3px; background-color: var(--gold); margin: 28px auto; border-radius: 2px; }
+    .thankyou-next { font-size: 14px; color: var(--navy); font-weight: 500; }
+    .site-footer { background-color: var(--navy); padding: 20px 32px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 0.04em; }
+    @media (max-width: 600px) { .main-wrap { padding: 28px 16px 48px; } .name-screen-title { font-size: 22px; } .scale-buttons { gap: 5px; } }
+  </style>
+</head>
+<body>
+
+<script>
+${configBlock}
+<\/script>
+
+<header class="site-header">
+  <div class="logo-mark">H</div>
+  <div>
+    <div class="brand-name">Harland Education</div>
+    <div class="brand-sub">Diagnostic Assessment</div>
+  </div>
+</header>
+
+<div class="progress-bar-wrap" id="progressWrap" style="display:none;">
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">Question 0 of 0</div>
+</div>
+
+<main class="main-wrap">
+
+  <section class="screen active" id="screenName">
+    <h1 class="name-screen-title" id="introHeadingEl"></h1>
+    <p class="name-screen-desc" id="introDescEl"></p>
+    <div class="info-card" id="infoCardEl"></div>
+    <div style="margin-bottom: 24px;">
+      <label class="field-label" for="studentName" id="nameLabelEl"></label>
+      <input class="field-input" type="text" id="studentName" autocomplete="name" spellcheck="false">
+      <div class="field-error" id="nameError">Please enter your name before continuing.</div>
+      <div style="font-size:13px; color:var(--grey); margin-top:8px;" id="nameHintEl"></div>
+    </div>
+    <button class="btn-primary" id="btnStartDiagnostic">Begin Assessment</button>
+  </section>
+
+  <section class="screen" id="screenQuestions">
+    <p class="required-note">Fields marked <span class="req">*</span> are required.</p>
+    <div id="questionsContainer"></div>
+    <div class="btn-row"><button class="btn-primary" id="btnSubmit"></button></div>
+    <div class="submit-error" id="submitError">Please answer all required questions before submitting.</div>
+  </section>
+
+  <section class="screen" id="screenThankYou">
+    <div class="thankyou-wrap">
+      <div class="thankyou-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2 class="thankyou-title" id="thankyouTitleEl"></h2>
+      <p class="thankyou-body" id="thankyouBodyEl"></p>
+      <div class="thankyou-divider"></div>
+      <p class="thankyou-next" id="thankyouNextEl"></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  &copy; Harland Education &mdash; Xinyi District, Taipei &mdash; Confidential Assessment Material
+</footer>
+
+<script>
+  function showScreen(screenId) {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) { screens[i].classList.remove('active'); }
+    document.getElementById(screenId).classList.add('active');
+  }
+  function initDisplay() {
+    document.title = CONFIG.diagnosticTitle + ' | Harland Education';
+    document.getElementById('introHeadingEl').textContent  = CONFIG.introHeading;
+    document.getElementById('introDescEl').textContent     = CONFIG.introDescription;
+    document.getElementById('nameLabelEl').textContent     = CONFIG.nameLabel;
+    document.getElementById('nameHintEl').textContent      = CONFIG.nameHint;
+    document.getElementById('btnSubmit').textContent       = CONFIG.submitButtonLabel;
+    document.getElementById('thankyouTitleEl').textContent = CONFIG.thankyouTitle;
+    document.getElementById('thankyouBodyEl').textContent  = CONFIG.thankyouBody;
+    document.getElementById('thankyouNextEl').textContent  = CONFIG.thankyouNext;
+    var cardEl = document.getElementById('infoCardEl');
+    var cardHtml = '';
+    for (var i = 0; i < CONFIG.infoPoints.length; i++) { cardHtml += '<p><strong>' + (i + 1) + '.</strong> ' + CONFIG.infoPoints[i] + '</p>'; }
+    cardEl.innerHTML = cardHtml;
+  }
+  document.getElementById('btnStartDiagnostic').onclick = function() {
+    var name = document.getElementById('studentName').value.trim();
+    if (!name) { document.getElementById('nameError').style.display = 'block'; document.getElementById('studentName').focus(); return; }
+    document.getElementById('nameError').style.display = 'none';
+    renderQuestions();
+    showScreen('screenQuestions');
+    document.getElementById('progressWrap').style.display = 'block';
+    updateProgress();
+    window.scrollTo(0, 0);
+  };
+  var ANSWERS = {};
+  var RANKING_STATE = {};
+  function renderQuestions() {
+    var container = document.getElementById('questionsContainer');
+    var html = '';
+    var currentDomain = null;
+    var qNum = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      qNum++;
+      if (q.domain !== currentDomain) {
+        currentDomain = q.domain;
+        html += '<div class="domain-header"><div class="domain-label">Section</div><div class="domain-title">' + escHtml(q.domain) + '</div></div>';
+      }
+      html += '<div class="question-card" id="card_' + escHtml(q.id) + '">';
+      html += '<div class="question-number">Question ' + qNum + (q.required ? ' <span class="req">*</span>' : '') + '</div>';
+      html += '<div class="question-text">' + escHtml(q.text) + '</div>';
+      if (q.type === 'mcq')     html += renderMcq(q);
+      else if (q.type === 'text')    html += renderText(q);
+      else if (q.type === 'scale')   html += renderScale(q);
+      else if (q.type === 'ranking') html += renderRanking(q);
+      html += '</div>';
+    }
+    container.innerHTML = html;
+    attachListeners();
+  }
+  function renderMcq(q) {
+    var letters = ['A','B','C','D','E','F'];
+    var html = '<ul class="mcq-options">';
+    for (var i = 0; i < q.options.length; i++) {
+      var inputId = 'mcq_' + q.id + '_' + i;
+      html += '<li><input type="radio" name="mcq_' + escHtml(q.id) + '" id="' + inputId + '" value="' + i + '"><label for="' + inputId + '"><span class="option-letter">' + letters[i] + '</span>' + escHtml(q.options[i]) + '</label></li>';
+    }
+    html += '</ul>';
+    return html;
+  }
+  function renderText(q) {
+    var hint = q.hint ? escHtml(q.hint) : '';
+    return '<textarea class="text-response" id="txt_' + escHtml(q.id) + '" placeholder="' + hint + '" rows="5"></textarea><div class="text-char-count" id="cc_' + escHtml(q.id) + '">0 characters</div>';
+  }
+  function renderScale(q) {
+    var html = '<div class="scale-wrap"><div class="scale-labels"><span>' + escHtml(q.labelLow) + '</span><span>' + escHtml(q.labelHigh) + '</span></div><div class="scale-buttons">';
+    for (var v = q.min; v <= q.max; v++) { html += '<button type="button" class="scale-btn" data-qid="' + escHtml(q.id) + '" data-val="' + v + '">' + v + '</button>'; }
+    html += '</div></div>';
+    return html;
+  }
+  function renderRanking(q) {
+    RANKING_STATE[q.id] = q.items.slice();
+    var html = '<p class="rank-hint">Use the arrows to reorder. Top = most preferred.</p><ul class="rank-list" id="ranklist_' + escHtml(q.id) + '">';
+    for (var i = 0; i < q.items.length; i++) { html += buildRankItem(q.id, i, q.items.length, q.items[i]); }
+    html += '</ul>';
+    return html;
+  }
+  function buildRankItem(qid, idx, total, text) {
+    var upDis = idx === 0 ? 'disabled' : '';
+    var dnDis = idx === total - 1 ? 'disabled' : '';
+    return '<li class="rank-item"><div class="rank-position">' + (idx+1) + '</div><div class="rank-text">' + escHtml(text) + '</div><div class="rank-controls"><button type="button" class="rank-btn" ' + upDis + ' onclick="moveRankItem(\\'' + escHtml(qid) + '\\',' + idx + ',-1)" title="Move up">&#9650;</button><button type="button" class="rank-btn" ' + dnDis + ' onclick="moveRankItem(\\'' + escHtml(qid) + '\\',' + idx + ',1)" title="Move down">&#9660;</button></div></li>';
+  }
+  function moveRankItem(qid, idx, direction) {
+    var items = RANKING_STATE[qid];
+    var newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= items.length) return;
+    var temp = items[idx]; items[idx] = items[newIdx]; items[newIdx] = temp;
+    RANKING_STATE[qid] = items;
+    var listEl = document.getElementById('ranklist_' + qid);
+    var html = '';
+    for (var i = 0; i < items.length; i++) { html += buildRankItem(qid, i, items.length, items[i]); }
+    listEl.innerHTML = html;
+    updateProgress();
+  }
+  function attachListeners() {
+    var radios = document.querySelectorAll('.mcq-options input[type="radio"]');
+    for (var i = 0; i < radios.length; i++) { radios[i].onchange = function() { ANSWERS[this.name.replace('mcq_', '')] = parseInt(this.value, 10); updateProgress(); }; }
+    var textareas = document.querySelectorAll('.text-response');
+    for (var j = 0; j < textareas.length; j++) { (function(ta) { var qid = ta.id.replace('txt_', ''); ta.oninput = function() { ANSWERS[qid] = ta.value; var cc = document.getElementById('cc_' + qid); if (cc) cc.textContent = ta.value.length + ' characters'; updateProgress(); }; })(textareas[j]); }
+    var scaleBtns = document.querySelectorAll('.scale-btn');
+    for (var k = 0; k < scaleBtns.length; k++) { scaleBtns[k].onclick = function() { var qid = this.getAttribute('data-qid'); var val = parseInt(this.getAttribute('data-val'), 10); ANSWERS[qid] = val; var siblings = document.querySelectorAll('.scale-btn[data-qid="' + qid + '"]'); for (var s = 0; s < siblings.length; s++) { siblings[s].classList.remove('selected'); } this.classList.add('selected'); updateProgress(); }; }
+  }
+  function countRequired() {
+    var total = 0; var answered = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (!q.required && q.type !== 'mcq') continue;
+      total++;
+      if (q.type === 'mcq' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'text' && ANSWERS[q.id] && ANSWERS[q.id].length >= (q.minLength || 0)) answered++;
+      else if (q.type === 'scale' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'ranking') answered++;
+    }
+    return { total: total, answered: answered };
+  }
+  function updateProgress() {
+    var counts = countRequired();
+    var pct = counts.total > 0 ? Math.round((counts.answered / counts.total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = counts.answered + ' of ' + counts.total + ' required questions answered';
+  }
+  function validate() {
+    var missing = [];
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
+      else if (q.type === 'text' && q.required) { var v = ANSWERS[q.id] || ''; if (v.length < (q.minLength || 1)) missing.push(q.id); }
+      else if (q.type === 'scale' && q.required) { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
+    }
+    return missing;
+  }
+  function highlightMissing(missingIds) {
+    var allCards = document.querySelectorAll('.question-card');
+    for (var i = 0; i < allCards.length; i++) { allCards[i].style.borderColor = ''; }
+    for (var j = 0; j < missingIds.length; j++) { var card = document.getElementById('card_' + missingIds[j]); if (card) card.style.borderColor = '#C0392B'; }
+    if (missingIds.length > 0) { var first = document.getElementById('card_' + missingIds[0]); if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+  function collectPayload() {
+    var studentName = document.getElementById('studentName').value.trim();
+    var mcqScores = {}; var selfRatings = {}; var preferences = {}; var rawResponses = {};
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') { var chosen = ANSWERS[q.id]; mcqScores[q.id] = { chosen: chosen, answer: q.answer, correct: (q.answer !== null && q.answer !== undefined) ? (chosen === q.answer) : null }; rawResponses[q.id] = chosen; }
+      else if (q.type === 'text') { rawResponses[q.id] = ANSWERS[q.id] || ''; }
+      else if (q.type === 'scale') { selfRatings[q.id] = ANSWERS[q.id]; rawResponses[q.id] = ANSWERS[q.id]; }
+      else if (q.type === 'ranking') { var order = RANKING_STATE[q.id] || []; preferences[q.id] = order; rawResponses[q.id] = order; }
+    }
+    return { student_id: STUDENT_ID, student_name: studentName, diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL, raw_responses: rawResponses, mcq_scores: mcqScores, self_ratings: selfRatings, preferences: preferences };
+  }
+  function submitToSupabase(payload, onSuccess, onError) {
+    var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
+    fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
+    .then(function(res) { if (!res.ok) throw new Error('Diagnostic insert failed: ' + res.status); return res.json(); })
+    .then(function(data) {
+      var reportPayload = { diagnostic_id: data[0].id, student_id: payload.student_id, student_name: payload.student_name, diagnostic_label: payload.diagnostic_label, ai_report: null, edited_report: null, status: 'pending', reviewed_by: null, reviewed_at: null, sent_at: null, send_notes: null };
+      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+    })
+    .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
+    .catch(function(err) { onError(err); });
+  }
+  document.getElementById('btnSubmit').onclick = function() {
+    var missingIds = validate();
+    if (missingIds.length > 0) { document.getElementById('submitError').style.display = 'block'; highlightMissing(missingIds); return; }
+    document.getElementById('submitError').style.display = 'none';
+    var btn = document.getElementById('btnSubmit');
+    btn.disabled = true; btn.textContent = 'Submitting...';
+    submitToSupabase(collectPayload(), function() { document.getElementById('progressWrap').style.display = 'none'; showScreen('screenThankYou'); window.scrollTo(0, 0); }, function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'Submission failed. Please check your connection and try again. Error: ' + err.message; });
+  };
+  function escHtml(str) { if (str === null || str === undefined) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  initDisplay();
+<\/script>
+</body>
+</html>`;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function val(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadState();
+initSetupTab();
+renderQuestionsList();
+
+</script>
+</body>
+</html>
