@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AP Computer Science A Readiness | Harland Education</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:  #1B2A4A;
+      --gold:  #C9A84C;
+      --cream: #F7F5F0;
+      --white: #FFFFFF;
+      --grey:  #6B7280;
+      --light-grey: #E5E3DF;
+      --error: #C0392B;
+      --font-serif: 'Libre Baskerville', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+      --font-mono:  'Courier New', Courier, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background-color: var(--cream); color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+    .site-header { background-color: var(--navy); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+    .site-header .logo-mark { width: 38px; height: 38px; background-color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; font-size: 18px; color: var(--navy); flex-shrink: 0; }
+    .site-header .brand-name { font-family: var(--font-serif); font-size: 18px; color: var(--white); letter-spacing: 0.02em; }
+    .site-header .brand-sub { font-size: 11px; color: var(--gold); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+    .progress-bar-wrap { background-color: var(--navy); padding: 0 32px 16px; }
+    .progress-track { height: 3px; background-color: rgba(255,255,255,0.15); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background-color: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
+    .progress-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .main-wrap { flex: 1; max-width: 760px; width: 100%; margin: 0 auto; padding: 40px 24px 60px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .name-screen-title { font-family: var(--font-serif); font-size: 28px; color: var(--navy); line-height: 1.3; margin-bottom: 10px; }
+    .name-screen-desc { font-size: 15px; color: var(--grey); line-height: 1.6; margin-bottom: 36px; max-width: 540px; }
+    .info-card { background-color: var(--white); border: 1px solid var(--light-grey); border-left: 4px solid var(--gold); border-radius: 8px; padding: 20px 24px; margin-bottom: 32px; }
+    .info-card p { font-size: 14px; color: var(--grey); line-height: 1.6; }
+    .info-card p + p { margin-top: 8px; }
+    .info-card strong { color: var(--navy); font-weight: 600; }
+    .field-label { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; }
+    .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 16px; color: var(--navy); background: var(--white); outline: none; transition: border-color 0.2s; }
+    .field-input:focus { border-color: var(--gold); }
+    .field-error { font-size: 13px; color: var(--error); margin-top: 6px; display: none; }
+    .domain-header { margin: 36px 0 24px; padding-bottom: 12px; border-bottom: 2px solid var(--navy); }
+    .domain-header:first-of-type { margin-top: 0; }
+    .domain-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+    .domain-title { font-family: var(--font-serif); font-size: 20px; color: var(--navy); }
+    .question-card { background-color: var(--white); border: 1px solid var(--light-grey); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+    .question-number { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 8px; }
+    .question-text { font-family: var(--font-serif); font-size: 16px; line-height: 1.6; color: var(--navy); margin-bottom: 10px; }
+    .code-block { font-family: var(--font-mono); font-size: 13px; background: #F0EEE9; border-left: 3px solid var(--gold); border-radius: 6px; padding: 12px 16px; margin-bottom: 18px; line-height: 1.7; color: var(--navy); white-space: pre; overflow-x: auto; }
+    .mcq-options { list-style: none; }
+    .mcq-options li { margin-bottom: 10px; }
+    .mcq-options label { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; font-size: 15px; line-height: 1.45; color: var(--navy); }
+    .mcq-options label:hover { border-color: var(--gold); background-color: #FDFCF8; }
+    .mcq-options input[type="radio"] { display: none; }
+    .mcq-options input[type="radio"]:checked + label { border-color: var(--navy); background-color: #EEF0F4; font-weight: 500; }
+    .option-letter { font-weight: 700; color: var(--gold); flex-shrink: 0; min-width: 18px; }
+    .text-response { width: 100%; min-height: 110px; padding: 13px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 15px; color: var(--navy); background: var(--white); resize: vertical; outline: none; transition: border-color 0.2s; line-height: 1.5; }
+    .text-response:focus { border-color: var(--gold); }
+    .text-char-count { font-size: 12px; color: var(--grey); text-align: right; margin-top: 6px; }
+    .scale-wrap { padding: 4px 0; }
+    .scale-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--grey); margin-bottom: 12px; }
+    .scale-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .scale-btn { flex: 1; min-width: 36px; max-width: 60px; aspect-ratio: 1; border: 1.5px solid var(--light-grey); border-radius: 8px; background: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--navy); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; display: flex; align-items: center; justify-content: center; }
+    .scale-btn:hover { border-color: var(--gold); }
+    .scale-btn.selected { background-color: var(--navy); border-color: var(--navy); color: var(--white); }
+    .rank-list { list-style: none; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 8px; margin-bottom: 8px; font-size: 15px; color: var(--navy); user-select: none; }
+    .rank-position { font-size: 12px; font-weight: 700; color: var(--gold); min-width: 26px; text-align: center; }
+    .rank-text { flex: 1; line-height: 1.4; }
+    .rank-controls { display: flex; flex-direction: column; gap: 4px; }
+    .rank-btn { background: none; border: 1px solid var(--light-grey); border-radius: 4px; width: 26px; height: 22px; cursor: pointer; font-size: 11px; color: var(--grey); display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s; }
+    .rank-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .rank-btn:disabled { opacity: 0.25; cursor: default; }
+    .rank-btn:disabled:hover { background: none; color: var(--grey); border-color: var(--light-grey); }
+    .rank-hint { font-size: 12px; color: var(--grey); margin-top: -4px; margin-bottom: 10px; }
+    .btn-primary { display: inline-block; background-color: var(--navy); color: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; padding: 14px 36px; border: none; border-radius: 8px; cursor: pointer; letter-spacing: 0.02em; transition: background-color 0.2s, transform 0.1s; }
+    .btn-primary:hover { background-color: #263D6A; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { background-color: var(--light-grey); color: var(--grey); cursor: not-allowed; transform: none; }
+    .btn-row { margin-top: 36px; display: flex; justify-content: flex-end; }
+    .required-note { font-size: 13px; color: var(--grey); margin-bottom: 28px; }
+    .req { color: var(--error); }
+    .submit-error { background-color: #FDECEA; border: 1px solid #F5C6C2; border-radius: 8px; padding: 14px 18px; font-size: 14px; color: var(--error); margin-top: 16px; display: none; }
+    .thankyou-wrap { text-align: center; padding: 40px 0; }
+    .thankyou-icon { width: 72px; height: 72px; background-color: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; }
+    .thankyou-icon svg { width: 34px; height: 34px; }
+    .thankyou-title { font-family: var(--font-serif); font-size: 28px; color: var(--navy); margin-bottom: 16px; }
+    .thankyou-body { font-size: 16px; color: var(--grey); line-height: 1.7; max-width: 480px; margin: 0 auto 32px; }
+    .thankyou-divider { width: 60px; height: 3px; background-color: var(--gold); margin: 28px auto; border-radius: 2px; }
+    .thankyou-next { font-size: 14px; color: var(--navy); font-weight: 500; }
+    .site-footer { background-color: var(--navy); padding: 20px 32px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 0.04em; }
+    @media (max-width: 600px) { .main-wrap { padding: 28px 16px 48px; } .name-screen-title { font-size: 22px; } .scale-buttons { gap: 5px; } }
+  </style>
+</head>
+<body>
+
+<script>
+
+  var SB_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
+
+  var STUDENT_ID = null;
+
+  var DIAGNOSTIC_TYPE  = 'ap_cs_a_readiness';
+  var DIAGNOSTIC_LABEL = 'AP Computer Science A Readiness';
+
+  var CONFIG = {
+    diagnosticTitle:    'AP Computer Science A Readiness',
+    diagnosticSubtitle: 'Grade 10-11 Assessment',
+    introHeading:    'Welcome to Your AP Computer Science Assessment',
+    introDescription: 'This diagnostic helps your teacher understand your current strengths and find the best starting point for your AP Computer Science A programme. The multiple-choice questions test programming logic and Java knowledge -- do your best. The open-response questions have no right or wrong answer.',
+    infoPoints: [
+      'This assessment takes approximately 25 minutes.',
+      'Read each question carefully. Some questions describe code -- trace through it step by step.',
+      'No prior Java experience is required. Logical thinking matters more than syntax knowledge.',
+      'You cannot save and return -- please complete it in one sitting.'
+    ],
+    nameLabel:        'Your Full Name',
+    nameHint:         'Please enter your name exactly as you want it to appear on your report.',
+    thankyouTitle:    'Assessment Complete',
+    thankyouBody:     'Thank you for completing the AP Computer Science diagnostic. Your teacher will review your responses and prepare a personalised programme recommendation within the next few days.',
+    thankyouNext:     'You may close this window.',
+    submitButtonLabel: 'Submit My Responses'
+  };
+
+  var QUESTIONS = [
+
+    /* =====================================================
+       SECTION A: PROGRAMMING LOGIC
+       ===================================================== */
+    {
+      id:      'logic_value_trace',
+      domain:  'Programming Logic',
+      type:    'mcq',
+      text:    'Three operations run in sequence on a variable x:\n\n  Step 1: x = 10\n  Step 2: x = x + 3\n  Step 3: x = x * 2\n\nWhat is the final value of x?',
+      options: ['16', '23', '26', '30'],
+      answer:  2
+    },
+    {
+      id:      'logic_conditional',
+      domain:  'Programming Logic',
+      type:    'mcq',
+      text:    'A program checks whether n > 5.\nIf true, it prints "Big". If false, it prints "Small".\n\nIf n = 7, what does the program print?',
+      options: ['Big', 'Small', 'BigSmall', 'Nothing -- n must equal 5 to trigger output'],
+      answer:  0
+    },
+    {
+      id:      'logic_loop_count',
+      domain:  'Programming Logic',
+      type:    'mcq',
+      text:    'A loop starts with i = 0, continues while i < 5, and adds 1 to i each time.\n\nHow many times does the loop body execute?',
+      options: ['4', '5', '6', 'It runs forever -- i never reaches 5'],
+      answer:  1
+    },
+    {
+      id:      'logic_array_index',
+      domain:  'Programming Logic',
+      type:    'mcq',
+      text:    'An array stores five values at index positions 0 to 4:\n\n  {10, 20, 30, 40, 50}\n\nWhat value is stored at index 3?',
+      options: ['30', '40', '50', 'Error -- index 3 does not exist in a 5-element array'],
+      answer:  1
+    },
+    {
+      id:      'logic_boolean',
+      domain:  'Programming Logic',
+      type:    'mcq',
+      text:    'In Java, what is the result of the following expression?\n\n  (3 > 2) && (5 < 4)',
+      options: ['true', 'false', '1', 'Error -- you cannot combine two comparisons like this'],
+      answer:  1
+    },
+
+    /* =====================================================
+       SECTION B: OBJECT-ORIENTED PROGRAMMING
+       ===================================================== */
+    {
+      id:      'oop_class',
+      domain:  'Object-Oriented Programming',
+      type:    'mcq',
+      text:    'In Java, a class is best described as:',
+      options: [
+        'A variable that can store many values at once',
+        'A blueprint that defines the properties and behaviours of objects',
+        'A function that performs a calculation and returns a result',
+        'A list of instructions that runs automatically at program start'
+      ],
+      answer:  1
+    },
+    {
+      id:      'oop_void',
+      domain:  'Object-Oriented Programming',
+      type:    'mcq',
+      text:    'In Java, a method declared as void:',
+      options: [
+        'Returns the number zero when it finishes',
+        'Can only be called once per program run',
+        'Performs an action but does not return any value to the caller',
+        'Automatically prints its result to the screen'
+      ],
+      answer:  2
+    },
+    {
+      id:      'oop_inheritance',
+      domain:  'Object-Oriented Programming',
+      type:    'mcq',
+      text:    'In Java, if class Dog extends class Animal, which of the following is true?',
+      options: [
+        'Animal gains all the methods defined inside Dog',
+        'Dog can use all non-private methods and fields defined in Animal',
+        'Dog and Animal automatically share the same constructor',
+        'You can no longer create an Animal object once Dog is defined'
+      ],
+      answer:  1
+    },
+    {
+      id:      'oop_encapsulation',
+      domain:  'Object-Oriented Programming',
+      type:    'mcq',
+      text:    'Why are instance variables in a Java class usually declared private?',
+      options: [
+        'Private variables execute faster than public ones',
+        'To control access and prevent them from being changed directly from outside the class',
+        'Java requires all variables to be private by default',
+        'Private variables can be shared between programs more easily'
+      ],
+      answer:  1
+    },
+
+    /* =====================================================
+       SECTION C: ALGORITHMS AND PROBLEM SOLVING
+       ===================================================== */
+    {
+      id:      'algo_linear_search',
+      domain:  'Algorithms and Problem Solving',
+      type:    'mcq',
+      text:    'A linear search checks each item in a list one by one until it finds the target.\n\nIn an unsorted list of 100 items, what is the maximum number of comparisons needed?',
+      options: ['1', '10', '50', '100'],
+      answer:  3
+    },
+    {
+      id:      'algo_recursion',
+      domain:  'Algorithms and Problem Solving',
+      type:    'mcq',
+      text:    'Every correctly written recursive method must include:',
+      options: [
+        'A for loop inside the method body',
+        'At least two parameters',
+        'A base case that stops the recursion from continuing forever',
+        'A return type of void'
+      ],
+      answer:  2
+    },
+    {
+      id:      'algo_complexity',
+      domain:  'Algorithms and Problem Solving',
+      type:    'mcq',
+      text:    'An algorithm takes twice as long to run whenever the input size doubles.\n\nThis is described as:',
+      options: [
+        'O(1) -- constant time: runtime does not change with input size',
+        'O(log n) -- logarithmic time: runtime grows very slowly',
+        'O(n) -- linear time: runtime grows in proportion to input size',
+        'O(n^2) -- quadratic time: runtime grows with the square of input size'
+      ],
+      answer:  2
+    },
+    {
+      id:      'algo_string',
+      domain:  'Algorithms and Problem Solving',
+      type:    'mcq',
+      text:    'In Java, s = "Hello".\n\nWhat does s.length() + s.substring(1, 3) produce?\n(length() counts all characters; substring(1,3) returns characters at positions 1 and 2)',
+      options: ['"5el"', '"7el"', '"5He"', '"HelloHe"'],
+      answer:  0
+    },
+
+    /* =====================================================
+       SECTION D: MATHS AND LOGICAL REASONING
+       ===================================================== */
+    {
+      id:      'maths_modulo',
+      domain:  'Maths and Logical Reasoning',
+      type:    'mcq',
+      text:    'The % operator returns the remainder after integer division.\n\nWhat is the result of 17 % 5?',
+      options: ['3', '2', '1', '0'],
+      answer:  1
+    },
+    {
+      id:      'maths_binary',
+      domain:  'Maths and Logical Reasoning',
+      type:    'mcq',
+      text:    'In binary (base 2), each digit represents a power of 2 from right to left: 1, 2, 4, 8...\n\nWhat is the decimal value of the binary number 1010?',
+      options: ['8', '9', '10', '12'],
+      answer:  2
+    },
+
+    /* =====================================================
+       SECTION E: OPEN-ENDED REASONING
+       ===================================================== */
+    {
+      id:      'text_background',
+      domain:  'Open-Ended Reasoning',
+      type:    'text',
+      text:    'Have you done any programming before? If yes, describe what languages or tools you have used and what you built or learned. If no, describe any experience with logical problem-solving -- for example, maths puzzles, strategy games, robotics, or structured planning.',
+      hint:    'Be specific. For example: "I learned Python for 6 months and built a calculator." or "I have not coded before but I enjoy chess and logic puzzles."',
+      minLength: 1,
+      required:  true
+    },
+    {
+      id:      'text_debugging',
+      domain:  'Open-Ended Reasoning',
+      type:    'text',
+      text:    'A program is supposed to print the numbers 1 to 10, but instead prints 0 to 9. What might have caused this, and how would you fix it? You do not need to write code -- describe your reasoning in plain English.',
+      hint:    'Think about where the loop starts counting and how off-by-one errors happen.',
+      minLength: 1,
+      required:  true
+    },
+    {
+      id:      'text_real_world',
+      domain:  'Open-Ended Reasoning',
+      type:    'text',
+      text:    'Describe a real-world problem that you think could be solved by writing a computer program. What would the program do, what information would it need, and what would it produce? There is no right or wrong answer.',
+      hint:    'This can be anything -- a game, a scheduling tool, a health tracker, a recommendation system.',
+      minLength: 1,
+      required:  true
+    },
+
+    /* =====================================================
+       SECTION F: STUDENT PROFILE
+       ===================================================== */
+    {
+      id:        'scale_coding',
+      domain:    'Student Profile',
+      type:      'scale',
+      text:      'How much experience do you have writing code in any programming language (e.g. Python, JavaScript, Scratch, Java)?',
+      min:        1,
+      max:        5,
+      labelLow:  'None at all',
+      labelHigh: 'Very experienced',
+      required:   true
+    },
+    {
+      id:        'scale_logic',
+      domain:    'Student Profile',
+      type:      'scale',
+      text:      'How comfortable are you with step-by-step logical problem-solving -- breaking a complex task into smaller parts and working through them systematically?',
+      min:        1,
+      max:        5,
+      labelLow:  'Not comfortable',
+      labelHigh: 'Very comfortable',
+      required:   true
+    },
+    {
+      id:        'scale_maths',
+      domain:    'Student Profile',
+      type:      'scale',
+      text:      'How confident are you in mathematics -- particularly algebra, sequences, and logical reasoning?',
+      min:        1,
+      max:        5,
+      labelLow:  'Not confident',
+      labelHigh: 'Very confident',
+      required:   true
+    },
+    {
+      id:        'scale_interest',
+      domain:    'Student Profile',
+      type:      'scale',
+      text:      'How interested are you in understanding how software and technology work at a deeper level?',
+      min:        1,
+      max:        5,
+      labelLow:  'Not interested',
+      labelHigh: 'Very interested',
+      required:   true
+    },
+    {
+      id:       'rank_cs_topics',
+      domain:   'Student Profile',
+      type:     'ranking',
+      text:     'Rank these areas of computer science from most to least interesting to you. Use the arrows to reorder -- most interesting at the top.',
+      items:    [
+        'Building games and interactive programs',
+        'Data analysis and working with large datasets',
+        'Artificial intelligence and machine learning',
+        'Web development and apps',
+        'Cybersecurity and problem-solving under constraints'
+      ],
+      required:  true
+    }
+
+  ];
+
+</script>
+
+<header class="site-header">
+  <div class="logo-mark">H</div>
+  <div>
+    <div class="brand-name">Harland Education</div>
+    <div class="brand-sub">Diagnostic Assessment</div>
+  </div>
+</header>
+
+<div class="progress-bar-wrap" id="progressWrap" style="display:none;">
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">Question 0 of 0</div>
+</div>
+
+<main class="main-wrap">
+
+  <section class="screen active" id="screenName">
+    <h1 class="name-screen-title" id="introHeadingEl"></h1>
+    <p class="name-screen-desc" id="introDescEl"></p>
+    <div class="info-card" id="infoCardEl"></div>
+    <div style="margin-bottom: 24px;">
+      <label class="field-label" for="studentName" id="nameLabelEl"></label>
+      <input class="field-input" type="text" id="studentName" autocomplete="name" spellcheck="false">
+      <div class="field-error" id="nameError">Please enter your name before continuing.</div>
+      <div style="font-size:13px; color:var(--grey); margin-top:8px;" id="nameHintEl"></div>
+    </div>
+    <button class="btn-primary" id="btnStartDiagnostic">Begin Assessment</button>
+  </section>
+
+  <section class="screen" id="screenQuestions">
+    <p class="required-note">Fields marked <span class="req">*</span> are required.</p>
+    <div id="questionsContainer"></div>
+    <div class="btn-row"><button class="btn-primary" id="btnSubmit"></button></div>
+    <div class="submit-error" id="submitError">Please answer all required questions before submitting.</div>
+  </section>
+
+  <section class="screen" id="screenThankYou">
+    <div class="thankyou-wrap">
+      <div class="thankyou-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2 class="thankyou-title" id="thankyouTitleEl"></h2>
+      <p class="thankyou-body" id="thankyouBodyEl"></p>
+      <div class="thankyou-divider"></div>
+      <p class="thankyou-next" id="thankyouNextEl"></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  &copy; Harland Education &mdash; Xinyi District, Taipei &mdash; Confidential Assessment Material
+</footer>
+
+<script>
+  function showScreen(id) {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) { screens[i].classList.remove('active'); }
+    document.getElementById(id).classList.add('active');
+  }
+
+  function initDisplay() {
+    document.title = CONFIG.diagnosticTitle + ' | Harland Education';
+    document.getElementById('introHeadingEl').textContent  = CONFIG.introHeading;
+    document.getElementById('introDescEl').textContent     = CONFIG.introDescription;
+    document.getElementById('nameLabelEl').textContent     = CONFIG.nameLabel;
+    document.getElementById('nameHintEl').textContent      = CONFIG.nameHint;
+    document.getElementById('btnSubmit').textContent       = CONFIG.submitButtonLabel;
+    document.getElementById('thankyouTitleEl').textContent = CONFIG.thankyouTitle;
+    document.getElementById('thankyouBodyEl').textContent  = CONFIG.thankyouBody;
+    document.getElementById('thankyouNextEl').textContent  = CONFIG.thankyouNext;
+    var cardEl = document.getElementById('infoCardEl');
+    var cardHtml = '';
+    for (var i = 0; i < CONFIG.infoPoints.length; i++) {
+      cardHtml += '<p><strong>' + (i + 1) + '.</strong> ' + CONFIG.infoPoints[i] + '</p>';
+    }
+    cardEl.innerHTML = cardHtml;
+  }
+
+  document.getElementById('btnStartDiagnostic').onclick = function() {
+    var name = document.getElementById('studentName').value.trim();
+    if (!name) { document.getElementById('nameError').style.display = 'block'; document.getElementById('studentName').focus(); return; }
+    document.getElementById('nameError').style.display = 'none';
+    renderQuestions();
+    showScreen('screenQuestions');
+    document.getElementById('progressWrap').style.display = 'block';
+    updateProgress();
+    window.scrollTo(0, 0);
+  };
+
+  var ANSWERS = {};
+  var RANKING_STATE = {};
+
+  function renderQuestions() {
+    var container = document.getElementById('questionsContainer');
+    var html = '';
+    var currentDomain = null;
+    var qNum = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      qNum++;
+      if (q.domain !== currentDomain) {
+        currentDomain = q.domain;
+        html += '<div class="domain-header"><div class="domain-label">Section</div><div class="domain-title">' + escHtml(q.domain) + '</div></div>';
+      }
+      html += '<div class="question-card" id="card_' + escHtml(q.id) + '">';
+      html += '<div class="question-number">Question ' + qNum + (q.required || q.type === 'mcq' ? ' <span class="req">*</span>' : '') + '</div>';
+      html += '<div class="question-text">' + escHtml(q.text).replace(/\n/g, '<br>') + '</div>';
+      if (q.type === 'mcq')          html += renderMcq(q);
+      else if (q.type === 'text')    html += renderText(q);
+      else if (q.type === 'scale')   html += renderScale(q);
+      else if (q.type === 'ranking') html += renderRanking(q);
+      html += '</div>';
+    }
+    container.innerHTML = html;
+    attachListeners();
+  }
+
+  function renderMcq(q) {
+    var letters = ['A','B','C','D','E'];
+    var html = '<ul class="mcq-options">';
+    for (var i = 0; i < q.options.length; i++) {
+      var iid = 'mcq_' + q.id + '_' + i;
+      html += '<li><input type="radio" name="mcq_' + escHtml(q.id) + '" id="' + iid + '" value="' + i + '"><label for="' + iid + '"><span class="option-letter">' + letters[i] + '</span>' + escHtml(q.options[i]) + '</label></li>';
+    }
+    html += '</ul>';
+    return html;
+  }
+
+  function renderText(q) {
+    return '<textarea class="text-response" id="txt_' + escHtml(q.id) + '" placeholder="' + escHtml(q.hint || '') + '" rows="5"></textarea>'
+         + '<div class="text-char-count" id="cc_' + escHtml(q.id) + '">0 characters</div>';
+  }
+
+  function renderScale(q) {
+    var html = '<div class="scale-wrap"><div class="scale-labels"><span>' + escHtml(q.labelLow) + '</span><span>' + escHtml(q.labelHigh) + '</span></div><div class="scale-buttons">';
+    for (var v = q.min; v <= q.max; v++) {
+      html += '<button type="button" class="scale-btn" data-qid="' + escHtml(q.id) + '" data-val="' + v + '">' + v + '</button>';
+    }
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderRanking(q) {
+    RANKING_STATE[q.id] = q.items.slice();
+    var html = '<p class="rank-hint">Use the arrows to reorder. Top = most preferred.</p><ul class="rank-list" id="ranklist_' + escHtml(q.id) + '">';
+    for (var i = 0; i < q.items.length; i++) { html += buildRankItem(q.id, i, q.items.length, q.items[i]); }
+    html += '</ul>';
+    return html;
+  }
+
+  function buildRankItem(qid, idx, total, text) {
+    var upDis = idx === 0 ? 'disabled' : '';
+    var dnDis = idx === total - 1 ? 'disabled' : '';
+    return '<li class="rank-item"><div class="rank-position">' + (idx + 1) + '</div><div class="rank-text">' + escHtml(text) + '</div>'
+         + '<div class="rank-controls">'
+         + '<button type="button" class="rank-btn" ' + upDis + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',-1)">&#9650;</button>'
+         + '<button type="button" class="rank-btn" ' + dnDis + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',1)">&#9660;</button>'
+         + '</div></li>';
+  }
+
+  function moveRankItem(qid, idx, direction) {
+    var items = RANKING_STATE[qid];
+    var newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= items.length) return;
+    var temp = items[idx]; items[idx] = items[newIdx]; items[newIdx] = temp;
+    RANKING_STATE[qid] = items;
+    var listEl = document.getElementById('ranklist_' + qid);
+    var html = '';
+    for (var i = 0; i < items.length; i++) { html += buildRankItem(qid, i, items.length, items[i]); }
+    listEl.innerHTML = html;
+    updateProgress();
+  }
+
+  function attachListeners() {
+    var radios = document.querySelectorAll('.mcq-options input[type="radio"]');
+    for (var i = 0; i < radios.length; i++) {
+      radios[i].onchange = function() { ANSWERS[this.name.replace('mcq_', '')] = parseInt(this.value, 10); updateProgress(); };
+    }
+    var textareas = document.querySelectorAll('.text-response');
+    for (var j = 0; j < textareas.length; j++) {
+      (function(ta) {
+        var qid = ta.id.replace('txt_', '');
+        ta.oninput = function() {
+          ANSWERS[qid] = ta.value;
+          var cc = document.getElementById('cc_' + qid);
+          if (cc) cc.textContent = ta.value.length + ' characters';
+          updateProgress();
+        };
+      })(textareas[j]);
+    }
+    var scaleBtns = document.querySelectorAll('.scale-btn');
+    for (var k = 0; k < scaleBtns.length; k++) {
+      scaleBtns[k].onclick = function() {
+        var qid = this.getAttribute('data-qid');
+        var val = parseInt(this.getAttribute('data-val'), 10);
+        ANSWERS[qid] = val;
+        var siblings = document.querySelectorAll('.scale-btn[data-qid="' + qid + '"]');
+        for (var s = 0; s < siblings.length; s++) { siblings[s].classList.remove('selected'); }
+        this.classList.add('selected');
+        updateProgress();
+      };
+    }
+  }
+
+  function countRequired() {
+    var total = 0; var answered = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (!q.required && q.type !== 'mcq') continue;
+      total++;
+      if (q.type === 'mcq' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'text' && ANSWERS[q.id] && ANSWERS[q.id].length >= (q.minLength || 1)) answered++;
+      else if (q.type === 'scale' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'ranking') answered++;
+    }
+    return { total: total, answered: answered };
+  }
+
+  function updateProgress() {
+    var counts = countRequired();
+    var pct = counts.total > 0 ? Math.round((counts.answered / counts.total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = counts.answered + ' of ' + counts.total + ' required questions answered';
+  }
+
+  function validate() {
+    var missing = [];
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
+      else if (q.type === 'text' && q.required) { var v = ANSWERS[q.id] || ''; if (v.length < (q.minLength || 1)) missing.push(q.id); }
+      else if (q.type === 'scale' && q.required) { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
+    }
+    return missing;
+  }
+
+  function highlightMissing(missingIds) {
+    var allCards = document.querySelectorAll('.question-card');
+    for (var i = 0; i < allCards.length; i++) { allCards[i].style.borderColor = ''; }
+    for (var j = 0; j < missingIds.length; j++) { var card = document.getElementById('card_' + missingIds[j]); if (card) card.style.borderColor = '#C0392B'; }
+    if (missingIds.length > 0) { var first = document.getElementById('card_' + missingIds[0]); if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+
+  function collectPayload() {
+    var studentName = document.getElementById('studentName').value.trim();
+    var mcqScores = {}; var selfRatings = {}; var preferences = {}; var rawResponses = {};
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') {
+        var chosen = ANSWERS[q.id];
+        mcqScores[q.id] = { chosen: chosen, answer: q.answer, correct: (q.answer !== null && q.answer !== undefined) ? (chosen === q.answer) : null };
+        rawResponses[q.id] = chosen;
+      } else if (q.type === 'text') {
+        rawResponses[q.id] = ANSWERS[q.id] || '';
+      } else if (q.type === 'scale') {
+        selfRatings[q.id] = ANSWERS[q.id];
+        rawResponses[q.id] = ANSWERS[q.id];
+      } else if (q.type === 'ranking') {
+        var order = RANKING_STATE[q.id] || [];
+        preferences[q.id] = order;
+        rawResponses[q.id] = order;
+      }
+    }
+    return {
+      student_id: STUDENT_ID, student_name: studentName,
+      diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
+      raw_responses: rawResponses, mcq_scores: mcqScores,
+      self_ratings: selfRatings, preferences: preferences
+    };
+  }
+
+  function submitToSupabase(payload, onSuccess, onError) {
+    var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
+    fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
+    .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
+    .then(function(data) {
+      var reportPayload = {
+        diagnostic_id: data[0].id,
+        student_id: payload.student_id,
+        student_name: payload.student_name,
+        diagnostic_label: payload.diagnostic_label,
+        ai_report: 'Pending HT review',
+        status: 'pending'
+      };
+      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+    })
+    .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
+    .catch(function(err) { onError(err); });
+  }
+
+  document.getElementById('btnSubmit').onclick = function() {
+    var missingIds = validate();
+    if (missingIds.length > 0) { document.getElementById('submitError').style.display = 'block'; highlightMissing(missingIds); return; }
+    document.getElementById('submitError').style.display = 'none';
+    var btn = document.getElementById('btnSubmit');
+    btn.disabled = true; btn.textContent = 'Submitting...';
+    submitToSupabase(collectPayload(),
+      function() { document.getElementById('progressWrap').style.display = 'none'; showScreen('screenThankYou'); window.scrollTo(0, 0); },
+      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'Submission failed. Please check your connection and try again. Error: ' + err.message; }
+    );
+  };
+
+  function escHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  initDisplay();
+</script>
+</body>
+</html>
