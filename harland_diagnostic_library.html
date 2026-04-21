@@ -244,6 +244,36 @@
       updated:     'Mar 2026'
     },
 
+    {
+      name:        'IB History Readiness',
+      subject:     '20th Century World History',
+      category:    'IB',
+      icon:        '&#128214;',
+      iconClass:   'icon-default',
+      level:       'Grade 11',
+      time:        '25-30 min',
+      description: 'Assesses historical knowledge, source analysis skills, and essay reasoning for IB History SL/HL admissions. Covers WWI, Cold War, authoritarian states, rights and protest.',
+      tags:        ['IB History', 'SL', 'HL', 'Source Analysis', 'Admissions'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_ib_history_diagnostic.html',
+      status:      'live',
+      updated:     'Mar 2026'
+    },
+
+    {
+      name:        'IB History Readiness',
+      subject:     'World History, Source Analysis, Essay Skills',
+      category:    'IB',
+      icon:        '&#128212;',
+      iconClass:   'icon-default',
+      level:       'Grade 11',
+      time:        '25-30 min',
+      description: 'Assesses historical knowledge, source analysis methodology, and essay reasoning for IB History SL/HL admissions. Covers 20th century world history broadly.',
+      tags:        ['IB History', 'SL', 'HL', 'Source Analysis', 'Admissions'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_ib_history_diagnostic.html',
+      status:      'live',
+      updated:     'Apr 2026'
+    },
+
     /* ----- PLANNED ----- */
     {
       name:        'SAT Readiness',
@@ -335,7 +365,7 @@
   function renderCards() {
     var container = document.getElementById('cardContainer');
     var query = document.getElementById('searchInput').value.toLowerCase().trim();
-    var categories = ['AP', 'SAT', 'English', 'General'];
+    var categories = ['AP', 'IB', 'SAT', 'English', 'General'];
     var html = '';
     var visibleCount = 0;
 
