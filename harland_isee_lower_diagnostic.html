@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISEE Lower Level Readiness | Harland Education</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:  #1B2A4A;
+      --gold:  #C9A84C;
+      --cream: #F7F5F0;
+      --white: #FFFFFF;
+      --grey:  #6B7280;
+      --light-grey: #E5E3DF;
+      --error: #C0392B;
+      --font-serif: 'Libre Baskerville', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background-color: var(--cream); color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+    .site-header { background-color: var(--navy); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+    .site-header .logo-mark { width: 38px; height: 38px; background-color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; font-size: 18px; color: var(--navy); flex-shrink: 0; }
+    .site-header .brand-name { font-family: var(--font-serif); font-size: 18px; color: var(--white); letter-spacing: 0.02em; }
+    .site-header .brand-sub { font-size: 11px; color: var(--gold); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+    .progress-bar-wrap { background-color: var(--navy); padding: 0 32px 16px; }
+    .progress-track { height: 3px; background-color: rgba(255,255,255,0.15); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background-color: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
+    .progress-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .main-wrap { flex: 1; max-width: 760px; width: 100%; margin: 0 auto; padding: 40px 24px 60px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .name-screen-title { font-family: var(--font-serif); font-size: 28px; color: var(--navy); line-height: 1.3; margin-bottom: 10px; }
+    .name-screen-desc { font-size: 15px; color: var(--grey); line-height: 1.6; margin-bottom: 36px; max-width: 540px; }
+    .info-card { background-color: var(--white); border: 1px solid var(--light-grey); border-left: 4px solid var(--gold); border-radius: 8px; padding: 20px 24px; margin-bottom: 32px; }
+    .info-card p { font-size: 14px; color: var(--grey); line-height: 1.6; }
+    .info-card p + p { margin-top: 8px; }
+    .info-card strong { color: var(--navy); font-weight: 600; }
+    .field-label { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; }
+    .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 16px; color: var(--navy); background: var(--white); outline: none; transition: border-color 0.2s; }
+    .field-input:focus { border-color: var(--gold); }
+    .field-error { font-size: 13px; color: var(--error); margin-top: 6px; display: none; }
+    .domain-header { margin: 36px 0 24px; padding-bottom: 12px; border-bottom: 2px solid var(--navy); }
+    .domain-header:first-of-type { margin-top: 0; }
+    .domain-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+    .domain-title { font-family: var(--font-serif); font-size: 20px; color: var(--navy); }
+    .question-card { background-color: var(--white); border: 1px solid var(--light-grey); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+    .question-number { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 8px; }
+    .question-text { font-family: var(--font-serif); font-size: 16px; line-height: 1.6; color: var(--navy); margin-bottom: 18px; }
+    .source-block { font-family: var(--font-sans); font-size: 14px; background: #F0EEE9; border-left: 3px solid var(--gold); border-radius: 6px; padding: 14px 18px; margin-bottom: 18px; line-height: 1.75; color: #2A2A3A; }
+    .source-attr { font-size: 11px; color: var(--grey); margin-top: 8px; letter-spacing: 0.03em; font-style: italic; }
+    .mcq-options { list-style: none; }
+    .mcq-options li { margin-bottom: 10px; }
+    .mcq-options label { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; font-size: 15px; line-height: 1.45; color: var(--navy); }
+    .mcq-options label:hover { border-color: var(--gold); background-color: #FDFCF8; }
+    .mcq-options input[type="radio"] { display: none; }
+    .mcq-options input[type="radio"]:checked + label { border-color: var(--navy); background-color: #EEF0F4; font-weight: 500; }
+    .option-letter { font-weight: 700; color: var(--gold); flex-shrink: 0; min-width: 18px; }
+    .text-response { width: 100%; min-height: 110px; padding: 13px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 15px; color: var(--navy); background: var(--white); resize: vertical; outline: none; transition: border-color 0.2s; line-height: 1.5; }
+    .text-response:focus { border-color: var(--gold); }
+    .text-char-count { font-size: 12px; color: var(--grey); text-align: right; margin-top: 6px; }
+    .scale-wrap { padding: 4px 0; }
+    .scale-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--grey); margin-bottom: 12px; }
+    .scale-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .scale-btn { flex: 1; min-width: 36px; max-width: 60px; aspect-ratio: 1; border: 1.5px solid var(--light-grey); border-radius: 8px; background: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--navy); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; display: flex; align-items: center; justify-content: center; }
+    .scale-btn:hover { border-color: var(--gold); }
+    .scale-btn.selected { background-color: var(--navy); border-color: var(--navy); color: var(--white); }
+    .rank-list { list-style: none; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 8px; margin-bottom: 8px; font-size: 15px; color: var(--navy); user-select: none; }
+    .rank-position { font-size: 12px; font-weight: 700; color: var(--gold); min-width: 26px; text-align: center; }
+    .rank-text { flex: 1; line-height: 1.4; }
+    .rank-controls { display: flex; flex-direction: column; gap: 4px; }
+    .rank-btn { background: none; border: 1px solid var(--light-grey); border-radius: 4px; width: 26px; height: 22px; cursor: pointer; font-size: 11px; color: var(--grey); display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s; }
+    .rank-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .rank-btn:disabled { opacity: 0.25; cursor: default; }
+    .rank-btn:disabled:hover { background: none; color: var(--grey); border-color: var(--light-grey); }
+    .rank-hint { font-size: 12px; color: var(--grey); margin-top: -4px; margin-bottom: 10px; }
+    .btn-primary { display: inline-block; background-color: var(--navy); color: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; padding: 14px 36px; border: none; border-radius: 8px; cursor: pointer; letter-spacing: 0.02em; transition: background-color 0.2s, transform 0.1s; }
+    .btn-primary:hover { background-color: #263D6A; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { background-color: var(--light-grey); color: var(--grey); cursor: not-allowed; transform: none; }
+    .btn-row { margin-top: 36px; display: flex; justify-content: flex-end; }
+    .required-note { font-size: 13px; color: var(--grey); margin-bottom: 28px; }
+    .req { color: var(--error); }
+    .submit-error { background-color: #FDECEA; border: 1px solid #F5C6C2; border-radius: 8px; padding: 14px 18px; font-size: 14px; color: var(--error); margin-top: 16px; display: none; }
+    .thankyou-wrap { text-align: center; padding: 40px 0; }
+    .thankyou-icon { width: 72px; height: 72px; background-color: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; }
+    .thankyou-icon svg { width: 34px; height: 34px; }
+    .thankyou-title { font-family: var(--font-serif); font-size: 28px; color: var(--navy); margin-bottom: 16px; }
+    .thankyou-body { font-size: 16px; color: var(--grey); line-height: 1.7; max-width: 480px; margin: 0 auto 32px; }
+    .thankyou-divider { width: 60px; height: 3px; background-color: var(--gold); margin: 28px auto; border-radius: 2px; }
+    .thankyou-next { font-size: 14px; color: var(--navy); font-weight: 500; }
+    .site-footer { background-color: var(--navy); padding: 20px 32px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 0.04em; }
+    @media (max-width: 600px) { .main-wrap { padding: 28px 16px 48px; } .name-screen-title { font-size: 22px; } .scale-buttons { gap: 5px; } }
+  </style>
+</head>
+<body>
+
+<script>
+
+  var SB_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
+
+  var STUDENT_ID = null;
+
+  var DIAGNOSTIC_TYPE  = 'isee_lower_level_readiness';
+  var DIAGNOSTIC_LABEL = 'ISEE Lower Level Readiness';
+
+  var CONFIG = {
+    diagnosticTitle:    'ISEE Lower Level Readiness',
+    diagnosticSubtitle: 'For students applying to Grades 5 and 6',
+    introHeading:    'Hello and welcome!',
+    introDescription: 'This is a fun quiz that helps your teacher learn about you and find the best place to start your ISEE preparation. Some questions test what you already know -- just do your best. Other questions ask what you think -- there is no right or wrong answer for those.',
+    infoPoints: [
+      'This quiz takes about 25 minutes.',
+      'Read each question carefully and pick the best answer.',
+      'For the writing questions, just write what you think -- you do not need to use big words.',
+      'It is okay to not know an answer. Just choose your best guess and keep going.',
+      'Try to do this quiz in one sitting -- you cannot save and come back later.'
+    ],
+    nameLabel:        'Your Full Name',
+    nameHint:         'Please write your name the way you want it on your report.',
+    thankyouTitle:    'You did it!',
+    thankyouBody:     'Thank you for finishing the quiz. Your teacher will read your answers carefully and send your family a special report about how to make your ISEE preparation as helpful as possible.',
+    thankyouNext:     'You can close this window now.',
+    submitButtonLabel: 'Submit My Answers'
+  };
+
+  var QUESTIONS = [
+
+    /* =====================================================
+       SECTION A: VERBAL REASONING
+       Vocabulary, synonyms, sentence completion
+       ===================================================== */
+    {
+      id:      'verb_synonym_brave',
+      domain:  'Verbal Reasoning',
+      type:    'mcq',
+      text:    'Choose the word that means almost the SAME as: BRAVE',
+      options: ['Quiet', 'Tired', 'Courageous', 'Friendly'],
+      answer:  2
+    },
+    {
+      id:      'verb_synonym_enormous',
+      domain:  'Verbal Reasoning',
+      type:    'mcq',
+      text:    'Choose the word that means almost the SAME as: ENORMOUS',
+      options: ['Tiny', 'Huge', 'Round', 'Heavy'],
+      answer:  1
+    },
+    {
+      id:      'verb_completion_1',
+      domain:  'Verbal Reasoning',
+      type:    'mcq',
+      text:    'Choose the word that best fills in the blank:\n\n"Even though it was raining, the children were ____ to play outside."',
+      options: ['eager', 'tired', 'asleep', 'broken'],
+      answer:  0
+    },
+    {
+      id:      'verb_completion_2',
+      domain:  'Verbal Reasoning',
+      type:    'mcq',
+      text:    'Choose the word that best fills in the blank:\n\n"The mountain was so ____ that we could not see the top through the clouds."',
+      options: ['flat', 'tall', 'wet', 'noisy'],
+      answer:  1
+    },
+    {
+      id:      'verb_analogy',
+      domain:  'Verbal Reasoning',
+      type:    'mcq',
+      text:    'PUPPY is to DOG as KITTEN is to ____',
+      options: ['Mouse', 'Cat', 'Bird', 'Fish'],
+      answer:  1
+    },
+
+    /* =====================================================
+       SECTION B: QUANTITATIVE REASONING
+       Number patterns, logic, problem-solving
+       ===================================================== */
+    {
+      id:      'quant_pattern',
+      domain:  'Quantitative Reasoning',
+      type:    'mcq',
+      text:    'What number comes next in this pattern?\n\n2, 4, 8, 16, ____',
+      options: ['18', '24', '32', '64'],
+      answer:  2
+    },
+    {
+      id:      'quant_word_problem',
+      domain:  'Quantitative Reasoning',
+      type:    'mcq',
+      text:    'Sarah has 3 boxes. Each box has 6 pencils inside. She gives 4 pencils to her brother.\n\nHow many pencils does Sarah have left?',
+      options: ['10', '14', '18', '22'],
+      answer:  1
+    },
+    {
+      id:      'quant_compare',
+      domain:  'Quantitative Reasoning',
+      type:    'mcq',
+      text:    'Which number is the LARGEST?',
+      options: ['1/2', '1/4', '3/4', '1/3'],
+      answer:  2
+    },
+    {
+      id:      'quant_logic',
+      domain:  'Quantitative Reasoning',
+      type:    'mcq',
+      text:    'In a class of 20 students, 12 students like apples and 8 students do not.\n\nIf 5 of the students who like apples are boys, how many girls like apples?',
+      options: ['3', '5', '7', '12'],
+      answer:  2
+    },
+
+    /* =====================================================
+       SECTION C: READING COMPREHENSION
+       Short passage with 3 questions
+       ===================================================== */
+    {
+      id:      'read_main_idea',
+      domain:  'Reading Comprehension',
+      type:    'mcq',
+      text:    'Read the passage below, then answer the question.',
+      source:  'The blue whale is the largest animal that has ever lived on Earth. It is even bigger than the largest dinosaurs. A blue whale can grow as long as three school buses parked end to end. Its heart is so big that a small child could fit inside it. Even though it is huge, the blue whale eats some of the smallest creatures in the ocean. It feeds on tiny shrimp called krill, swallowing millions of them every day.',
+      sourceAttr: 'Adapted from "Giants of the Ocean"',
+      textAfter: 'Which sentence best describes the MAIN IDEA of this passage?',
+      options: [
+        'Blue whales are bigger than dinosaurs',
+        'The blue whale is an enormous animal that eats very small creatures',
+        'Krill are tiny shrimp that live in the ocean',
+        'A child can fit inside a blue whale\'s heart'
+      ],
+      answer:  1
+    },
+    {
+      id:      'read_detail',
+      domain:  'Reading Comprehension',
+      type:    'mcq',
+      text:    'According to the passage above, what does a blue whale eat?',
+      options: [
+        'Smaller whales',
+        'Fish and seaweed',
+        'Tiny shrimp called krill',
+        'Dinosaur bones'
+      ],
+      answer:  2
+    },
+    {
+      id:      'read_inference',
+      domain:  'Reading Comprehension',
+      type:    'mcq',
+      text:    'The passage compares a blue whale to "three school buses parked end to end." Why does the writer use this comparison?',
+      options: [
+        'To show that blue whales travel like buses',
+        'To help the reader picture how long a blue whale really is',
+        'To describe what colour a blue whale is',
+        'To explain how fast a blue whale can swim'
+      ],
+      answer:  1
+    },
+
+    /* =====================================================
+       SECTION D: MATHEMATICS ACHIEVEMENT
+       Standard arithmetic and geometry concepts
+       ===================================================== */
+    {
+      id:      'math_division',
+      domain:  'Mathematics',
+      type:    'mcq',
+      text:    'What is 144 divided by 12?',
+      options: ['10', '11', '12', '14'],
+      answer:  2
+    },
+    {
+      id:      'math_decimals',
+      domain:  'Mathematics',
+      type:    'mcq',
+      text:    'Which decimal is equal to one-half?',
+      options: ['0.05', '0.25', '0.5', '5.0'],
+      answer:  2
+    },
+    {
+      id:      'math_geometry',
+      domain:  'Mathematics',
+      type:    'mcq',
+      text:    'A rectangle has a length of 8 cm and a width of 5 cm.\n\nWhat is the AREA of the rectangle?',
+      options: ['13 cm', '26 cm', '40 cm', '40 cm squared'],
+      answer:  3
+    },
+    {
+      id:      'math_time',
+      domain:  'Mathematics',
+      type:    'mcq',
+      text:    'A film starts at 3:45 PM and lasts for 1 hour and 30 minutes.\n\nWhat time does the film end?',
+      options: ['4:15 PM', '4:45 PM', '5:00 PM', '5:15 PM'],
+      answer:  3
+    },
+
+    /* =====================================================
+       SECTION E: WRITING AND EXPRESSION
+       Open-ended, age-appropriate prompts
+       ===================================================== */
+    {
+      id:      'text_about_you',
+      domain:  'About You',
+      type:    'text',
+      text:    'Tell us a little about yourself. What is your favourite school subject and why? What do you like to do when you are not in school?',
+      hint:    'Just write a few sentences. There is no right or wrong answer -- we want to learn about you.',
+      minLength: 1,
+      required:  true
+    },
+    {
+      id:      'text_writing_sample',
+      domain:  'About You',
+      type:    'text',
+      text:    'Imagine you find a magical door in your school that leads somewhere amazing.\n\nWrite a few sentences about where the door leads, what you see when you go through it, and what happens next.',
+      hint:    'Use your imagination! Try to write at least 3 or 4 full sentences.',
+      minLength: 1,
+      required:  true
+    },
+    {
+      id:      'text_problem_solving',
+      domain:  'About You',
+      type:    'text',
+      text:    'Tell us about a time you tried something difficult and did not give up. What did you do, and how did you feel afterwards?',
+      hint:    'It can be anything -- learning to ride a bike, solving a hard puzzle, or trying a new sport.',
+      minLength: 1,
+      required:  true
+    },
+
+    /* =====================================================
+       SECTION F: STUDENT PROFILE
+       ===================================================== */
+    {
+      id:        'scale_reading_comfort',
+      domain:    'How You Feel About Learning',
+      type:      'scale',
+      text:      'How much do you enjoy reading books?',
+      min:        1,
+      max:        5,
+      labelLow:  'I do not like it',
+      labelHigh: 'I love it',
+      required:   true
+    },
+    {
+      id:        'scale_maths_confidence',
+      domain:    'How You Feel About Learning',
+      type:      'scale',
+      text:      'How confident do you feel about maths?',
+      min:        1,
+      max:        5,
+      labelLow:  'Not confident',
+      labelHigh: 'Very confident',
+      required:   true
+    },
+    {
+      id:        'scale_test_feeling',
+      domain:    'How You Feel About Learning',
+      type:      'scale',
+      text:      'How do you usually feel when you take a test?',
+      min:        1,
+      max:        5,
+      labelLow:  'Very nervous',
+      labelHigh: 'Calm and ready',
+      required:   true
+    },
+    {
+      id:       'rank_subjects',
+      domain:   'How You Feel About Learning',
+      type:     'ranking',
+      text:     'Put these school subjects in order, with your FAVOURITE at the top and your LEAST favourite at the bottom. Use the arrows to move them.',
+      items:    [
+        'English / Reading',
+        'Maths',
+        'Science',
+        'History or Social Studies',
+        'Art or Music'
+      ],
+      required:  true
+    }
+
+  ];
+
+</script>
+
+<header class="site-header">
+  <div class="logo-mark">H</div>
+  <div>
+    <div class="brand-name">Harland Education</div>
+    <div class="brand-sub">Diagnostic Assessment</div>
+  </div>
+</header>
+
+<div class="progress-bar-wrap" id="progressWrap" style="display:none;">
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">Question 0 of 0</div>
+</div>
+
+<main class="main-wrap">
+
+  <section class="screen active" id="screenName">
+    <h1 class="name-screen-title" id="introHeadingEl"></h1>
+    <p class="name-screen-desc" id="introDescEl"></p>
+    <div class="info-card" id="infoCardEl"></div>
+    <div style="margin-bottom: 24px;">
+      <label class="field-label" for="studentName" id="nameLabelEl"></label>
+      <input class="field-input" type="text" id="studentName" autocomplete="name" spellcheck="false">
+      <div class="field-error" id="nameError">Please enter your name before continuing.</div>
+      <div style="font-size:13px; color:var(--grey); margin-top:8px;" id="nameHintEl"></div>
+    </div>
+    <button class="btn-primary" id="btnStartDiagnostic">Start the Quiz</button>
+  </section>
+
+  <section class="screen" id="screenQuestions">
+    <p class="required-note">Questions marked with <span class="req">*</span> need to be answered.</p>
+    <div id="questionsContainer"></div>
+    <div class="btn-row"><button class="btn-primary" id="btnSubmit"></button></div>
+    <div class="submit-error" id="submitError">Please answer all the questions before submitting.</div>
+  </section>
+
+  <section class="screen" id="screenThankYou">
+    <div class="thankyou-wrap">
+      <div class="thankyou-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2 class="thankyou-title" id="thankyouTitleEl"></h2>
+      <p class="thankyou-body" id="thankyouBodyEl"></p>
+      <div class="thankyou-divider"></div>
+      <p class="thankyou-next" id="thankyouNextEl"></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  &copy; Harland Education &mdash; Xinyi District, Taipei &mdash; Confidential Assessment Material
+</footer>
+
+<script>
+  function showScreen(id) {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) { screens[i].classList.remove('active'); }
+    document.getElementById(id).classList.add('active');
+  }
+
+  function initDisplay() {
+    document.title = CONFIG.diagnosticTitle + ' | Harland Education';
+    document.getElementById('introHeadingEl').textContent  = CONFIG.introHeading;
+    document.getElementById('introDescEl').textContent     = CONFIG.introDescription;
+    document.getElementById('nameLabelEl').textContent     = CONFIG.nameLabel;
+    document.getElementById('nameHintEl').textContent      = CONFIG.nameHint;
+    document.getElementById('btnSubmit').textContent       = CONFIG.submitButtonLabel;
+    document.getElementById('thankyouTitleEl').textContent = CONFIG.thankyouTitle;
+    document.getElementById('thankyouBodyEl').textContent  = CONFIG.thankyouBody;
+    document.getElementById('thankyouNextEl').textContent  = CONFIG.thankyouNext;
+    var cardEl = document.getElementById('infoCardEl');
+    var cardHtml = '';
+    for (var i = 0; i < CONFIG.infoPoints.length; i++) {
+      cardHtml += '<p><strong>' + (i + 1) + '.</strong> ' + CONFIG.infoPoints[i] + '</p>';
+    }
+    cardEl.innerHTML = cardHtml;
+  }
+
+  document.getElementById('btnStartDiagnostic').onclick = function() {
+    var name = document.getElementById('studentName').value.trim();
+    if (!name) { document.getElementById('nameError').style.display = 'block'; document.getElementById('studentName').focus(); return; }
+    document.getElementById('nameError').style.display = 'none';
+    renderQuestions();
+    showScreen('screenQuestions');
+    document.getElementById('progressWrap').style.display = 'block';
+    updateProgress();
+    window.scrollTo(0, 0);
+  };
+
+  var ANSWERS = {};
+  var RANKING_STATE = {};
+
+  function renderQuestions() {
+    var container = document.getElementById('questionsContainer');
+    var html = '';
+    var currentDomain = null;
+    var qNum = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      qNum++;
+      if (q.domain !== currentDomain) {
+        currentDomain = q.domain;
+        html += '<div class="domain-header"><div class="domain-label">Section</div><div class="domain-title">' + escHtml(q.domain) + '</div></div>';
+      }
+      html += '<div class="question-card" id="card_' + escHtml(q.id) + '">';
+      html += '<div class="question-number">Question ' + qNum + (q.required || q.type === 'mcq' ? ' <span class="req">*</span>' : '') + '</div>';
+      html += '<div class="question-text">' + escHtml(q.text).replace(/\n/g, '<br>') + '</div>';
+      if (q.source) {
+        html += '<div class="source-block">' + escHtml(q.source);
+        if (q.sourceAttr) html += '<div class="source-attr">-- ' + escHtml(q.sourceAttr) + '</div>';
+        html += '</div>';
+      }
+      if (q.textAfter) {
+        html += '<div class="question-text" style="margin-top:-8px;margin-bottom:18px;">' + escHtml(q.textAfter).replace(/\n/g, '<br>') + '</div>';
+      }
+      if (q.type === 'mcq')          html += renderMcq(q);
+      else if (q.type === 'text')    html += renderText(q);
+      else if (q.type === 'scale')   html += renderScale(q);
+      else if (q.type === 'ranking') html += renderRanking(q);
+      html += '</div>';
+    }
+    container.innerHTML = html;
+    attachListeners();
+  }
+
+  function renderMcq(q) {
+    var letters = ['A','B','C','D','E'];
+    var html = '<ul class="mcq-options">';
+    for (var i = 0; i < q.options.length; i++) {
+      var iid = 'mcq_' + q.id + '_' + i;
+      html += '<li><input type="radio" name="mcq_' + escHtml(q.id) + '" id="' + iid + '" value="' + i + '"><label for="' + iid + '"><span class="option-letter">' + letters[i] + '</span>' + escHtml(q.options[i]) + '</label></li>';
+    }
+    html += '</ul>';
+    return html;
+  }
+
+  function renderText(q) {
+    return '<textarea class="text-response" id="txt_' + escHtml(q.id) + '" placeholder="' + escHtml(q.hint || '') + '" rows="6"></textarea>'
+         + '<div class="text-char-count" id="cc_' + escHtml(q.id) + '">0 characters</div>';
+  }
+
+  function renderScale(q) {
+    var html = '<div class="scale-wrap"><div class="scale-labels"><span>' + escHtml(q.labelLow) + '</span><span>' + escHtml(q.labelHigh) + '</span></div><div class="scale-buttons">';
+    for (var v = q.min; v <= q.max; v++) {
+      html += '<button type="button" class="scale-btn" data-qid="' + escHtml(q.id) + '" data-val="' + v + '">' + v + '</button>';
+    }
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderRanking(q) {
+    RANKING_STATE[q.id] = q.items.slice();
+    var html = '<p class="rank-hint">Use the arrows to move things up or down. Top = your favourite.</p><ul class="rank-list" id="ranklist_' + escHtml(q.id) + '">';
+    for (var i = 0; i < q.items.length; i++) { html += buildRankItem(q.id, i, q.items.length, q.items[i]); }
+    html += '</ul>';
+    return html;
+  }
+
+  function buildRankItem(qid, idx, total, text) {
+    var upDis = idx === 0 ? 'disabled' : '';
+    var dnDis = idx === total - 1 ? 'disabled' : '';
+    return '<li class="rank-item"><div class="rank-position">' + (idx + 1) + '</div><div class="rank-text">' + escHtml(text) + '</div>'
+         + '<div class="rank-controls">'
+         + '<button type="button" class="rank-btn" ' + upDis + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',-1)">&#9650;</button>'
+         + '<button type="button" class="rank-btn" ' + dnDis + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',1)">&#9660;</button>'
+         + '</div></li>';
+  }
+
+  function moveRankItem(qid, idx, direction) {
+    var items = RANKING_STATE[qid];
+    var newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= items.length) return;
+    var temp = items[idx]; items[idx] = items[newIdx]; items[newIdx] = temp;
+    RANKING_STATE[qid] = items;
+    var listEl = document.getElementById('ranklist_' + qid);
+    var html = '';
+    for (var i = 0; i < items.length; i++) { html += buildRankItem(qid, i, items.length, items[i]); }
+    listEl.innerHTML = html;
+    updateProgress();
+  }
+
+  function attachListeners() {
+    var radios = document.querySelectorAll('.mcq-options input[type="radio"]');
+    for (var i = 0; i < radios.length; i++) {
+      radios[i].onchange = function() { ANSWERS[this.name.replace('mcq_', '')] = parseInt(this.value, 10); updateProgress(); };
+    }
+    var textareas = document.querySelectorAll('.text-response');
+    for (var j = 0; j < textareas.length; j++) {
+      (function(ta) {
+        var qid = ta.id.replace('txt_', '');
+        ta.oninput = function() {
+          ANSWERS[qid] = ta.value;
+          var cc = document.getElementById('cc_' + qid);
+          if (cc) cc.textContent = ta.value.length + ' characters';
+          updateProgress();
+        };
+      })(textareas[j]);
+    }
+    var scaleBtns = document.querySelectorAll('.scale-btn');
+    for (var k = 0; k < scaleBtns.length; k++) {
+      scaleBtns[k].onclick = function() {
+        var qid = this.getAttribute('data-qid');
+        var val = parseInt(this.getAttribute('data-val'), 10);
+        ANSWERS[qid] = val;
+        var siblings = document.querySelectorAll('.scale-btn[data-qid="' + qid + '"]');
+        for (var s = 0; s < siblings.length; s++) { siblings[s].classList.remove('selected'); }
+        this.classList.add('selected');
+        updateProgress();
+      };
+    }
+  }
+
+  function countRequired() {
+    var total = 0; var answered = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (!q.required && q.type !== 'mcq') continue;
+      total++;
+      if (q.type === 'mcq' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'text' && ANSWERS[q.id] && ANSWERS[q.id].length >= 1) answered++;
+      else if (q.type === 'scale' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'ranking') answered++;
+    }
+    return { total: total, answered: answered };
+  }
+
+  function updateProgress() {
+    var counts = countRequired();
+    var pct = counts.total > 0 ? Math.round((counts.answered / counts.total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = counts.answered + ' of ' + counts.total + ' questions answered';
+  }
+
+  function validate() {
+    var missing = [];
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
+      else if (q.type === 'text' && q.required) { var v = ANSWERS[q.id] || ''; if (v.length < 1) missing.push(q.id); }
+      else if (q.type === 'scale' && q.required) { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
+    }
+    return missing;
+  }
+
+  function highlightMissing(missingIds) {
+    var allCards = document.querySelectorAll('.question-card');
+    for (var i = 0; i < allCards.length; i++) { allCards[i].style.borderColor = ''; }
+    for (var j = 0; j < missingIds.length; j++) { var card = document.getElementById('card_' + missingIds[j]); if (card) card.style.borderColor = '#C0392B'; }
+    if (missingIds.length > 0) { var first = document.getElementById('card_' + missingIds[0]); if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+
+  function collectPayload() {
+    var studentName = document.getElementById('studentName').value.trim();
+    var mcqScores = {}; var selfRatings = {}; var preferences = {}; var rawResponses = {};
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') {
+        var chosen = ANSWERS[q.id];
+        mcqScores[q.id] = { chosen: chosen, answer: q.answer, correct: (q.answer !== null && q.answer !== undefined) ? (chosen === q.answer) : null };
+        rawResponses[q.id] = chosen;
+      } else if (q.type === 'text') {
+        rawResponses[q.id] = ANSWERS[q.id] || '';
+      } else if (q.type === 'scale') {
+        selfRatings[q.id] = ANSWERS[q.id];
+        rawResponses[q.id] = ANSWERS[q.id];
+      } else if (q.type === 'ranking') {
+        var order = RANKING_STATE[q.id] || [];
+        preferences[q.id] = order;
+        rawResponses[q.id] = order;
+      }
+    }
+    return {
+      student_id: STUDENT_ID, student_name: studentName,
+      diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
+      raw_responses: rawResponses, mcq_scores: mcqScores,
+      self_ratings: selfRatings, preferences: preferences
+    };
+  }
+
+  function submitToSupabase(payload, onSuccess, onError) {
+    var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
+    fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
+    .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
+    .then(function(data) {
+      var reportPayload = {
+        diagnostic_id: data[0].id,
+        student_id: payload.student_id,
+        student_name: payload.student_name,
+        diagnostic_label: payload.diagnostic_label,
+        ai_report: 'Pending HT review',
+        status: 'pending'
+      };
+      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+    })
+    .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
+    .catch(function(err) { onError(err); });
+  }
+
+  document.getElementById('btnSubmit').onclick = function() {
+    var missingIds = validate();
+    if (missingIds.length > 0) { document.getElementById('submitError').style.display = 'block'; highlightMissing(missingIds); return; }
+    document.getElementById('submitError').style.display = 'none';
+    var btn = document.getElementById('btnSubmit');
+    btn.disabled = true; btn.textContent = 'Submitting...';
+    submitToSupabase(collectPayload(),
+      function() { document.getElementById('progressWrap').style.display = 'none'; showScreen('screenThankYou'); window.scrollTo(0, 0); },
+      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'Submission failed. Please check your connection and try again. Error: ' + err.message; }
+    );
+  };
+
+  function escHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  initDisplay();
+</script>
+</body>
+</html>
