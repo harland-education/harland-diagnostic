@@ -246,21 +246,6 @@
 
     {
       name:        'IB History Readiness',
-      subject:     '20th Century World History',
-      category:    'IB',
-      icon:        '&#128214;',
-      iconClass:   'icon-default',
-      level:       'Grade 11',
-      time:        '25-30 min',
-      description: 'Assesses historical knowledge, source analysis skills, and essay reasoning for IB History SL/HL admissions. Covers WWI, Cold War, authoritarian states, rights and protest.',
-      tags:        ['IB History', 'SL', 'HL', 'Source Analysis', 'Admissions'],
-      url:         'https://harland-education.github.io/harland-diagnostic/harland_ib_history_diagnostic.html',
-      status:      'live',
-      updated:     'Mar 2026'
-    },
-
-    {
-      name:        'IB History Readiness',
       subject:     'World History, Source Analysis, Essay Skills',
       category:    'IB',
       icon:        '&#128212;',
@@ -272,6 +257,36 @@
       url:         'https://harland-education.github.io/harland-diagnostic/harland_ib_history_diagnostic.html',
       status:      'live',
       updated:     'Apr 2026'
+    },
+
+    {
+      name:        'High School Debating Readiness',
+      subject:     'Argument, Logic, Rebuttal',
+      category:    'General',
+      icon:        '&#127908;',
+      iconClass:   'icon-default',
+      level:       'All high school',
+      time:        '25 min',
+      description: 'Assesses argument construction, logical reasoning, rebuttal skills, and motion analysis for admissions to and placement within the Harland debating programme.',
+      tags:        ['Debating', 'Critical Thinking', 'Argumentation', 'Admissions', 'Placement'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_debating_diagnostic.html',
+      status:      'live',
+      updated:     'May 2026'
+    },
+
+    {
+      name:        'ISEE Lower Level Readiness',
+      subject:     'Verbal, Quantitative, Reading, Maths',
+      category:    'Test Prep',
+      icon:        '&#128218;',
+      iconClass:   'icon-default',
+      level:       'Grades 5-6 applicants',
+      time:        '25 min',
+      description: 'Assesses verbal reasoning, quantitative reasoning, reading comprehension, and mathematics for ISEE Lower Level test prep admissions and placement. Designed for ages 9-11.',
+      tags:        ['ISEE', 'Lower Level', 'Test Prep', 'Admissions', 'Placement'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_isee_lower_diagnostic.html',
+      status:      'live',
+      updated:     'May 2026'
     },
 
     /* ----- PLANNED ----- */
@@ -365,7 +380,7 @@
   function renderCards() {
     var container = document.getElementById('cardContainer');
     var query = document.getElementById('searchInput').value.toLowerCase().trim();
-    var categories = ['AP', 'IB', 'SAT', 'English', 'General'];
+    var categories = ['AP', 'IB', 'SAT', 'Test Prep', 'English', 'General'];
     var html = '';
     var visibleCount = 0;
 
