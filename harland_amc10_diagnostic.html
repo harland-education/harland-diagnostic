@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMC 10 Diagnostic | Harland Education</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:  #1B2A4A;
+      --gold:  #C9A84C;
+      --cream: #F7F5F0;
+      --white: #FFFFFF;
+      --grey:  #6B7280;
+      --light-grey: #E5E3DF;
+      --error: #C0392B;
+      --ok: #2E7D52;
+      --warn: #C7831F;
+      --font-serif: 'Libre Baskerville', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+      --font-mono:  'JetBrains Mono', 'Courier New', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background-color: var(--cream); color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .exam-bar { background-color: var(--navy); padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+    .exam-bar-left { display: flex; align-items: center; gap: 14px; }
+    .exam-bar .logo-mark { width: 34px; height: 34px; background-color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; font-size: 16px; color: var(--navy); flex-shrink: 0; }
+    .exam-bar .brand-sub { font-size: 10px; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; }
+    .exam-bar .paper-title { font-family: var(--font-serif); font-size: 16px; color: var(--white); }
+    .timer-wrap { display: flex; align-items: center; gap: 16px; }
+    .timer-block { text-align: right; }
+    .timer-label { font-size: 9px; color: rgba(255,255,255,0.5); letter-spacing: 0.14em; text-transform: uppercase; }
+    .timer-value { font-family: var(--font-serif); font-size: 26px; color: var(--gold); line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .timer-value.expired { color: var(--error); }
+    .timer-value.warning { color: var(--warn); }
+    .timer-btns { display: flex; gap: 8px; }
+    .timer-btn { font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 14px; border-radius: 6px; cursor: pointer; border: 1px solid var(--gold); background: var(--gold); color: var(--navy); transition: opacity 0.15s; }
+    .timer-btn.secondary { background: transparent; color: var(--gold); }
+    .timer-btn:hover { opacity: 0.85; }
+    .timer-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .main-wrap { flex: 1; max-width: 820px; width: 100%; margin: 0 auto; padding: 32px 24px 60px; }
+
+    .cover { background: var(--white); border: 1px solid var(--light-grey); border-top: 4px solid var(--gold); border-radius: 10px; padding: 30px 34px; margin-bottom: 28px; }
+    .cover-title { font-family: var(--font-serif); font-size: 26px; line-height: 1.3; color: var(--navy); margin-bottom: 6px; }
+    .cover-sub { font-size: 13px; color: var(--grey); letter-spacing: 0.04em; margin-bottom: 22px; }
+    .cover-desc { font-size: 14.5px; color: var(--navy); line-height: 1.65; margin-bottom: 20px; }
+    .instructions { background: #F0EEE9; border-left: 3px solid var(--gold); border-radius: 6px; padding: 18px 22px; }
+    .instructions-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); font-weight: 600; margin-bottom: 12px; }
+    .instructions ul { list-style: none; }
+    .instructions li { font-size: 13.5px; color: #3A3A48; line-height: 1.6; padding-left: 16px; position: relative; margin-bottom: 7px; }
+    .instructions li::before { content: '--'; position: absolute; left: 0; color: var(--gold); }
+    .instructions strong { font-weight: 600; color: var(--navy); }
+
+    .name-gate { background: var(--white); border: 1px solid var(--light-grey); border-radius: 10px; padding: 22px 26px; margin-bottom: 28px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .name-gate label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); flex-shrink: 0; }
+    .name-gate input { flex: 1; min-width: 200px; padding: 11px 14px; border: 1.5px solid var(--light-grey); border-radius: 7px; font-family: var(--font-sans); font-size: 15px; color: var(--navy); outline: none; }
+    .name-gate input:focus { border-color: var(--gold); }
+    .name-gate .gate-err { font-size: 12px; color: var(--error); width: 100%; display: none; }
+
+    .band-divider { display: flex; align-items: center; gap: 14px; margin: 28px 0 18px; }
+    .band-divider .tag { background: var(--gold); color: var(--navy); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 5px; }
+    .band-divider .line { flex: 1; height: 1px; background: var(--light-grey); }
+    .band-divider .hint { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); }
+
+    .question-card { background-color: var(--white); border: 1px solid var(--light-grey); border-radius: 10px; padding: 22px 26px; margin-bottom: 14px; }
+    .qcard-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .qcard-num { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+    .qcard-topic { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--grey); }
+    .qcard-text { font-family: var(--font-serif); font-size: 15.5px; line-height: 1.6; color: var(--navy); margin-bottom: 16px; }
+    .qcard-text code { font-family: var(--font-mono); font-size: 14px; background: #F0EEE9; padding: 1px 6px; border-radius: 3px; color: #2A2A48; }
+    .mcq-options { list-style: none; }
+    .mcq-options li { margin-bottom: 8px; }
+    .mcq-options label { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border: 1.5px solid var(--light-grey); border-radius: 7px; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; font-family: var(--font-mono); font-size: 14.5px; line-height: 1.4; color: var(--navy); }
+    .mcq-options label:hover { border-color: var(--gold); background-color: #FDFCF8; }
+    .mcq-options input[type="radio"] { display: none; }
+    .mcq-options input[type="radio"]:checked + label { border-color: var(--navy); background-color: #EEF0F4; font-weight: 600; }
+    .option-letter { font-family: var(--font-sans); font-weight: 700; color: var(--gold); flex-shrink: 0; min-width: 18px; }
+
+    .profile-section { margin-top: 36px; }
+    .profile-header { padding-bottom: 12px; border-bottom: 2px solid var(--navy); margin-bottom: 20px; }
+    .profile-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+    .profile-title { font-family: var(--font-serif); font-size: 20px; color: var(--navy); }
+    .scale-wrap { padding: 4px 0; }
+    .scale-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--grey); margin-bottom: 12px; }
+    .scale-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .scale-btn { flex: 1; min-width: 36px; max-width: 60px; aspect-ratio: 1; border: 1.5px solid var(--light-grey); border-radius: 8px; background: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--navy); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; display: flex; align-items: center; justify-content: center; }
+    .scale-btn:hover { border-color: var(--gold); }
+    .scale-btn.selected { background-color: var(--navy); border-color: var(--navy); color: var(--white); }
+    .rank-list { list-style: none; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 8px; margin-bottom: 8px; font-size: 14.5px; color: var(--navy); user-select: none; }
+    .rank-position { font-size: 12px; font-weight: 700; color: var(--gold); min-width: 26px; text-align: center; }
+    .rank-text { flex: 1; line-height: 1.4; }
+    .rank-controls { display: flex; flex-direction: column; gap: 4px; }
+    .rank-btn { background: none; border: 1px solid var(--light-grey); border-radius: 4px; width: 26px; height: 22px; cursor: pointer; font-size: 11px; color: var(--grey); display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s; }
+    .rank-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .rank-btn:disabled { opacity: 0.25; cursor: default; }
+    .rank-btn:disabled:hover { background: none; color: var(--grey); border-color: var(--light-grey); }
+    .rank-hint { font-size: 12px; color: var(--grey); margin-top: -4px; margin-bottom: 10px; }
+    .text-response { width: 100%; min-height: 110px; padding: 12px 14px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 14.5px; color: var(--navy); background: var(--white); resize: vertical; outline: none; line-height: 1.5; }
+    .text-response:focus { border-color: var(--gold); }
+    .text-char-count { font-size: 12px; color: var(--grey); text-align: right; margin-top: 6px; }
+
+    .submit-row { text-align: center; margin: 36px 0 16px; }
+    .btn-submit { background-color: var(--navy); color: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; padding: 15px 42px; border: none; border-radius: 8px; cursor: pointer; letter-spacing: 0.04em; text-transform: uppercase; transition: background-color 0.2s; }
+    .btn-submit:hover { background-color: #263D6A; }
+    .btn-submit:disabled { background: var(--light-grey); color: var(--grey); cursor: not-allowed; }
+    .submit-note { font-size: 12px; font-style: italic; color: var(--grey); margin-top: 10px; }
+    .submit-error { background-color: #FDECEA; border: 1px solid #F5C6C2; border-radius: 8px; padding: 13px 18px; font-size: 13px; color: var(--error); margin-top: 14px; display: none; }
+
+    /* RESULTS */
+    .results-screen { display: none; }
+    .score-hero { background: var(--navy); border-radius: 12px; padding: 38px 36px; text-align: center; margin-bottom: 24px; color: var(--white); }
+    .score-hero-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .score-hero-range { font-family: var(--font-serif); font-size: 48px; line-height: 1.1; color: var(--gold); margin-bottom: 6px; }
+    .score-hero-sub { font-size: 14px; color: rgba(255,255,255,0.75); margin-bottom: 14px; }
+    .score-hero-detail { font-size: 13.5px; color: rgba(255,255,255,0.6); line-height: 1.65; max-width: 540px; margin: 0 auto; }
+    .score-hero-detail strong { color: var(--gold); font-weight: 600; }
+
+    .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 26px; }
+    @media (max-width: 640px) { .breakdown-grid { grid-template-columns: 1fr; } }
+    .breakdown-card { background: var(--white); border: 1px solid var(--light-grey); border-radius: 10px; padding: 20px 22px; }
+    .breakdown-title { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 14px; }
+    .breakdown-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #EEECE6; font-size: 14px; }
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-row .label { color: var(--navy); }
+    .breakdown-row .value { font-family: var(--font-mono); font-size: 13px; color: var(--navy); }
+    .breakdown-row .pct { display: inline-block; min-width: 50px; text-align: right; }
+    .breakdown-row .pill { display: inline-block; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; margin-left: 8px; font-weight: 600; }
+    .pill.strong { background: #E2F0E8; color: var(--ok); }
+    .pill.solid { background: #FAF6EA; color: var(--warn); }
+    .pill.weak { background: #FDECEA; color: var(--error); }
+
+    .context-card { background: var(--white); border: 1px solid var(--light-grey); border-left: 3px solid var(--gold); border-radius: 8px; padding: 18px 22px; margin-bottom: 26px; }
+    .context-card h3 { font-family: var(--font-serif); font-size: 16px; color: var(--navy); margin-bottom: 10px; }
+    .context-card p { font-size: 13.5px; line-height: 1.65; color: #3A3A48; margin-bottom: 6px; }
+    .context-card strong { color: var(--navy); font-weight: 600; }
+
+    .solutions-toggle { text-align: center; margin: 8px 0 20px; }
+    .btn-reveal { background: transparent; border: 1.5px solid var(--gold); color: var(--navy); font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 11px 22px; border-radius: 7px; cursor: pointer; transition: background 0.15s; }
+    .btn-reveal:hover { background: #F0EEE9; }
+    .solutions-section { display: none; }
+    .solution-card { background: var(--white); border: 1px solid var(--light-grey); border-radius: 8px; padding: 18px 22px; margin-bottom: 12px; }
+    .sol-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .sol-num { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+    .sol-result { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 12px; }
+    .sol-result.right { background: #E2F0E8; color: var(--ok); }
+    .sol-result.wrong { background: #FDECEA; color: var(--error); }
+    .sol-result.blank { background: #F0EEE9; color: var(--grey); }
+    .sol-question { font-family: var(--font-serif); font-size: 14px; color: var(--navy); line-height: 1.55; margin-bottom: 10px; }
+    .sol-answers { font-size: 13px; color: #3A3A48; margin-bottom: 8px; font-family: var(--font-mono); }
+    .sol-answers .a-label { font-family: var(--font-sans); color: var(--grey); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
+    .sol-explain { font-size: 13px; color: #3A3A48; line-height: 1.65; background: #F4F2EC; border-radius: 6px; padding: 10px 14px; }
+    .sol-explain strong { color: var(--navy); }
+
+    .site-footer { background-color: var(--navy); padding: 20px 32px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 0.04em; }
+    @media (max-width: 640px) {
+      .exam-bar { padding: 12px 16px; flex-wrap: wrap; gap: 12px; }
+      .timer-value { font-size: 22px; }
+      .main-wrap { padding: 24px 14px 48px; }
+      .cover, .question-card, .score-hero { padding: 22px 18px; }
+      .score-hero-range { font-size: 38px; }
+    }
+  </style>
+</head>
+<body>
+
+<script>
+
+  /* =========================================================================
+     HARLAND AMC 10 DIAGNOSTIC
+     Predicts likely AMC 10 score based on a 15-question calibrated sample
+     across difficulty bands and topic areas. Timer matches real AMC pace.
+     ========================================================================= */
+
+  var SB_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
+
+  var STUDENT_ID = null;
+  var DIAGNOSTIC_TYPE  = 'amc10_diagnostic';
+  var DIAGNOSTIC_LABEL = 'AMC 10 Diagnostic';
+
+  var CONFIG = {
+    brandSub:     'Harland Academic Coaching',
+    title:        'AMC 10 Diagnostic',
+    subTitle:     'Estimated score and topic breakdown',
+    timerMinutes: 45,
+    description:  'This diagnostic uses 15 calibrated problems spread across the four AMC 10 difficulty bands and five core topic areas to estimate the score you would likely earn on the real AMC 10 today. Your accuracy in each band is projected onto the full 25-question contest.',
+    instructions: [
+      'This diagnostic is timed: <strong>45 minutes</strong>, matching real AMC 10 pace (about 3 minutes per question).',
+      '<strong>No calculator.</strong> Use scratch paper for working out.',
+      'Problems are arranged from <strong>Easy</strong> (similar to AMC Q1-10) through <strong>Challenge</strong> (similar to AMC Q21-25). Difficulty rises throughout.',
+      'If a problem is taking too long, <strong>move on and come back</strong> -- this is how strong AMC scorers manage time.',
+      'After submitting, you will see your estimated AMC 10 score, a topic-by-topic breakdown, and full solutions.',
+      'Complete in one sitting; the diagnostic does not save partial progress.'
+    ],
+    profile: {
+      title: 'About You'
+    }
+  };
+
+  /* QUESTIONS -- 15 math problems, calibrated to AMC 10 difficulty bands.
+     Each has: id, band, topic, text, options (5, A-E), answer (0-4), solution. */
+  var QUESTIONS = [
+    {
+      id: 'e1', band: 'easy', topic: 'Algebra',
+      text: 'A train travels from City A to City B at an average speed of 60 mph and returns along the same route at an average speed of 40 mph. The entire round trip takes 5 hours. What is the one-way distance between A and B, in miles?',
+      options: ['120', '140', '150', '180', '200'],
+      answer: 0,
+      solution: 'Let d be the one-way distance. The outbound trip takes d/60 hours and the return takes d/40 hours, so d/60 + d/40 = 5. Multiply through by 120: 2d + 3d = 600, giving 5d = 600 and d = <strong>120</strong> miles. (Note: averaging the two speeds to 50 mph is the common error -- the correct method uses the harmonic mean.)'
+    },
+    {
+      id: 'e2', band: 'easy', topic: 'Geometry',
+      text: 'The perimeter of a rectangle is 30 cm. If the length is twice the width, what is the area of the rectangle in square cm?',
+      options: ['30', '50', '60', '90', '100'],
+      answer: 1,
+      solution: 'From 2L + 2W = 30, we get L + W = 15. With L = 2W: 3W = 15, so W = 5 and L = 10. Area = L * W = <strong>50</strong>.'
+    },
+    {
+      id: 'e3', band: 'easy', topic: 'Number Theory',
+      text: 'What is the sum of all positive integer divisors of 12 (including 1 and 12 themselves)?',
+      options: ['16', '22', '28', '32', '36'],
+      answer: 2,
+      solution: 'Divisors of 12: 1, 2, 3, 4, 6, 12. Sum = 1 + 2 + 3 + 4 + 6 + 12 = <strong>28</strong>.'
+    },
+    {
+      id: 'e4', band: 'easy', topic: 'Algebra',
+      text: 'A jacket originally costs $80. It is first marked down by 20%, and then a further 25% discount is applied to the sale price at checkout. What is the final price?',
+      options: ['$36', '$40', '$44', '$48', '$52'],
+      answer: 3,
+      solution: 'After the 20% discount: $80 * 0.80 = $64. After the further 25% discount on the new price: $64 * 0.75 = <strong>$48</strong>. (Common error: adding the two discounts to get 45% off would give $44 -- but successive discounts do NOT add.)'
+    },
+    {
+      id: 'e5', band: 'easy', topic: 'Algebra',
+      text: 'What is the 10th term of the arithmetic sequence 3, 7, 11, 15, ... ?',
+      options: ['31', '33', '35', '37', '39'],
+      answer: 4,
+      solution: 'The general term is a_n = 3 + 4(n - 1). For n = 10: 3 + 4(9) = 3 + 36 = <strong>39</strong>.'
+    },
+    {
+      id: 'm1', band: 'medium', topic: 'Algebra',
+      text: 'If x + 1/x = 5, what is the value of x^2 + 1/x^2?',
+      options: ['23', '25', '27', '29', '31'],
+      answer: 0,
+      solution: 'Square both sides: (x + 1/x)^2 = 25, which expands to x^2 + 2 + 1/x^2 = 25. So x^2 + 1/x^2 = <strong>23</strong>.'
+    },
+    {
+      id: 'm2', band: 'medium', topic: 'Geometry',
+      text: 'In triangle ABC, angle A = 50 degrees and angle B = 70 degrees. The angle bisector from C meets side AB at point D. What is the measure of angle ADC?',
+      options: ['95 degrees', '100 degrees', '105 degrees', '110 degrees', '115 degrees'],
+      answer: 1,
+      solution: 'Angle C = 180 - 50 - 70 = 60 degrees. The bisector splits this into two 30-degree angles, so angle ACD = 30. In triangle ACD: 50 + 30 + angle ADC = 180, giving angle ADC = <strong>100 degrees</strong>.'
+    },
+    {
+      id: 'm3', band: 'medium', topic: 'Combinatorics',
+      text: 'How many 3-digit positive integers have all distinct digits and are divisible by 5?',
+      options: ['96', '112', '136', '144', '168'],
+      answer: 2,
+      solution: 'A number divisible by 5 ends in 0 or 5. Ending in 0: first digit 1-9 (9 choices), middle digit 0-9 excluding the first and 0 (8 choices) = 72. Ending in 5: first digit 1-9 excluding 5 (8 choices), middle digit 0-9 excluding first and 5 (8 choices) = 64. Total = 72 + 64 = <strong>136</strong>.'
+    },
+    {
+      id: 'm4', band: 'medium', topic: 'Number Theory',
+      text: 'What is the remainder when 7^100 is divided by 11?',
+      options: ['0', '1', '3', '7', '9'],
+      answer: 1,
+      solution: 'By Fermat\'s Little Theorem, 7^10 is congruent to 1 (mod 11). So 7^100 = (7^10)^10 is congruent to 1^10 = <strong>1</strong> (mod 11).'
+    },
+    {
+      id: 'm5', band: 'medium', topic: 'Probability',
+      text: 'A fair six-sided die is rolled three times. What is the probability that the sum of the three rolls equals 9?',
+      options: ['1/12', '1/9', '25/216', '1/8', '5/36'],
+      answer: 2,
+      solution: 'Total outcomes: 6^3 = 216. Count integer solutions to a + b + c = 9 with 1 <= a, b, c <= 6. Enumeration gives 25 such triples. Probability = <strong>25/216</strong>.'
+    },
+    {
+      id: 'h1', band: 'hard', topic: 'Geometry',
+      text: 'In triangle ABC, AB = 13, BC = 14, and CA = 15. What is the length of the altitude from vertex A to side BC?',
+      options: ['8', '10', '11', '12', '14'],
+      answer: 3,
+      solution: 'Use Heron\'s formula. s = (13 + 14 + 15)/2 = 21. Area = sqrt(21 * 8 * 7 * 6) = sqrt(7056) = 84. Then altitude h = 2 * Area / BC = 2 * 84 / 14 = <strong>12</strong>.'
+    },
+    {
+      id: 'h2', band: 'hard', topic: 'Algebra',
+      text: 'The polynomial P(x) = x^3 - 6x^2 + 11x - 6 has three roots a, b, and c. What is the value of a^2 + b^2 + c^2?',
+      options: ['6', '11', '12', '13', '14'],
+      answer: 4,
+      solution: 'By Vieta\'s formulas: a + b + c = 6 and ab + bc + ca = 11. Use (a + b + c)^2 = a^2 + b^2 + c^2 + 2(ab + bc + ca). So 36 = a^2 + b^2 + c^2 + 22, giving a^2 + b^2 + c^2 = <strong>14</strong>.'
+    },
+    {
+      id: 'h3', band: 'hard', topic: 'Number Theory',
+      text: 'How many ordered pairs of positive integers (a, b) satisfy 1/a + 1/b = 1/10?',
+      options: ['9', '10', '11', '15', '20'],
+      answer: 0,
+      solution: 'Multiply by 10ab: 10b + 10a = ab, which rearranges to (a - 10)(b - 10) = 100. The number 100 = 2^2 * 5^2 has (2+1)(2+1) = 9 positive divisors. Each divisor d gives a valid ordered pair (a, b) = (10 + d, 10 + 100/d). Answer: <strong>9</strong>.'
+    },
+    {
+      id: 'h4', band: 'hard', topic: 'Combinatorics',
+      text: 'A 3-digit positive integer is chosen at random (with each of 100, 101, ..., 999 equally likely). What is the probability that the sum of its digits is exactly 12?',
+      options: ['1/20', '1/15', '7/100', '13/180', '11/150'],
+      answer: 4,
+      solution: 'Count triples (a, b, c) with 1 <= a <= 9, 0 <= b, c <= 9, a + b + c = 12. Summing over a from 1 to 9 gives 8 + 9 + 10 + 9 + 8 + 7 + 6 + 5 + 4 = 66 triples. Probability = 66 / 900 = <strong>11/150</strong>.'
+    },
+    {
+      id: 'v1', band: 'very_hard', topic: 'Combinatorics',
+      text: 'How many distinct 4-digit positive integers are there whose digits, in some order, are 2, 0, 2, and 4, and which are divisible by 4?',
+      options: ['1', '3', '4', '5', '6'],
+      answer: 3,
+      solution: 'A number is divisible by 4 if its last two digits form a number divisible by 4. From {2, 0, 2, 4} the valid endings are 04, 20, 24, and 40. Counting arrangements of the first two digits (first cannot be 0): ending 04 gives 1 (2204); ending 20 gives 2 (2420, 4220); ending 24 gives 1 (2024); ending 40 gives 1 (2240). Total = <strong>5</strong>.'
+    }
+  ];
+
+  /* PROFILE -- placement context, light touch */
+  var PROFILE = [
+    { id: 'scale_math_conf', type: 'scale',
+      text: 'How confident are you in your overall mathematical ability -- algebra, geometry, number theory, counting, and probability combined?',
+      labelLow: 'Not confident', labelHigh: 'Very confident' },
+    { id: 'scale_speed', type: 'scale',
+      text: 'How comfortable are you solving math problems under time pressure (where you have only a few minutes per problem)?',
+      labelLow: 'Not comfortable', labelHigh: 'Very comfortable' },
+    { id: 'scale_no_calc', type: 'scale',
+      text: 'How comfortable are you doing math without a calculator -- including arithmetic, factoring, and mental computation?',
+      labelLow: 'Not comfortable', labelHigh: 'Very comfortable' },
+    { id: 'scale_persistence', type: 'scale',
+      text: 'When a math problem looks unfamiliar or difficult, how willing are you to keep trying different approaches rather than give up?',
+      labelLow: 'I tend to give up', labelHigh: 'I stay with it' },
+    { id: 'rank_topics', type: 'ranking',
+      text: 'Rank these AMC 10 topic areas from STRONGEST to WEAKEST for you. Strongest at the top.',
+      items: ['Algebra (equations, sequences, functions)', 'Geometry (triangles, circles, areas, angles)', 'Number Theory (divisibility, primes, modular arithmetic)', 'Combinatorics (counting and arrangements)', 'Probability'] },
+    { id: 'text_background', type: 'text', required: true,
+      text: 'Describe your math background. What is the highest math class you have taken? Have you done any competition math before (AMC 8, MATHCOUNTS, school math team, Olympiad prep, etc.)? If yes, what was your best result?',
+      hint: 'Be specific. For example: "I took Algebra 2 last year and I am currently taking Precalculus. I took the AMC 8 in 8th grade and scored 18." or "I have not done any competition math but I am a strong A student in math class."' }
+  ];
+
+</script>
+
+<div class="exam-bar">
+  <div class="exam-bar-left">
+    <div class="logo-mark">H</div>
+    <div>
+      <div class="brand-sub" id="brandSubEl"></div>
+      <div class="paper-title" id="paperTitleEl"></div>
+    </div>
+  </div>
+  <div class="timer-wrap">
+    <div class="timer-block">
+      <div class="timer-label">Time Remaining</div>
+      <div class="timer-value" id="timerValue">45:00</div>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-btn" id="btnStartTimer">Start</button>
+      <button class="timer-btn secondary" id="btnResetTimer">Reset</button>
+    </div>
+  </div>
+</div>
+
+<main class="main-wrap">
+
+  <div id="examScreen">
+
+    <section class="cover">
+      <h1 class="cover-title" id="coverTitleEl"></h1>
+      <div class="cover-sub" id="coverSubEl"></div>
+      <p class="cover-desc" id="coverDescEl"></p>
+      <div class="instructions">
+        <div class="instructions-label">Instructions</div>
+        <ul id="instructionsList"></ul>
+      </div>
+    </section>
+
+    <div class="name-gate" id="nameGate">
+      <label for="studentName">Student Name</label>
+      <input type="text" id="studentName" autocomplete="name" spellcheck="false" placeholder="Enter your full name">
+      <div class="gate-err" id="gateErr">Please enter your name before submitting.</div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <section class="profile-section">
+      <div class="profile-header">
+        <div class="profile-label">Profile</div>
+        <div class="profile-title" id="profileTitleEl"></div>
+      </div>
+      <div id="profileContainer"></div>
+    </section>
+
+    <div class="submit-row">
+      <button class="btn-submit" id="btnSubmit">Submit & See My Estimated Score</button>
+      <div class="submit-note">Your responses are saved for your coach. You will see your estimated AMC 10 score on the next screen.</div>
+      <div class="submit-error" id="submitError"></div>
+    </div>
+
+  </div>
+
+  <div class="results-screen" id="resultsScreen">
+
+    <div class="score-hero">
+      <div class="score-hero-label">Estimated AMC 10 Score</div>
+      <div class="score-hero-range" id="scoreRange">0 -- 0</div>
+      <div class="score-hero-sub" id="scoreSub">out of 150 possible</div>
+      <div class="score-hero-detail" id="scoreDetail"></div>
+    </div>
+
+    <div class="breakdown-grid">
+      <div class="breakdown-card">
+        <div class="breakdown-title">By Difficulty</div>
+        <div id="diffBreakdown"></div>
+      </div>
+      <div class="breakdown-card">
+        <div class="breakdown-title">By Topic</div>
+        <div id="topicBreakdown"></div>
+      </div>
+    </div>
+
+    <div class="context-card">
+      <h3>What These Numbers Mean</h3>
+      <p><strong>AMC 10 scoring:</strong> 25 questions, 6 points for each correct, 0 for incorrect, 1.5 for blank. Maximum 150.</p>
+      <p><strong>Honor Roll of Distinction:</strong> typically requires a score around <strong>120+</strong> (varies year-to-year, roughly top 1-2.5%).</p>
+      <p><strong>AIME qualification:</strong> top ~2.5% on AMC 10, typically scores around <strong>100-120</strong> depending on the year.</p>
+      <p><strong>Important caveat:</strong> This estimate is based on a 15-question sample under simulated AMC pace, projected onto the full 25-question contest. Because only one Challenge-band question is sampled, getting that one right or wrong on the day can swing your real score by several points -- the range above accounts for this. Your actual score will also vary with the specific problems on the contest, your time management, and whether you leave hard problems blank (which earns 1.5 partial credit on the real AMC vs. 0 for a wrong guess).</p>
+    </div>
+
+    <div class="solutions-toggle">
+      <button class="btn-reveal" id="btnReveal">Show Solutions</button>
+    </div>
+
+    <div class="solutions-section" id="solutionsSection"></div>
+
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  &copy; Harland Education &mdash; Xinyi District, Taipei &mdash; Confidential Diagnostic Material
+</footer>
+
+<script>
+  function escHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  /* ---------- DISPLAY SETUP ---------- */
+  function initDisplay() {
+    document.title = CONFIG.title + ' | Harland Education';
+    document.getElementById('brandSubEl').textContent   = CONFIG.brandSub;
+    document.getElementById('paperTitleEl').textContent = CONFIG.title;
+    document.getElementById('coverTitleEl').textContent = CONFIG.title;
+    document.getElementById('coverSubEl').textContent   = CONFIG.subTitle;
+    document.getElementById('coverDescEl').textContent  = CONFIG.description;
+    document.getElementById('profileTitleEl').textContent = CONFIG.profile.title;
+    document.getElementById('timerValue').textContent   = pad(CONFIG.timerMinutes) + ':00';
+
+    var ins = '';
+    for (var i = 0; i < CONFIG.instructions.length; i++) {
+      ins += '<li>' + CONFIG.instructions[i] + '</li>';
+    }
+    document.getElementById('instructionsList').innerHTML = ins;
+  }
+
+  /* ---------- QUESTION RENDERING ---------- */
+  var BANDS = [
+    { key: 'easy', label: 'Easy (AMC Q1-10 level)', hint: 'About 1-2 minutes per problem' },
+    { key: 'medium', label: 'Medium (AMC Q11-15 level)', hint: 'About 2-3 minutes per problem' },
+    { key: 'hard', label: 'Hard (AMC Q16-20 level)', hint: 'These require insight' },
+    { key: 'very_hard', label: 'Challenge (AMC Q21-25 level)', hint: 'Olympiad-style -- attempt only if time allows' }
+  ];
+
+  function renderQuestions() {
+    var html = '';
+    var qNum = 0;
+    for (var b = 0; b < BANDS.length; b++) {
+      var band = BANDS[b];
+      var bandQs = [];
+      for (var i = 0; i < QUESTIONS.length; i++) { if (QUESTIONS[i].band === band.key) bandQs.push(QUESTIONS[i]); }
+      if (bandQs.length === 0) continue;
+      html += '<div class="band-divider"><span class="tag">' + escHtml(band.label) + '</span><span class="line"></span><span class="hint">' + escHtml(band.hint) + '</span></div>';
+      for (var j = 0; j < bandQs.length; j++) {
+        qNum++;
+        html += renderQuestion(bandQs[j], qNum);
+      }
+    }
+    document.getElementById('questionsContainer').innerHTML = html;
+  }
+
+  function renderQuestion(q, num) {
+    var letters = ['A','B','C','D','E'];
+    var h = '<div class="question-card" id="card_' + escHtml(q.id) + '">';
+    h += '<div class="qcard-head"><div class="qcard-num">Question ' + num + '</div><div class="qcard-topic">' + escHtml(q.topic) + '</div></div>';
+    h += '<div class="qcard-text">' + escHtml(q.text) + '</div>';
+    h += '<ul class="mcq-options">';
+    for (var i = 0; i < q.options.length; i++) {
+      var iid = 'mcq_' + q.id + '_' + i;
+      h += '<li><input type="radio" name="mcq_' + escHtml(q.id) + '" id="' + iid + '" value="' + i + '"><label for="' + iid + '"><span class="option-letter">(' + letters[i] + ')</span>' + escHtml(q.options[i]) + '</label></li>';
+    }
+    h += '</ul></div>';
+    return h;
+  }
+
+  /* ---------- PROFILE RENDERING ---------- */
+  var RANK_STATE = {};
+
+  function renderProfile() {
+    var html = '';
+    for (var i = 0; i < PROFILE.length; i++) {
+      var p = PROFILE[i];
+      html += '<div class="question-card" id="card_' + escHtml(p.id) + '">';
+      html += '<div class="qcard-head"><div class="qcard-num">' + (p.type === 'text' ? 'Background' : (p.type === 'ranking' ? 'Ranking' : 'Self-rating')) + '</div></div>';
+      html += '<div class="qcard-text" style="font-family:var(--font-sans);font-size:14.5px;">' + escHtml(p.text) + '</div>';
+      if (p.type === 'scale') {
+        html += '<div class="scale-wrap"><div class="scale-labels"><span>' + escHtml(p.labelLow) + '</span><span>' + escHtml(p.labelHigh) + '</span></div><div class="scale-buttons">';
+        for (var v = 1; v <= 5; v++) {
+          html += '<button type="button" class="scale-btn" data-qid="' + escHtml(p.id) + '" data-val="' + v + '">' + v + '</button>';
+        }
+        html += '</div></div>';
+      } else if (p.type === 'ranking') {
+        RANK_STATE[p.id] = p.items.slice();
+        html += '<p class="rank-hint">Use the arrows to reorder. Top = strongest.</p><ul class="rank-list" id="ranklist_' + escHtml(p.id) + '">';
+        for (var k = 0; k < p.items.length; k++) html += buildRankItem(p.id, k, p.items.length, p.items[k]);
+        html += '</ul>';
+      } else if (p.type === 'text') {
+        html += '<textarea class="text-response" id="txt_' + escHtml(p.id) + '" rows="5" placeholder="' + escHtml(p.hint || '') + '"></textarea>';
+        html += '<div class="text-char-count" id="cc_' + escHtml(p.id) + '">0 characters</div>';
+      }
+      html += '</div>';
+    }
+    document.getElementById('profileContainer').innerHTML = html;
+    attachProfileListeners();
+  }
+
+  function buildRankItem(qid, idx, total, text) {
+    var upDis = idx === 0 ? 'disabled' : '';
+    var dnDis = idx === total - 1 ? 'disabled' : '';
+    return '<li class="rank-item"><div class="rank-position">' + (idx + 1) + '</div><div class="rank-text">' + escHtml(text) + '</div>'
+         + '<div class="rank-controls">'
+         + '<button type="button" class="rank-btn" ' + upDis + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',-1)">&#9650;</button>'
+         + '<button type="button" class="rank-btn" ' + dnDis + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',1)">&#9660;</button>'
+         + '</div></li>';
+  }
+
+  function moveRankItem(qid, idx, direction) {
+    var items = RANK_STATE[qid];
+    var newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= items.length) return;
+    var tmp = items[idx]; items[idx] = items[newIdx]; items[newIdx] = tmp;
+    RANK_STATE[qid] = items;
+    var listEl = document.getElementById('ranklist_' + qid);
+    var html = '';
+    for (var i = 0; i < items.length; i++) html += buildRankItem(qid, i, items.length, items[i]);
+    listEl.innerHTML = html;
+  }
+
+  var PROFILE_ANSWERS = {};
+
+  function attachProfileListeners() {
+    var scaleBtns = document.querySelectorAll('.scale-btn');
+    for (var k = 0; k < scaleBtns.length; k++) {
+      scaleBtns[k].onclick = function() {
+        var qid = this.getAttribute('data-qid');
+        var val = parseInt(this.getAttribute('data-val'), 10);
+        PROFILE_ANSWERS[qid] = val;
+        var siblings = document.querySelectorAll('.scale-btn[data-qid="' + qid + '"]');
+        for (var s = 0; s < siblings.length; s++) siblings[s].classList.remove('selected');
+        this.classList.add('selected');
+      };
+    }
+    var areas = document.querySelectorAll('.text-response');
+    for (var t = 0; t < areas.length; t++) {
+      (function(ta) {
+        var qid = ta.id.replace('txt_', '');
+        ta.oninput = function() {
+          PROFILE_ANSWERS[qid] = ta.value;
+          var cc = document.getElementById('cc_' + qid);
+          if (cc) cc.textContent = ta.value.length + ' characters';
+        };
+      })(areas[t]);
+    }
+  }
+
+  /* ---------- TIMER ---------- */
+  var timerInterval = null;
+  var timerRemaining = CONFIG.timerMinutes * 60;
+  var timerHasStarted = false;
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  function renderTimer() {
+    var m = Math.floor(timerRemaining / 60);
+    var s = timerRemaining % 60;
+    var el = document.getElementById('timerValue');
+    el.classList.remove('expired', 'warning');
+    if (timerRemaining <= 0) { el.classList.add('expired'); el.textContent = 'TIME UP'; }
+    else { if (timerRemaining <= 300) el.classList.add('warning'); el.textContent = pad(m) + ':' + pad(s); }
+  }
+
+  document.getElementById('btnStartTimer').onclick = function() {
+    if (timerInterval) return;
+    timerHasStarted = true;
+    timerInterval = setInterval(function() {
+      if (timerRemaining > 0) { timerRemaining--; renderTimer(); }
+      else { clearInterval(timerInterval); timerInterval = null; }
+    }, 1000);
+  };
+
+  document.getElementById('btnResetTimer').onclick = function() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    timerRemaining = CONFIG.timerMinutes * 60;
+    timerHasStarted = false;
+    renderTimer();
+  };
+
+  /* ---------- COLLECTION + SCORING ---------- */
+  function collectMcqAnswers() {
+    var answers = {};
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      var radios = document.getElementsByName('mcq_' + q.id);
+      var chosen = null;
+      for (var r = 0; r < radios.length; r++) { if (radios[r].checked) { chosen = parseInt(radios[r].value, 10); break; } }
+      answers[q.id] = chosen;
+    }
+    return answers;
+  }
+
+  function computeResults(mcqAnswers) {
+    /* Compute per-band, per-topic accuracy, and project to AMC 10 score */
+    var bandCorrect = { easy: 0, medium: 0, hard: 0, very_hard: 0 };
+    var bandTotal   = { easy: 0, medium: 0, hard: 0, very_hard: 0 };
+    var topicCorrect = {}; var topicTotal = {};
+    var rawCorrect = 0; var rawAttempted = 0;
+    var perQ = {};
+
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      bandTotal[q.band]++;
+      if (!topicTotal[q.topic]) { topicTotal[q.topic] = 0; topicCorrect[q.topic] = 0; }
+      topicTotal[q.topic]++;
+      var chosen = mcqAnswers[q.id];
+      var isCorrect = (chosen !== null && chosen === q.answer);
+      if (chosen !== null) rawAttempted++;
+      if (isCorrect) { bandCorrect[q.band]++; topicCorrect[q.topic]++; rawCorrect++; }
+      perQ[q.id] = { chosen: chosen, answer: q.answer, correct: isCorrect };
+    }
+
+    /* Project to full AMC 10 (25 questions: 10 easy + 5 medium + 5 hard + 5 very-hard) */
+    var pE  = bandTotal.easy      > 0 ? bandCorrect.easy      / bandTotal.easy      : 0;
+    var pM  = bandTotal.medium    > 0 ? bandCorrect.medium    / bandTotal.medium    : 0;
+    var pH  = bandTotal.hard      > 0 ? bandCorrect.hard      / bandTotal.hard      : 0;
+    var pVH = bandTotal.very_hard > 0 ? bandCorrect.very_hard / bandTotal.very_hard : 0;
+    var projCorrect = 10 * pE + 5 * pM + 5 * pH + 5 * pVH;
+    var projScore = projCorrect * 6;
+
+    /* Confidence band: +/- 10 points (about +/- 1.5 questions of noise) */
+    var lower = Math.max(0, Math.round(projScore - 12));
+    var upper = Math.min(150, Math.round(projScore + 12));
+
+    return {
+      perQ: perQ, rawCorrect: rawCorrect, rawAttempted: rawAttempted,
+      bandCorrect: bandCorrect, bandTotal: bandTotal,
+      topicCorrect: topicCorrect, topicTotal: topicTotal,
+      projCorrect: projCorrect, projScore: projScore,
+      lower: lower, upper: upper
+    };
+  }
+
+  /* ---------- SUBMIT ---------- */
+  function submitToSupabase(payload, onSuccess, onError) {
+    var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
+    fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
+    .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
+    .then(function(data) {
+      var reportPayload = {
+        diagnostic_id: data[0].id,
+        student_id: payload.student_id,
+        student_name: payload.student_name,
+        diagnostic_label: payload.diagnostic_label,
+        ai_report: 'Pending HT review',
+        status: 'pending'
+      };
+      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+    })
+    .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
+    .catch(function(err) { onError(err); });
+  }
+
+  document.getElementById('btnSubmit').onclick = function() {
+    var name = document.getElementById('studentName').value.trim();
+    if (!name) {
+      document.getElementById('gateErr').style.display = 'block';
+      document.getElementById('studentName').focus();
+      document.getElementById('nameGate').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    document.getElementById('gateErr').style.display = 'none';
+
+    var mcq = collectMcqAnswers();
+    var results = computeResults(mcq);
+
+    var timeUsed = timerHasStarted ? ((CONFIG.timerMinutes * 60) - timerRemaining) : null;
+
+    /* Build payload for Supabase */
+    var rawResponses = {};
+    var mcqScores = {};
+    var selfRatings = {};
+    var preferences = {};
+    for (var qid in mcq) { rawResponses[qid] = mcq[qid]; mcqScores[qid] = results.perQ[qid]; }
+    for (var pid in PROFILE_ANSWERS) {
+      var pv = PROFILE_ANSWERS[pid];
+      rawResponses[pid] = pv;
+      if (typeof pv === 'number') selfRatings[pid] = pv;
+    }
+    for (var rk in RANK_STATE) { rawResponses[rk] = RANK_STATE[rk]; preferences[rk] = RANK_STATE[rk]; }
+    preferences.estimated_score_low  = results.lower;
+    preferences.estimated_score_high = results.upper;
+    preferences.estimated_score_mid  = Math.round(results.projScore);
+    preferences.raw_correct          = results.rawCorrect;
+    preferences.raw_attempted        = results.rawAttempted;
+    preferences.time_used_seconds    = timeUsed;
+
+    var payload = {
+      student_id: STUDENT_ID,
+      student_name: name,
+      diagnostic_type: DIAGNOSTIC_TYPE,
+      diagnostic_label: DIAGNOSTIC_LABEL,
+      raw_responses: rawResponses,
+      mcq_scores: mcqScores,
+      self_ratings: selfRatings,
+      preferences: preferences
+    };
+
+    var btn = document.getElementById('btnSubmit');
+    btn.disabled = true; btn.textContent = 'Saving...';
+    document.getElementById('submitError').style.display = 'none';
+
+    submitToSupabase(payload,
+      function() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        showResults(results, mcq);
+      },
+      function(err) {
+        btn.disabled = false; btn.textContent = 'Submit & See My Estimated Score';
+        var e = document.getElementById('submitError');
+        e.style.display = 'block';
+        e.textContent = 'Save failed. Please check your connection and try again. Error: ' + err.message;
+      }
+    );
+  };
+
+  /* ---------- RESULTS DISPLAY ---------- */
+  function pillClass(pct) {
+    if (pct >= 75) return 'strong';
+    if (pct >= 50) return 'solid';
+    return 'weak';
+  }
+  function pillLabel(pct) {
+    if (pct >= 75) return 'Strong';
+    if (pct >= 50) return 'Solid';
+    return 'Needs work';
+  }
+
+  function showResults(r, mcq) {
+    document.getElementById('examScreen').style.display = 'none';
+    document.getElementById('resultsScreen').style.display = 'block';
+
+    document.getElementById('scoreRange').textContent = r.lower + ' -- ' + r.upper;
+    document.getElementById('scoreSub').textContent = 'out of 150 possible (midpoint estimate: ' + Math.round(r.projScore) + ')';
+    var rawPct = Math.round((r.rawCorrect / QUESTIONS.length) * 100);
+    var projC = r.projCorrect.toFixed(1);
+    document.getElementById('scoreDetail').innerHTML =
+        'You answered <strong>' + r.rawCorrect + ' of ' + QUESTIONS.length + '</strong> diagnostic problems correctly (' + rawPct + '%). '
+      + 'Projected onto a full 25-question AMC 10, that suggests roughly <strong>' + projC + ' correct</strong>, giving a likely score in the range shown above. '
+      + (r.lower < 60 ? 'Focused prep will move this up substantially.' : (r.lower >= 100 ? 'You are in or near AIME-qualifying territory.' : 'You have a solid foundation to build on.'));
+
+    /* Difficulty breakdown */
+    var diffOrder = ['easy', 'medium', 'hard', 'very_hard'];
+    var diffLabels = { easy: 'Easy', medium: 'Medium', hard: 'Hard', very_hard: 'Challenge' };
+    var diffHtml = '';
+    for (var i = 0; i < diffOrder.length; i++) {
+      var k = diffOrder[i];
+      var c = r.bandCorrect[k]; var t = r.bandTotal[k];
+      var p = t > 0 ? Math.round((c / t) * 100) : 0;
+      diffHtml += '<div class="breakdown-row"><span class="label">' + diffLabels[k] + '</span><span class="value">' + c + '/' + t + ' <span class="pct">(' + p + '%)</span><span class="pill ' + pillClass(p) + '">' + pillLabel(p) + '</span></span></div>';
+    }
+    document.getElementById('diffBreakdown').innerHTML = diffHtml;
+
+    /* Topic breakdown */
+    var topicHtml = '';
+    var topics = []; for (var tk in r.topicTotal) topics.push(tk);
+    topics.sort();
+    for (var j = 0; j < topics.length; j++) {
+      var tn = topics[j];
+      var tc = r.topicCorrect[tn]; var tt = r.topicTotal[tn];
+      var tp = tt > 0 ? Math.round((tc / tt) * 100) : 0;
+      topicHtml += '<div class="breakdown-row"><span class="label">' + escHtml(tn) + '</span><span class="value">' + tc + '/' + tt + ' <span class="pct">(' + tp + '%)</span><span class="pill ' + pillClass(tp) + '">' + pillLabel(tp) + '</span></span></div>';
+    }
+    document.getElementById('topicBreakdown').innerHTML = topicHtml;
+
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById('btnReveal').onclick = function() {
+    var sec = document.getElementById('solutionsSection');
+    var html = '';
+    var qNum = 0;
+    var letters = ['A','B','C','D','E'];
+    var mcq = collectMcqAnswers();
+    for (var b = 0; b < BANDS.length; b++) {
+      for (var i = 0; i < QUESTIONS.length; i++) {
+        if (QUESTIONS[i].band !== BANDS[b].key) continue;
+        var q = QUESTIONS[i];
+        qNum++;
+        var chosen = mcq[q.id];
+        var blank = (chosen === null || typeof chosen === 'undefined');
+        var correct = !blank && (chosen === q.answer);
+        var resultClass = blank ? 'blank' : (correct ? 'right' : 'wrong');
+        var resultLabel = blank ? 'Blank' : (correct ? 'Correct' : 'Incorrect');
+        html += '<div class="solution-card">';
+        html += '<div class="sol-head"><span class="sol-num">Question ' + qNum + ' (' + escHtml(q.topic) + ')</span><span class="sol-result ' + resultClass + '">' + resultLabel + '</span></div>';
+        html += '<div class="sol-question">' + escHtml(q.text) + '</div>';
+        html += '<div class="sol-answers"><span class="a-label">Your answer:</span>' + (blank ? '(blank)' : '(' + letters[chosen] + ') ' + escHtml(q.options[chosen])) + '</div>';
+        html += '<div class="sol-answers"><span class="a-label">Correct:</span>(' + letters[q.answer] + ') ' + escHtml(q.options[q.answer]) + '</div>';
+        html += '<div class="sol-explain">' + q.solution + '</div>';
+        html += '</div>';
+      }
+    }
+    sec.innerHTML = html;
+    sec.style.display = 'block';
+    this.textContent = 'Solutions Shown';
+    this.disabled = true;
+  };
+
+  /* ---------- INIT ---------- */
+  initDisplay();
+  renderQuestions();
+  renderProfile();
+  renderTimer();
+</script>
+</body>
+</html>

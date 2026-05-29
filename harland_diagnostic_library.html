@@ -245,6 +245,36 @@
     },
 
     {
+      name:        'AP Physics 1 Readiness',
+      subject:     'Algebra-Based Physics -- Mechanics, Energy, Forces, Circuits',
+      category:    'AP',
+      icon:        '&#9883;',
+      iconClass:   'icon-default',
+      level:       'All High School Grades',
+      time:        '25-30 min',
+      description: 'Algebra-based physics readiness diagnostic. Tests math foundations (rearranging equations, units, trigonometry), quantitative reasoning, and pre-physics conceptual intuition. No prior physics required.',
+      tags:        ['AP Physics 1', 'Algebra-Based', 'Mechanics', 'Math Foundations'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_ap_physics_1_diagnostic.html',
+      status:      'live',
+      updated:     'May 2026'
+    },
+
+    {
+      name:        'AP Calculus AB Readiness',
+      subject:     'Single-Variable Calculus -- Limits, Derivatives, Integrals',
+      category:    'AP',
+      icon:        '&#8747;',
+      iconClass:   'icon-default',
+      level:       'All High School Grades',
+      time:        '25-30 min',
+      description: 'Calculus AB readiness diagnostic. Tests algebra and pre-calculus foundation (functions, factoring, trig, end behaviour) and intuition for core calculus concepts (rates of change, tangent slope, integrals, FTC). No prior calculus required.',
+      tags:        ['AP Calculus AB', 'Pre-Calculus', 'Derivatives', 'Integrals'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_ap_calculus_ab_diagnostic.html',
+      status:      'live',
+      updated:     'May 2026'
+    },
+
+    {
       name:        'IB History Readiness',
       subject:     'World History, Source Analysis, Essay Skills',
       category:    'IB',
@@ -300,6 +330,50 @@
       description: 'Assesses verbal reasoning, quantitative reasoning, reading comprehension, and mathematics for ISEE Lower Level test prep admissions and placement. Designed for ages 9-11.',
       tags:        ['ISEE', 'Lower Level', 'Test Prep', 'Admissions', 'Placement'],
       url:         'https://harland-education.github.io/harland-diagnostic/harland_isee_lower_diagnostic.html',
+      status:      'live',
+      updated:     'May 2026'
+    },
+
+    {
+      name:        'AICE General Paper Readiness',
+      subject:     'Critical Thinking, Argument, Essay Writing',
+      category:    'AICE',
+      icon:        '&#129504;',
+      iconClass:   'icon-default',
+      level:       'Grade 10-11',
+      time:        '25-30 min',
+      description: 'Assesses critical thinking, argument analysis, evidence evaluation, and essay writing for AICE General Paper admissions and placement. Covers reasoning skills and contemporary global issues.',
+      tags:        ['AICE', 'General Paper', 'Critical Thinking', 'Admissions', 'Placement'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_aice_general_paper_diagnostic.html',
+      status:      'live',
+      updated:     'May 2026'
+    },
+    {
+      name:        'AICE European History Readiness',
+      subject:     'Modern European History (1750-present)',
+      category:    'AICE',
+      icon:        '&#127984;',
+      iconClass:   'icon-default',
+      level:       'Grade 10-11',
+      time:        '25-30 min',
+      description: 'Assesses historical knowledge, source analysis, and historical argument for AICE European History admissions and placement. Covers the French Revolution through the Cold War.',
+      tags:        ['AICE', 'European History', 'Source Analysis', 'Admissions', 'Placement'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_aice_european_history_diagnostic.html',
+      status:      'live',
+      updated:     'May 2026'
+    },
+
+    {
+      name:        'AMC 10 Diagnostic',
+      subject:     'Algebra, Geometry, Number Theory, Combinatorics, Probability',
+      category:    'Math Competition',
+      icon:        '&#129514;',
+      iconClass:   'icon-default',
+      level:       'Grade 9-10 (or below)',
+      time:        '45 min',
+      description: 'Predicts likely AMC 10 score using 15 calibrated problems across the four AMC difficulty bands. Timer matches real AMC pace. Returns a score range, difficulty/topic breakdown, and full worked solutions.',
+      tags:        ['AMC 10', 'Math Competition', 'Score Prediction', 'Algebra', 'Geometry'],
+      url:         'https://harland-education.github.io/harland-diagnostic/harland_amc10_diagnostic.html',
       status:      'live',
       updated:     'May 2026'
     },
@@ -395,7 +469,7 @@
   function renderCards() {
     var container = document.getElementById('cardContainer');
     var query = document.getElementById('searchInput').value.toLowerCase().trim();
-    var categories = ['AP', 'IB', 'SAT', 'Test Prep', 'English', 'General'];
+    var categories = ['AP', 'IB', 'AICE', 'Math Competition', 'SAT', 'Test Prep', 'English', 'General'];
     var html = '';
     var visibleCount = 0;
 
