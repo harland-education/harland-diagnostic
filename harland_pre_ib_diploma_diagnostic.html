@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-IB Diploma Readiness | Harland Education</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:  #1B2A4A;
+      --gold:  #C9A84C;
+      --cream: #F7F5F0;
+      --white: #FFFFFF;
+      --grey:  #6B7280;
+      --light-grey: #E5E3DF;
+      --error: #C0392B;
+      --font-serif: 'Libre Baskerville', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background-color: var(--cream); color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+    .site-header { background-color: var(--navy); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+    .site-header .logo-mark { width: 38px; height: 38px; background-color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; font-size: 18px; color: var(--navy); flex-shrink: 0; }
+    .site-header .brand-name { font-family: var(--font-serif); font-size: 18px; color: var(--white); letter-spacing: 0.02em; }
+    .site-header .brand-sub { font-size: 11px; color: var(--gold); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+    .progress-bar-wrap { background-color: var(--navy); padding: 0 32px 16px; }
+    .progress-track { height: 3px; background-color: rgba(255,255,255,0.15); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background-color: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
+    .progress-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .main-wrap { flex: 1; max-width: 760px; width: 100%; margin: 0 auto; padding: 40px 24px 60px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .name-screen-title { font-family: var(--font-serif); font-size: 28px; color: var(--navy); line-height: 1.3; margin-bottom: 10px; }
+    .name-screen-desc { font-size: 15px; color: var(--grey); line-height: 1.6; margin-bottom: 36px; max-width: 540px; }
+    .info-card { background-color: var(--white); border: 1px solid var(--light-grey); border-left: 4px solid var(--gold); border-radius: 8px; padding: 20px 24px; margin-bottom: 32px; }
+    .info-card p { font-size: 14px; color: var(--grey); line-height: 1.6; }
+    .info-card p + p { margin-top: 8px; }
+    .info-card strong { color: var(--navy); font-weight: 600; }
+    .field-label { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; }
+    .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 16px; color: var(--navy); background: var(--white); outline: none; transition: border-color 0.2s; }
+    .field-input:focus { border-color: var(--gold); }
+    .field-error { font-size: 13px; color: var(--error); margin-top: 6px; display: none; }
+    .domain-header { margin: 36px 0 24px; padding-bottom: 12px; border-bottom: 2px solid var(--navy); }
+    .domain-header:first-of-type { margin-top: 0; }
+    .domain-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+    .domain-title { font-family: var(--font-serif); font-size: 20px; color: var(--navy); }
+    .question-card { background-color: var(--white); border: 1px solid var(--light-grey); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+    .question-number { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 8px; }
+    .question-text { font-family: var(--font-serif); font-size: 16px; line-height: 1.6; color: var(--navy); margin-bottom: 18px; }
+    .question-text sup { font-size: 12px; }
+    .source-block { background: #FCFAF4; border-left: 3px solid var(--gold); padding: 16px 20px; margin: 16px 0; font-family: var(--font-serif); font-size: 14.5px; line-height: 1.7; color: var(--navy); border-radius: 0 4px 4px 0; }
+    .source-block p { margin-bottom: 10px; }
+    .source-block p:last-child { margin-bottom: 0; }
+    .source-block strong { font-weight: 700; }
+    .source-attr { font-size: 11.5px; color: var(--grey); margin-top: 12px; font-style: italic; font-family: var(--font-sans); }
+    .text-after { margin: 16px 0 18px; font-size: 14.5px; line-height: 1.6; color: var(--navy); }
+    .text-after p { margin-bottom: 8px; }
+    .mcq-options { list-style: none; }
+    .mcq-options li { margin-bottom: 10px; }
+    .mcq-options label { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; font-size: 15px; line-height: 1.45; color: var(--navy); }
+    .mcq-options label:hover { border-color: var(--gold); background-color: #FDFCF8; }
+    .mcq-options input[type="radio"] { display: none; }
+    .mcq-options input[type="radio"]:checked + label { border-color: var(--navy); background-color: #EEF0F4; font-weight: 500; }
+    .mcq-options label sup { font-size: 11px; }
+    .option-letter { font-weight: 700; color: var(--gold); flex-shrink: 0; min-width: 18px; }
+    .text-response { width: 100%; min-height: 110px; padding: 13px 16px; border: 1.5px solid var(--light-grey); border-radius: 8px; font-family: var(--font-sans); font-size: 15px; color: var(--navy); background: var(--white); resize: vertical; outline: none; transition: border-color 0.2s; line-height: 1.5; }
+    .text-response:focus { border-color: var(--gold); }
+    .text-char-count { font-size: 12px; color: var(--grey); text-align: right; margin-top: 6px; }
+    .scale-wrap { padding: 4px 0; }
+    .scale-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--grey); margin-bottom: 12px; }
+    .scale-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .scale-btn { flex: 1; min-width: 36px; max-width: 60px; aspect-ratio: 1; border: 1.5px solid var(--light-grey); border-radius: 8px; background: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--navy); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; display: flex; align-items: center; justify-content: center; }
+    .scale-btn:hover { border-color: var(--gold); }
+    .scale-btn.selected { background-color: var(--navy); border-color: var(--navy); color: var(--white); }
+    .rank-list { list-style: none; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 8px; margin-bottom: 8px; font-size: 15px; color: var(--navy); user-select: none; }
+    .rank-position { font-size: 12px; font-weight: 700; color: var(--gold); min-width: 26px; text-align: center; }
+    .rank-text { flex: 1; line-height: 1.4; }
+    .rank-controls { display: flex; flex-direction: column; gap: 4px; }
+    .rank-btn { background: none; border: 1px solid var(--light-grey); border-radius: 4px; width: 26px; height: 22px; cursor: pointer; font-size: 11px; color: var(--grey); display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s; }
+    .rank-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .rank-btn:disabled { opacity: 0.25; cursor: default; }
+    .rank-btn:disabled:hover { background: none; color: var(--grey); border-color: var(--light-grey); }
+    .rank-hint { font-size: 12px; color: var(--grey); margin-top: -4px; margin-bottom: 10px; }
+    .btn-primary { display: inline-block; background-color: var(--navy); color: var(--white); font-family: var(--font-sans); font-size: 15px; font-weight: 600; padding: 14px 36px; border: none; border-radius: 8px; cursor: pointer; letter-spacing: 0.02em; transition: background-color 0.2s, transform 0.1s; }
+    .btn-primary:hover { background-color: #263D6A; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { background-color: var(--light-grey); color: var(--grey); cursor: not-allowed; transform: none; }
+    .btn-row { margin-top: 36px; display: flex; justify-content: flex-end; }
+    .required-note { font-size: 13px; color: var(--grey); margin-bottom: 28px; }
+    .req { color: var(--error); }
+    .submit-error { background-color: #FDECEA; border: 1px solid #F5C6C2; border-radius: 8px; padding: 14px 18px; font-size: 14px; color: var(--error); margin-top: 16px; display: none; }
+    .thankyou-wrap { text-align: center; padding: 40px 0; }
+    .thankyou-icon { width: 72px; height: 72px; background-color: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; }
+    .thankyou-icon svg { width: 34px; height: 34px; }
+    .thankyou-title { font-family: var(--font-serif); font-size: 28px; color: var(--navy); margin-bottom: 16px; }
+    .thankyou-body { font-size: 16px; color: var(--grey); line-height: 1.7; max-width: 480px; margin: 0 auto 32px; }
+    .thankyou-divider { width: 60px; height: 3px; background-color: var(--gold); margin: 28px auto; border-radius: 2px; }
+    .thankyou-next { font-size: 14px; color: var(--navy); font-weight: 500; }
+    .site-footer { background-color: var(--navy); padding: 20px 32px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 0.04em; }
+    @media (max-width: 600px) { .main-wrap { padding: 28px 16px 48px; } .name-screen-title { font-size: 22px; } .scale-buttons { gap: 5px; } }
+  </style>
+</head>
+<body>
+
+<script>
+
+  var SB_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
+
+  var STUDENT_ID = null;
+  var DIAGNOSTIC_TYPE  = 'pre_ib_diploma_readiness';
+  var DIAGNOSTIC_LABEL = 'Pre-IB Diploma Readiness';
+
+  var CONFIG = {
+    diagnosticTitle:    'Pre-IB Diploma Readiness',
+    diagnosticSubtitle: 'For Students Considering the IB Diploma -- Admissions & Placement',
+    introHeading:    'Welcome to Your Pre-IB Readiness Assessment',
+    introDescription: 'The IB Diploma is a demanding two-year programme that asks students to think across subjects, write at length, and reason carefully under uncertainty. This diagnostic checks the mathematical foundation, analytical reading and writing, and the self-awareness habits that strong IB students rely on. It is meant for students considering the Diploma in Grades 9-11.',
+    infoPoints: [
+      'This assessment takes approximately 35-45 minutes.',
+      'No calculator is required. Use scratch paper for working.',
+      'The multiple-choice questions test core mathematical skills. The written questions ask you to show your reasoning -- workflow matters more than perfect answers.',
+      'The reading and analysis section uses an original editorial passage. Read it carefully before responding.',
+      'Please complete in one sitting; the diagnostic does not save partial progress.'
+    ],
+    nameLabel:        'Your Full Name',
+    nameHint:         'Please enter your name exactly as you want it to appear on your report.',
+    thankyouTitle:    'Assessment Complete',
+    thankyouBody:     'Thank you for completing the Pre-IB Diploma Readiness diagnostic. Your teacher will review your responses and prepare a personalised programme recommendation within the next few days.',
+    thankyouNext:     'You may close this window.',
+    submitButtonLabel: 'Submit My Responses'
+  };
+
+  /* QUESTIONS -- content preserved from prior authoring (questions, passage, prompts),
+     restructured to fit Harland architecture.
+
+     Field guide:
+       text         -- the question prompt itself
+       source       -- prose/passage shown in a source block (HTML allowed)
+       sourceAttr   -- attribution under the source block
+       textAfter    -- prompts/instructions after the source (HTML allowed)
+       options      -- mcq choices (HTML allowed for math notation)
+       answer       -- correct option index (mcq only)
+  */
+  var QUESTIONS = [
+
+    /* =====================================================
+       SECTION A: MATHEMATICAL FOUNDATIONS
+       Core algebra, indices, surds, function notation, slope, statistics
+       ===================================================== */
+    {
+      id:      'math_binomial',
+      domain:  'Mathematical Foundations',
+      type:    'mcq',
+      text:    'Which of the following is the correct full expansion of (2x &minus; 3)<sup>2</sup>?',
+      options: [
+        '4x<sup>2</sup> &minus; 9',
+        '4x<sup>2</sup> + 9',
+        '4x<sup>2</sup> &minus; 12x + 9',
+        '4x<sup>2</sup> &minus; 6x + 9'
+      ],
+      answer: 2
+    },
+    {
+      id:      'math_indices',
+      domain:  'Mathematical Foundations',
+      type:    'mcq',
+      text:    'Simplify (a<sup>3</sup> &times; a<sup>&minus;5</sup>) &divide; a<sup>&minus;2</sup>. The result is:',
+      options: [
+        '1',
+        'a<sup>&minus;2</sup>',
+        'a<sup>&minus;4</sup>',
+        'a<sup>2</sup>'
+      ],
+      answer: 0
+    },
+    {
+      id:      'math_surds',
+      domain:  'Mathematical Foundations',
+      type:    'mcq',
+      text:    'Simplify &radic;50 + &radic;18 fully.',
+      options: [
+        '&radic;68',
+        '8&radic;2',
+        '34&radic;2',
+        '16'
+      ],
+      answer: 1
+    },
+    {
+      id:      'math_function',
+      domain:  'Mathematical Foundations',
+      type:    'mcq',
+      text:    'If f(x) = x<sup>2</sup> &minus; 4x + 1, then f(&minus;2) =',
+      options: [
+        '5',
+        '&minus;3',
+        '9',
+        '13'
+      ],
+      answer: 3
+    },
+    {
+      id:      'math_gradient',
+      domain:  'Mathematical Foundations',
+      type:    'mcq',
+      text:    'Find the gradient (slope) of the straight line passing through the points (1, &minus;3) and (5, 9).',
+      options: [
+        '3',
+        '1/3',
+        '&minus;3',
+        '12'
+      ],
+      answer: 0
+    },
+    {
+      id:      'math_outlier',
+      domain:  'Mathematical Foundations',
+      type:    'mcq',
+      text:    'A class of 10 students has these test scores: 45, 48, 50, 52, 55, 58, 60, 62, 65, 95. The value 95 is an outlier. <strong>Which measure of central tendency is most affected by this outlier?</strong>',
+      options: [
+        'The range',
+        'The median',
+        'The mean',
+        'The mode'
+      ],
+      answer: 2
+    },
+
+    /* =====================================================
+       SECTION B: MATHEMATICAL REASONING
+       Open-ended problems testing pattern generalisation and applied calculation
+       ===================================================== */
+    {
+      id:      'reason_matchsticks',
+      domain:  'Mathematical Reasoning',
+      type:    'text',
+      text:    'A sequence of figures is built from matchsticks. Figure 1 is a single square made from 4 matches. Figure 2 is two squares sharing one edge and uses 7 matches. Figure 3 is three squares in a row sharing edges and uses 10 matches.',
+      textAfter: '<p>(a) How many matches would be needed to build Figure 10?</p><p>(b) Write a general rule for the number of matches needed for Figure n.</p><p>(c) Explain in one or two sentences how you can be sure your rule is correct.</p>',
+      hint:    '(a) ... (b) ... (c) ...',
+      minLength: 1,
+      required:  true
+    },
+    {
+      id:      'reason_rainwater',
+      domain:  'Mathematical Reasoning',
+      type:    'text',
+      text:    'A school in Taipei wants to install a rainwater harvesting system that captures rain from its roof and stores it in a tank. You have been asked to advise on how much storage capacity, in litres, they will need.',
+      source:  '<p><strong>Available data:</strong></p><p>-- Roof area available: 200 square metres</p><p>-- Average monthly rainfall, three wettest months:<br>&nbsp;&nbsp;&nbsp;May: 250 mm<br>&nbsp;&nbsp;&nbsp;June: 280 mm<br>&nbsp;&nbsp;&nbsp;August: 220 mm</p><p>-- Collection efficiency: 80% of rainfall is captured (the rest is lost to evaporation, splashing, and overflow)</p><p><strong>Useful conversion:</strong> 1 cubic metre = 1000 litres.</p>',
+      textAfter: '<p><strong>Calculate the maximum storage capacity, in litres, that the school would need to handle the wettest month.</strong></p><p>First write down the logic of your method, step by step, in sentences. Then perform the calculation, showing each step. The workflow matters more than the final number.</p>',
+      hint:    'My method: ...\\n\\nCalculation:\\nStep 1: ...',
+      minLength: 1,
+      required:  true
+    },
+
+    /* =====================================================
+       SECTION C: ANALYTICAL ENGLISH
+       Original editorial passage with three-part analytical prompt
+       ===================================================== */
+    {
+      id:      'english_analysis',
+      domain:  'Analytical English',
+      type:    'text',
+      text:    'Read the passage below carefully, then answer the three parts underneath it.',
+      source:  '<p><strong>The Vertical City and Its Discontents</strong></p><p>Across Asia, the response to population growth has been to build upward. From Hong Kong\'s towers to the satellite cities of greater Taipei, planners have embraced verticality as the only rational answer to land scarcity. The case seems persuasive: high-density living shortens commutes, lowers per-person energy use, and concentrates economic activity in ways that should produce wealthier, more efficient cities. Yet a growing body of evidence suggests the vertical city carries hidden costs that planners have been reluctant to confront.</p><p>The first concern is social. Sociologists studying high-rise communities in Singapore, Seoul, and Taipei have repeatedly found that vertical density does not produce the rich civic life that earlier urban theorists predicted from sheer population concentration. Residents of fifty-story towers, despite living closer to thousands of neighbours than any village dweller, report higher rates of loneliness and weaker community ties than those in low-rise neighbourhoods. The corridor and the elevator, it turns out, are not the modern equivalents of the village square. Density alone does not produce community; in some configurations, it actively prevents it.</p><p>The second concern is environmental, and it is the most counterintuitive. The claim that vertical cities are greener relies on a thin accounting: it counts the energy a resident uses inside the building, but ignores the carbon embedded in the concrete and steel that make height possible. A typical thirty-story tower contains roughly five times the structural material per resident as a four-story walk-up housing the same number of people. Once this embodied carbon is included, the supposed environmental advantage of the high-rise narrows sharply, and in some studies disappears entirely.</p><p>None of this is an argument against density itself. The most admired neighbourhoods in the world are extraordinarily dense, but they achieve it horizontally, through small lots and modest heights. The vertical city has been treated as the only option because it is the easiest to permit, finance, and sell. It is not, however, the only kind of city that works.</p>',
+      sourceAttr: 'Original editorial commissioned for this diagnostic.',
+      textAfter: '<p>(a) In about 80 words, summarise the author\'s main concerns about high-density vertical development.</p><p>(b) Identify the author\'s tone in a short phrase of your own, then choose ONE word choice or metaphor from the passage and explain how it supports the author\'s argument.</p><p>(c) State one weakness in the author\'s argument.</p>',
+      hint:    '(a) Summary:\\n\\n(b) Tone and device:\\n\\n(c) Weakness:',
+      minLength: 1,
+      required:  true
+    },
+
+    /* =====================================================
+       SECTION D: BACKGROUND
+       Captures grade and target IB programme info (was previously on welcome screen)
+       ===================================================== */
+    {
+      id:      'text_background',
+      domain:  'Background',
+      type:    'text',
+      text:    'Tell us a bit about your background. What grade are you currently in? Which school do you attend? Are you applying to a specific IB programme, or considering several? What math, science, or English-language courses have you most enjoyed so far?',
+      hint:    'For example: "I am in Grade 10 at Taipei European School. I am hoping to apply to the Diploma programme at TES next year. I have most enjoyed Geography and English Literature."',
+      minLength: 1,
+      required:  true
+    },
+
+    /* =====================================================
+       SECTION E: STUDENT PROFILE
+       Self-assessment scales + subject area ranking
+       ===================================================== */
+    {
+      id:        'scale_algebra',
+      domain:    'Student Profile',
+      type:      'scale',
+      text:      'How confident are you with algebraic manipulation and abstract mathematical reasoning -- factorising, indices, surds, working with variables in symbolic form?',
+      min:        1,
+      max:        5,
+      labelLow:  'Very unsure',
+      labelHigh: 'Very confident',
+      required:   true
+    },
+    {
+      id:        'scale_english',
+      domain:    'Student Profile',
+      type:      'scale',
+      text:      'How confident are you writing extended, formal academic English -- multi-paragraph essays with structured arguments, on unfamiliar topics?',
+      min:        1,
+      max:        5,
+      labelLow:  'Very unsure',
+      labelHigh: 'Very confident',
+      required:   true
+    },
+    {
+      id:        'scale_uncertainty',
+      domain:    'Student Profile',
+      type:      'scale',
+      text:      'How comfortable are you working through a problem when you are not sure of the right approach, and have to figure it out as you go?',
+      min:        1,
+      max:        5,
+      labelLow:  'Very uncomfortable',
+      labelHigh: 'Very comfortable',
+      required:   true
+    },
+    {
+      id:       'rank_ib_subjects',
+      domain:   'Student Profile',
+      type:     'ranking',
+      text:     'Rank these IB subject groups from MOST excited to study (top) to LEAST excited (bottom). Every rank must be used once.',
+      items:    [
+        'Mathematics',
+        'Sciences (Physics, Chemistry, Biology)',
+        'Individuals and Societies (History, Economics, Psychology)',
+        'Studies in Language and Literature (Group 1 English)',
+        'Language Acquisition (Group 2)',
+        'The Arts (Visual Arts, Music, Theatre, Film)'
+      ],
+      required:  true
+    }
+
+  ];
+
+</script>
+
+<header class="site-header">
+  <div class="logo-mark">H</div>
+  <div>
+    <div class="brand-name">Harland Education</div>
+    <div class="brand-sub">Diagnostic Assessment</div>
+  </div>
+</header>
+
+<div class="progress-bar-wrap" id="progressWrap" style="display:none;">
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">Question 0 of 0</div>
+</div>
+
+<main class="main-wrap">
+
+  <section class="screen active" id="screenName">
+    <h1 class="name-screen-title" id="introHeadingEl"></h1>
+    <p class="name-screen-desc" id="introDescEl"></p>
+    <div class="info-card" id="infoCardEl"></div>
+    <div style="margin-bottom: 24px;">
+      <label class="field-label" for="studentName" id="nameLabelEl"></label>
+      <input class="field-input" type="text" id="studentName" autocomplete="name" spellcheck="false">
+      <div class="field-error" id="nameError">Please enter your name before continuing.</div>
+      <div style="font-size:13px; color:var(--grey); margin-top:8px;" id="nameHintEl"></div>
+    </div>
+    <button class="btn-primary" id="btnStartDiagnostic">Begin Assessment</button>
+  </section>
+
+  <section class="screen" id="screenQuestions">
+    <p class="required-note">Fields marked <span class="req">*</span> are required.</p>
+    <div id="questionsContainer"></div>
+    <div class="btn-row"><button class="btn-primary" id="btnSubmit"></button></div>
+    <div class="submit-error" id="submitError">Please answer all required questions before submitting.</div>
+  </section>
+
+  <section class="screen" id="screenThankYou">
+    <div class="thankyou-wrap">
+      <div class="thankyou-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2 class="thankyou-title" id="thankyouTitleEl"></h2>
+      <p class="thankyou-body" id="thankyouBodyEl"></p>
+      <div class="thankyou-divider"></div>
+      <p class="thankyou-next" id="thankyouNextEl"></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  &copy; Harland Education &mdash; Xinyi District, Taipei &mdash; Confidential Assessment Material
+</footer>
+
+<script>
+  function showScreen(id) {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) { screens[i].classList.remove('active'); }
+    document.getElementById(id).classList.add('active');
+  }
+
+  function initDisplay() {
+    document.title = CONFIG.diagnosticTitle + ' | Harland Education';
+    document.getElementById('introHeadingEl').textContent  = CONFIG.introHeading;
+    document.getElementById('introDescEl').textContent     = CONFIG.introDescription;
+    document.getElementById('nameLabelEl').textContent     = CONFIG.nameLabel;
+    document.getElementById('nameHintEl').textContent      = CONFIG.nameHint;
+    document.getElementById('btnSubmit').textContent       = CONFIG.submitButtonLabel;
+    document.getElementById('thankyouTitleEl').textContent = CONFIG.thankyouTitle;
+    document.getElementById('thankyouBodyEl').textContent  = CONFIG.thankyouBody;
+    document.getElementById('thankyouNextEl').textContent  = CONFIG.thankyouNext;
+    var cardEl = document.getElementById('infoCardEl');
+    var cardHtml = '';
+    for (var i = 0; i < CONFIG.infoPoints.length; i++) {
+      cardHtml += '<p><strong>' + (i + 1) + '.</strong> ' + CONFIG.infoPoints[i] + '</p>';
+    }
+    cardEl.innerHTML = cardHtml;
+  }
+
+  document.getElementById('btnStartDiagnostic').onclick = function() {
+    var name = document.getElementById('studentName').value.trim();
+    if (!name) { document.getElementById('nameError').style.display = 'block'; document.getElementById('studentName').focus(); return; }
+    document.getElementById('nameError').style.display = 'none';
+    renderQuestions();
+    showScreen('screenQuestions');
+    document.getElementById('progressWrap').style.display = 'block';
+    updateProgress();
+    window.scrollTo(0, 0);
+  };
+
+  var ANSWERS = {};
+  var RANKING_STATE = {};
+
+  function renderQuestions() {
+    var container = document.getElementById('questionsContainer');
+    var html = '';
+    var currentDomain = null;
+    var qNum = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      qNum++;
+      if (q.domain !== currentDomain) {
+        currentDomain = q.domain;
+        html += '<div class="domain-header"><div class="domain-label">Section</div><div class="domain-title">' + escHtml(q.domain) + '</div></div>';
+      }
+      html += '<div class="question-card" id="card_' + escHtml(q.id) + '">';
+      html += '<div class="question-number">Question ' + qNum + (q.required || q.type === 'mcq' ? ' <span class="req">*</span>' : '') + '</div>';
+      /* Question text -- allow HTML for math notation (sup, &minus;, &radic; etc.) */
+      html += '<div class="question-text">' + q.text + '</div>';
+      if (q.source) {
+        html += '<div class="source-block">' + q.source;
+        if (q.sourceAttr) { html += '<div class="source-attr">' + escHtml(q.sourceAttr) + '</div>'; }
+        html += '</div>';
+      }
+      if (q.textAfter) {
+        html += '<div class="text-after">' + q.textAfter + '</div>';
+      }
+      if (q.type === 'mcq')          html += renderMcq(q);
+      else if (q.type === 'text')    html += renderText(q);
+      else if (q.type === 'scale')   html += renderScale(q);
+      else if (q.type === 'ranking') html += renderRanking(q);
+      html += '</div>';
+    }
+    container.innerHTML = html;
+    attachListeners();
+  }
+
+  function renderMcq(q) {
+    var letters = ['A','B','C','D','E'];
+    var html = '<ul class="mcq-options">';
+    for (var i = 0; i < q.options.length; i++) {
+      var iid = 'mcq_' + q.id + '_' + i;
+      /* Option text -- allow HTML for math notation */
+      html += '<li><input type="radio" name="mcq_' + escHtml(q.id) + '" id="' + iid + '" value="' + i + '"><label for="' + iid + '"><span class="option-letter">' + letters[i] + '</span>' + q.options[i] + '</label></li>';
+    }
+    html += '</ul>';
+    return html;
+  }
+
+  function renderText(q) {
+    var placeholder = (q.hint || '').replace(/\\n/g, '\n');
+    return '<textarea class="text-response" id="txt_' + escHtml(q.id) + '" placeholder="' + escHtml(placeholder) + '" rows="6"></textarea>'
+         + '<div class="text-char-count" id="cc_' + escHtml(q.id) + '">0 characters</div>';
+  }
+
+  function renderScale(q) {
+    var html = '<div class="scale-wrap"><div class="scale-labels"><span>' + escHtml(q.labelLow) + '</span><span>' + escHtml(q.labelHigh) + '</span></div><div class="scale-buttons">';
+    for (var v = q.min; v <= q.max; v++) {
+      html += '<button type="button" class="scale-btn" data-qid="' + escHtml(q.id) + '" data-val="' + v + '">' + v + '</button>';
+    }
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderRanking(q) {
+    RANKING_STATE[q.id] = q.items.slice();
+    var html = '<p class="rank-hint">Use the arrows to reorder. Top = most excited.</p><ul class="rank-list" id="ranklist_' + escHtml(q.id) + '">';
+    for (var i = 0; i < q.items.length; i++) { html += buildRankItem(q.id, i, q.items.length, q.items[i]); }
+    html += '</ul>';
+    return html;
+  }
+
+  function buildRankItem(qid, idx, total, text) {
+    var upDis = idx === 0 ? 'disabled' : '';
+    var dnDis = idx === total - 1 ? 'disabled' : '';
+    return '<li class="rank-item"><div class="rank-position">' + (idx + 1) + '</div><div class="rank-text">' + escHtml(text) + '</div>'
+         + '<div class="rank-controls">'
+         + '<button type="button" class="rank-btn" ' + upDis + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',-1)">&#9650;</button>'
+         + '<button type="button" class="rank-btn" ' + dnDis + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',1)">&#9660;</button>'
+         + '</div></li>';
+  }
+
+  function moveRankItem(qid, idx, direction) {
+    var items = RANKING_STATE[qid];
+    var newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= items.length) return;
+    var temp = items[idx]; items[idx] = items[newIdx]; items[newIdx] = temp;
+    RANKING_STATE[qid] = items;
+    var listEl = document.getElementById('ranklist_' + qid);
+    var html = '';
+    for (var i = 0; i < items.length; i++) { html += buildRankItem(qid, i, items.length, items[i]); }
+    listEl.innerHTML = html;
+    updateProgress();
+  }
+
+  function attachListeners() {
+    var radios = document.querySelectorAll('.mcq-options input[type="radio"]');
+    for (var i = 0; i < radios.length; i++) {
+      radios[i].onchange = function() { ANSWERS[this.name.replace('mcq_', '')] = parseInt(this.value, 10); updateProgress(); };
+    }
+    var textareas = document.querySelectorAll('.text-response');
+    for (var j = 0; j < textareas.length; j++) {
+      (function(ta) {
+        var qid = ta.id.replace('txt_', '');
+        ta.oninput = function() {
+          ANSWERS[qid] = ta.value;
+          var cc = document.getElementById('cc_' + qid);
+          if (cc) cc.textContent = ta.value.length + ' characters';
+          updateProgress();
+        };
+      })(textareas[j]);
+    }
+    var scaleBtns = document.querySelectorAll('.scale-btn');
+    for (var k = 0; k < scaleBtns.length; k++) {
+      scaleBtns[k].onclick = function() {
+        var qid = this.getAttribute('data-qid');
+        var val = parseInt(this.getAttribute('data-val'), 10);
+        ANSWERS[qid] = val;
+        var siblings = document.querySelectorAll('.scale-btn[data-qid="' + qid + '"]');
+        for (var s = 0; s < siblings.length; s++) { siblings[s].classList.remove('selected'); }
+        this.classList.add('selected');
+        updateProgress();
+      };
+    }
+  }
+
+  function countRequired() {
+    var total = 0; var answered = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (!q.required && q.type !== 'mcq') continue;
+      total++;
+      if (q.type === 'mcq' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'text' && ANSWERS[q.id] && ANSWERS[q.id].length >= 1) answered++;
+      else if (q.type === 'scale' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'ranking') answered++;
+    }
+    return { total: total, answered: answered };
+  }
+
+  function updateProgress() {
+    var counts = countRequired();
+    var pct = counts.total > 0 ? Math.round((counts.answered / counts.total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = counts.answered + ' of ' + counts.total + ' required questions answered';
+  }
+
+  function validate() {
+    var missing = [];
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
+      else if (q.type === 'text' && q.required) { var v = ANSWERS[q.id] || ''; if (v.length < 1) missing.push(q.id); }
+      else if (q.type === 'scale' && q.required) { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
+    }
+    return missing;
+  }
+
+  function highlightMissing(missingIds) {
+    var allCards = document.querySelectorAll('.question-card');
+    for (var i = 0; i < allCards.length; i++) { allCards[i].style.borderColor = ''; }
+    for (var j = 0; j < missingIds.length; j++) { var card = document.getElementById('card_' + missingIds[j]); if (card) card.style.borderColor = '#C0392B'; }
+    if (missingIds.length > 0) { var first = document.getElementById('card_' + missingIds[0]); if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+
+  function collectPayload() {
+    var studentName = document.getElementById('studentName').value.trim();
+    var mcqScores = {}; var selfRatings = {}; var preferences = {}; var rawResponses = {};
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') {
+        var chosen = ANSWERS[q.id];
+        mcqScores[q.id] = { chosen: chosen, answer: q.answer, correct: (q.answer !== null && q.answer !== undefined) ? (chosen === q.answer) : null };
+        rawResponses[q.id] = chosen;
+      } else if (q.type === 'text') {
+        rawResponses[q.id] = ANSWERS[q.id] || '';
+      } else if (q.type === 'scale') {
+        selfRatings[q.id] = ANSWERS[q.id];
+        rawResponses[q.id] = ANSWERS[q.id];
+      } else if (q.type === 'ranking') {
+        var order = RANKING_STATE[q.id] || [];
+        preferences[q.id] = order;
+        rawResponses[q.id] = order;
+      }
+    }
+    return {
+      student_id: STUDENT_ID, student_name: studentName,
+      diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
+      raw_responses: rawResponses, mcq_scores: mcqScores,
+      self_ratings: selfRatings, preferences: preferences
+    };
+  }
+
+  function submitToSupabase(payload, onSuccess, onError) {
+    var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
+    fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
+    .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
+    .then(function(data) {
+      var reportPayload = {
+        diagnostic_id: data[0].id,
+        student_id: payload.student_id,
+        student_name: payload.student_name,
+        diagnostic_label: payload.diagnostic_label,
+        ai_report: 'Pending HT review',
+        status: 'pending'
+      };
+      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+    })
+    .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
+    .catch(function(err) { onError(err); });
+  }
+
+  document.getElementById('btnSubmit').onclick = function() {
+    var missingIds = validate();
+    if (missingIds.length > 0) { document.getElementById('submitError').style.display = 'block'; highlightMissing(missingIds); return; }
+    document.getElementById('submitError').style.display = 'none';
+    var btn = document.getElementById('btnSubmit');
+    btn.disabled = true; btn.textContent = 'Submitting...';
+    submitToSupabase(collectPayload(),
+      function() { document.getElementById('progressWrap').style.display = 'none'; showScreen('screenThankYou'); window.scrollTo(0, 0); },
+      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'Submission failed. Please check your connection and try again. Error: ' + err.message; }
+    );
+  };
+
+  function escHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  initDisplay();
+</script>
+</body>
+</html>
