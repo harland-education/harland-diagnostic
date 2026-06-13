@@ -122,6 +122,28 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
 .ptable tbody tr:hover{background:var(--cream-warm);}
 .ptable .pt-name{font-weight:500;color:var(--ink);}
 .ptable .pt-level{font-weight:600;color:var(--gold-dark);}
+/* stream tabs (report column) */
+.stream-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border-soft);margin-bottom:10px;}
+.stab{font-size:11.5px;font-weight:500;letter-spacing:0.03em;padding:8px 14px;border:none;background:transparent;color:var(--slate);cursor:pointer;font-family:var(--font-body);border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:color .15s,border-color .15s;}
+.stab:hover{color:var(--ink);}
+.stab.on{color:var(--gold-dark);border-bottom-color:var(--gold-dark);}
+.stream-pane{display:flex;flex-direction:column;gap:7px;flex:1;min-height:0;}
+.stream-stub{font-size:12.5px;color:var(--slate);line-height:1.55;background:var(--cream-warm);border:1px solid var(--border-soft);border-left:3px solid var(--gold-dark);padding:12px 14px;}
+/* detailed teacher report */
+.det-empty{font-size:12.5px;color:var(--slate);line-height:1.5;background:var(--cream-warm);border:1px solid var(--border-soft);padding:14px;}
+.det-gen-btn{font-size:12px;font-weight:500;padding:9px 18px;border:1.5px solid var(--gold-dark);background:var(--white);color:var(--gold-dark);cursor:pointer;font-family:var(--font-body);transition:background .15s;align-self:flex-start;}
+.det-gen-btn:hover{background:var(--gold-pale);}
+.det-gen-btn:disabled{opacity:0.5;cursor:default;}
+.det-section-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--slate);margin:12px 0 5px;}
+.det-table{width:100%;border-collapse:collapse;font-size:12px;}
+.det-table th{text-align:left;font-size:9.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--slate);padding:5px 7px;border-bottom:1.5px solid var(--border-soft);}
+.det-table td{padding:6px 7px;border-bottom:1px solid var(--border-soft);color:var(--ink);vertical-align:top;line-height:1.42;}
+.det-table tr:hover{background:var(--cream-warm);}
+.det-ok{color:var(--success);font-weight:600;}
+.det-no{color:var(--error);font-weight:600;}
+.det-strand-dir{font-size:12.5px;color:var(--ink);line-height:1.5;background:var(--cream-warm);border-left:2px solid var(--gold);padding:7px 10px;margin-bottom:6px;}
+.det-strand-dir b{color:var(--gold-dark);}
+.det-actions{display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 .field label{display:block;font-size:12px;font-weight:500;color:var(--slate);margin-bottom:5px;letter-spacing:0.02em;}
 .fi{width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border-soft);font-family:var(--font-body);background:var(--white);color:var(--ink);}
@@ -226,8 +248,22 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
         <div id="m-responses"><div style="color:#9A9AA8;font-size:12px;">Loading...</div></div>
       </div>
       <div class="mleft">
-        <div class="mlabel">Report text to edit before sending</div>
-        <textarea class="mta" id="m-text"></textarea>
+        <div class="stream-tabs">
+          <button class="stab on" id="stab-exec" onclick="showStream('exec')">Executive</button>
+          <button class="stab" id="stab-detailed" onclick="showStream('detailed')">Detailed (teacher)</button>
+          <button class="stab" id="stab-parent" onclick="showStream('parent')">Parent</button>
+        </div>
+        <div class="stream-pane" id="pane-exec">
+          <div class="mlabel">Report text to edit before sending</div>
+          <textarea class="mta" id="m-text"></textarea>
+        </div>
+        <div class="stream-pane" id="pane-detailed" style="display:none;">
+          <div id="detailed-body"></div>
+        </div>
+        <div class="stream-pane" id="pane-parent" style="display:none;">
+          <div class="mlabel">Parent-facing summary</div>
+          <div class="stream-stub">The parent-facing stream is built in the next step, after the voice and sensitivity guidance is locked. It will be generated from the reviewed result, stripped of internal mechanics and scoring, written in full brand voice, and gated behind a release control so it is never sent automatically.</div>
+        </div>
       </div>
       <div class="mright">
         <div class="mbox-meta"><div class="mml">Student</div><div class="mmv" id="m-st"></div></div>
@@ -250,7 +286,8 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
 </div>
 
 <script>
-var U='',K='',AK='',PROXY='',W='',reports=[],students=[],activeId=null,activeDiag=null,activeResult=null,CATALOG={},placements=[];
+var U='',K='',AK='',PROXY='',W='',reports=[],students=[],activeId=null,activeDiag=null,activeResult=null,CATALOG={},placements=[],ITEMS={},activeItems=[];
+var STREAM_MODEL='claude-sonnet-4-6';
 
 function doConnect(){
   var u=document.getElementById('f-url').value.trim();
@@ -343,6 +380,8 @@ function openModal(id){
   document.getElementById('m-sx').textContent=r.status;
   document.getElementById('m-responses').innerHTML='<div style="color:#9A9AA8;font-size:12px;">Loading responses...</div>';
   document.getElementById('m-placement').innerHTML='<div class="pl-head"><span class="pl-eyebrow">Placement</span></div><div class="pl-none-note">Loading…</div>';
+  showStream('exec');
+  renderDetailed(r.detailed_items, r.edited_detailed||r.ai_detailed||'');
   document.getElementById('modal').className='on';
 
   // Fetch diagnostic record to show raw responses
@@ -354,6 +393,7 @@ function openModal(id){
     var diag=d&&d.length?d[0]:null;
     activeDiag=diag;
     loadPlacement(diag);
+    loadItems(diag?diag.diagnostic_id:null,function(items){activeItems=items;});
     var el=document.getElementById('m-responses');
     if(!diag){el.innerHTML='<div style="color:#9A9AA8;font-size:12px;">No response data.</div>';return;}
     var html='';
@@ -571,6 +611,156 @@ function renderPlacements(list){
 }
 function searchP(q){
   renderPlacements(q?placements.filter(function(p){return(p.full_name||'').toLowerCase().indexOf(q.toLowerCase())>-1;}):placements);
+}
+
+// ===== Report streams: tabs + detailed (teacher) =====
+function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function showStream(name){
+  ['exec','detailed','parent'].forEach(function(s){
+    var p=document.getElementById('pane-'+s); if(p) p.style.display=(s===name?'flex':'none');
+    var t=document.getElementById('stab-'+s); if(t) t.className='stab'+(s===name?' on':'');
+  });
+}
+
+function loadItems(diagId, cb){
+  if(!diagId){cb([]);return;}
+  if(ITEMS[diagId]){cb(ITEMS[diagId]);return;}
+  api('diagnostic_items?diagnostic_id=eq.'+diagId+'&order=item_order&select=*').then(function(d){
+    ITEMS[diagId]=d||[]; cb(ITEMS[diagId]);
+  }).catch(function(){cb([]);});
+}
+
+function renderDetailed(di, prose){
+  var el=document.getElementById('detailed-body'); if(!el) return;
+  var hasData = di && di.items && di.items.length;
+  var h='<div class="det-actions"><button class="det-gen-btn" id="det-gen-btn" onclick="generateDetailed()">'+(hasData||prose?'Regenerate':'Generate detailed report')+'</button>'
+    +'<span class="pl-hint">Per-question interpretation, grounded in the item bank. Review and edit before use.</span></div>';
+  if(!hasData && !prose){
+    h+='<div class="det-empty">No detailed teacher report yet. Generate one for a per-question walk-through (each item, the student\'s answer, and what it signals) plus a suggested teaching direction per strand, grounded in this diagnostic\'s item bank.</div>';
+    el.innerHTML=h; return;
+  }
+  if(hasData){
+    h+='<div class="det-section-label">Per-question analysis</div>';
+    h+='<table class="det-table"><thead><tr><th>Item</th><th>Assesses</th><th>Answer</th><th>Interpretation</th></tr></thead><tbody>';
+    di.items.forEach(function(it){
+      var ok=it.correct===true, un=(it.correct===null||it.correct===undefined);
+      h+='<tr><td><b>'+escH(it.id||'')+'</b><br><span style="color:var(--mist);">'+escH(it.strand||'')+'</span></td>'
+        +'<td>'+escH(it.assesses||'')+'</td>'
+        +'<td>'+escH(it.student_answer||'')+' <span class="'+(ok?'det-ok':'det-no')+'">'+(un?'':(ok?'OK':'X'))+'</span></td>'
+        +'<td>'+escH(it.interpretation||'')+'</td></tr>';
+    });
+    h+='</tbody></table>';
+  }
+  if(di && di.strand_directions && di.strand_directions.length){
+    h+='<div class="det-section-label">Teaching direction by strand</div>';
+    di.strand_directions.forEach(function(sd){
+      h+='<div class="det-strand-dir"><b>'+escH(sd.strand||'')+':</b> '+escH(sd.direction||'')+'</div>';
+    });
+  }
+  h+='<div class="det-section-label">Synthesis (editable)</div>';
+  h+='<textarea class="mta" id="det-prose" style="min-height:130px;">'+escH(prose||'')+'</textarea>';
+  h+='<div class="det-actions"><button class="mbtn mbtn-gold" id="det-save-btn" onclick="saveDetailed()">Save detailed report</button></div>';
+  el.innerHTML=h;
+}
+
+function detLetter(i){return String.fromCharCode(65+i);}
+function detFormatItem(it, mcq){
+  var s=mcq[it.item_id]||{}; var opts=it.options||[];
+  var optStr=opts.map(function(o,i){return detLetter(i)+') '+o;}).join('   ');
+  var correctL=(it.correct_index!=null?detLetter(it.correct_index):'?');
+  var chosenL=(s.chosen!=null?detLetter(s.chosen):'-');
+  var chosenTxt=(s.chosen!=null && opts[s.chosen]!=null?opts[s.chosen]:'(no answer)');
+  var verdict=(s.correct===true?'CORRECT':(s.correct===false?'INCORRECT':'unscored'));
+  return '['+it.item_id+' | '+it.strand+' L'+(it.target_level||'?')+' | '+(it.assesses||'')+']\n'
+    +'Q: '+it.stem+'\n'
+    +'Options: '+optStr+'\n'
+    +'Correct: '+correctL+' ('+(it.correct_answer||'')+')   Student chose: '+chosenL+' ('+chosenTxt+') -> '+verdict;
+}
+function buildDetailedPrompt(diag, result, items, name, label){
+  var mcq=diag.mcq_scores||{};
+  var raw=diag.raw_responses||{}; if(typeof raw==='string'){try{raw=JSON.parse(raw);}catch(e){raw={};}}
+  var L=[];
+  L.push('STUDENT: '+name);
+  L.push('DIAGNOSTIC: '+label);
+  if(result){
+    L.push('COMPUTED PLACEMENT: '+(result.subject||'')+' level '+(result.recommended_level||'?')+(result.confidence?(' (confidence '+result.confidence+')'):''));
+    if(result.breakdown && result.breakdown.length){
+      L.push('STRAND BREAKDOWN: '+result.breakdown.map(function(b){return (b.strand||'')+' '+(b.raw_score!=null?b.raw_score:'?')+'/'+(b.max_score!=null?b.max_score:'?')+(b.indicated_level?(' ('+b.indicated_level+')'):'');}).join('; '));
+    }
+    if(result.flags && result.flags.length) L.push('FLAGS: '+result.flags.join(', '));
+  }
+  var la=(diag.preferences||{}).level_analysis;
+  if(la && la.strand_levels){ var sl=[]; for(var k in la.strand_levels){sl.push(k+': '+la.strand_levels[k]);} L.push('DIAGNOSTIC STRAND LEVELS: '+sl.join('; ')); }
+  L.push('');
+  var readingSecs={};
+  items.forEach(function(it){ if(it.strand==='Reading'){(readingSecs[it.section]=readingSecs[it.section]||[]).push(it);} });
+  Object.keys(readingSecs).forEach(function(sec){
+    var secItems=readingSecs[sec]; var passage=null; secItems.forEach(function(it){if(it.passage)passage=it.passage;});
+    L.push('=== '+sec+' ===');
+    if(passage){ L.push('PASSAGE:'); L.push(passage); L.push(''); }
+    secItems.forEach(function(it){ L.push(detFormatItem(it,mcq)); L.push(''); });
+  });
+  ['Grammar','Vocabulary'].forEach(function(st){
+    var sItems=items.filter(function(it){return it.strand===st;}); if(!sItems.length) return;
+    L.push('=== '+st+' ===');
+    sItems.forEach(function(it){ L.push(detFormatItem(it,mcq)); L.push(''); });
+  });
+  items.filter(function(it){return it.strand==='Writing';}).forEach(function(it){
+    L.push('=== Writing ===');
+    L.push('PROMPT: '+it.stem);
+    if(it.rubric) L.push('RUBRIC: '+it.rubric);
+    var essay=raw[it.item_id];
+    L.push('STUDENT ESSAY: '+(essay && String(essay).trim()? essay : '(no essay submitted)'));
+    L.push('NOTE: Writing is teacher-assessed; treat as writing_pending.');
+    L.push('');
+  });
+  return L.join('\n');
+}
+
+function generateDetailed(){
+  var r=reports.find(function(x){return x.id===activeId;}); if(!r) return;
+  if(!AK||!PROXY){alert('Connect with your Anthropic key and Worker URL to generate.');return;}
+  if(!activeDiag){alert('Diagnostic data is still loading. Please wait a moment.');return;}
+  if(!activeItems||!activeItems.length){alert('No item bank found for this diagnostic. The detailed report needs an item bank; currently only the Grade 8-10 English diagnostic has one.');return;}
+  var btn=document.getElementById('det-gen-btn'); if(btn){btn.disabled=true;btn.textContent='Generating...';}
+  var dataBlock=buildDetailedPrompt(activeDiag, activeResult, activeItems, r.student_name||'the student', r.diagnostic_label||'Diagnostic');
+  var userPrompt='You are writing the DETAILED, TEACHER-FACING analysis for a Harland diagnostic. Below is the full item bank with the student\'s actual answers, grounded in the real questions.\n\n'
+    +dataBlock
+    +'\n\nReturn ONLY a JSON object (no markdown fences, no preamble) with this exact shape:\n'
+    +'{"items":[{"id":"<item_id>","strand":"<strand>","assesses":"<topic>","student_answer":"<the option text the student chose, or a short phrase>","correct":<true|false>,"interpretation":"<1-2 sentences. For a wrong answer, name the specific misconception the chosen distractor implies. For a correct answer, name the skill it confirms. Specific to THIS item.>"}],'
+    +'"strand_directions":[{"strand":"<Reading|Grammar|Vocabulary|Writing>","direction":"<2-3 sentences: where this student sits in this strand and what to teach first, grounded in the answers above>"}],'
+    +'"synthesis":"<2 to 4 short paragraphs: the teacher\'s working read - current level, clearest strengths and gaps, and how to open the first units. Reference specific evidence. Plain, direct, professional, not AI-sounding.>"}\n'
+    +'Include every item in "items". Keep each interpretation grounded in the actual question and the actual answer.';
+  fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:4000,
+      system:'You are a Head Teacher at Harland Education, an academic tutoring academy in Taipei serving international-school students. You write precise, evidence-grounded teacher-facing analysis, interpreting each answer in terms of the specific skill or misconception it reveals. You never invent facts unsupported by the data. When asked for JSON, output strictly valid JSON only.',
+      messages:[{role:'user',content:userPrompt}]})
+  }).then(function(res){if(!res.ok)return res.text().then(function(t){throw new Error(t);});return res.json();})
+  .then(function(d){
+    var text=(d.content&&d.content[0]&&d.content[0].text)||'';
+    var parsed=null; try{ parsed=JSON.parse(text.replace(/```json/gi,'').replace(/```/g,'').trim()); }catch(e){ parsed=null; }
+    if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the synthesis box for manual use.'); renderDetailed(null, text); return; }
+    var di={items:parsed.items||[], strand_directions:parsed.strand_directions||[]};
+    var prose=parsed.synthesis||'';
+    api('reports?id=eq.'+activeId,'PATCH',{ai_detailed:prose, detailed_items:di}).then(function(dd){
+      if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
+      renderDetailed(di, prose);
+    }).catch(function(e){ renderDetailed(di, prose); alert('Generated, but saving failed: '+e.message); });
+  }).catch(function(e){
+    var b=document.getElementById('det-gen-btn'); if(b){b.disabled=false;b.textContent='Generate detailed report';}
+    alert('Detailed generation failed: '+(e.message||'unknown error')+'\n\nYou can still write it manually.');
+  });
+}
+
+function saveDetailed(){
+  if(!activeId)return;
+  var pr=document.getElementById('det-prose'); var val=pr?pr.value:'';
+  var btn=document.getElementById('det-save-btn'); if(btn){btn.disabled=true;btn.textContent='Saving...';}
+  api('reports?id=eq.'+activeId,'PATCH',{edited_detailed:val}).then(function(dd){
+    if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
+    if(btn){btn.disabled=false;btn.textContent='Saved \u2713';setTimeout(function(){var b=document.getElementById('det-save-btn'); if(b){b.textContent='Save detailed report';}},1500);}
+  }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='Save detailed report';} alert('Save failed: '+e.message); });
 }
 
 function loadStudents(){
