@@ -393,7 +393,7 @@ function openModal(id){
     var diag=d&&d.length?d[0]:null;
     activeDiag=diag;
     loadPlacement(diag);
-    loadItems(diag?diag.diagnostic_id:null,function(items){activeItems=items;});
+    loadItems(diag,function(items){activeItems=items;});
     var el=document.getElementById('m-responses');
     if(!diag){el.innerHTML='<div style="color:#9A9AA8;font-size:12px;">No response data.</div>';return;}
     var html='';
@@ -623,12 +623,26 @@ function showStream(name){
   });
 }
 
-function loadItems(diagId, cb){
-  if(!diagId){cb([]);return;}
-  if(ITEMS[diagId]){cb(ITEMS[diagId]);return;}
-  api('diagnostic_items?diagnostic_id=eq.'+diagId+'&order=item_order&select=*').then(function(d){
-    ITEMS[diagId]=d||[]; cb(ITEMS[diagId]);
-  }).catch(function(){cb([]);});
+function loadItems(diag, cb){
+  var slug = diag && (diag.diagnostic_id || diag.diagnostic_type);
+  if(slug && ITEMS[slug]){ cb(ITEMS[slug]); return; }
+  if(slug){
+    api('diagnostic_items?diagnostic_id=eq.'+encodeURIComponent(slug)+'&order=item_order&select=*').then(function(d){
+      if(d && d.length){ ITEMS[slug]=d; cb(d); } else { resolveItemsByKeys(diag, cb); }
+    }).catch(function(){ resolveItemsByKeys(diag, cb); });
+  } else { resolveItemsByKeys(diag, cb); }
+}
+// Fallback: when the slug is missing or unmatched, identify the item bank from the answered item ids.
+function resolveItemsByKeys(diag, cb){
+  var mcq=(diag && diag.mcq_scores)||{}; var keys=Object.keys(mcq);
+  if(!keys.length){ cb([]); return; }
+  api('diagnostic_items?item_id=in.('+keys.join(',')+')&select=*').then(function(d){
+    if(!d || !d.length){ cb([]); return; }
+    var counts={}; d.forEach(function(it){ counts[it.diagnostic_id]=(counts[it.diagnostic_id]||0)+1; });
+    var best=null,bestN=0; for(var k in counts){ if(counts[k]>bestN){ bestN=counts[k]; best=k; } }
+    var items=d.filter(function(it){ return it.diagnostic_id===best; }).sort(function(a,b){ return (a.item_order||0)-(b.item_order||0); });
+    ITEMS[best]=items; cb(items);
+  }).catch(function(){ cb([]); });
 }
 
 function renderDetailed(di, prose){
