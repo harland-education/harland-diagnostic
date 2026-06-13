@@ -123,6 +123,7 @@
   var STUDENT_ID = null;
   var DIAGNOSTIC_TYPE  = 'english_diagnostic_g8_10';
   var DIAGNOSTIC_LABEL = 'English Level Diagnostic (Grade 8-10)';
+  var DIAGNOSTIC_SLUG  = 'english_diagnostic_g8_10'; // canonical id in diagnostics_catalog
 
   var CONFIG = {
     diagnosticTitle:    'English Level Diagnostic (Grade 8-10)',
@@ -830,25 +831,94 @@
     return {
       student_id: STUDENT_ID, student_name: studentName,
       diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
+      diagnostic_id: DIAGNOSTIC_SLUG, assessment_type: 'diagnostic',
       raw_responses: rawResponses, mcq_scores: mcqScores,
       self_ratings: selfRatings, preferences: preferences
     };
   }
 
+  // Map the level engine output (preferences.level_analysis) onto the canonical result contract.
+  function parseStrandLevel(s) {
+    var flags = []; var lvl = null;
+    if (!s) return { level: null, flags: flags };
+    if (s.indexOf('Below') === 0) { flags.push('below_band'); return { level: 'below_L8', flags: flags }; }
+    var mm = s.match(/Level (\d+)/);
+    lvl = mm ? ('L' + mm[1]) : null;
+    if (s.indexOf('possibly above band') >= 0) flags.push('possibly_above_band');
+    return { level: lvl, flags: flags };
+  }
+
+  function buildResult(submissionId, payload) {
+    var la = (payload.preferences && payload.preferences.level_analysis) ? payload.preferences.level_analysis : {};
+    var sl = la.strand_levels || {};
+    var bs = la.by_strand || {};
+    var strandNames = ['Reading', 'Grammar', 'Vocabulary'];
+    var breakdown = []; var nums = []; var bandFlags = [];
+    var i, f;
+    for (i = 0; i < strandNames.length; i++) {
+      var name = strandNames[i];
+      var parsed = parseStrandLevel(sl[name] || '');
+      var ov = (bs[name] && bs[name].overall) ? bs[name].overall : { correct: 0, total: 0 };
+      breakdown.push({ strand: name.toLowerCase(), raw_score: ov.correct, max_score: ov.total, indicated_level: parsed.level, flags: parsed.flags });
+      var num = null;
+      if (parsed.level === 'L8') num = 8; else if (parsed.level === 'L9') num = 9; else if (parsed.level === 'L10') num = 10; else if (parsed.level === 'below_L8') num = 7;
+      if (num !== null) nums.push(num);
+      for (f = 0; f < parsed.flags.length; f++) { if (bandFlags.indexOf(parsed.flags[f]) < 0) bandFlags.push(parsed.flags[f]); }
+    }
+    nums.sort(function(a, b) { return a - b; });
+    var mid = nums.length ? nums[Math.floor((nums.length - 1) / 2)] : null;
+    var recLevel = null;
+    if (mid === 7) { recLevel = 'below_L8'; } else if (mid !== null) { recLevel = 'L' + mid; }
+    var spread = nums.length ? (nums[nums.length - 1] - nums[0]) : 99;
+    // Conservative by design: the writing sample is teacher-scored and the final level is set on review,
+    // so the auto signal never claims 'high'.
+    var confidence = (spread <= 1 && bandFlags.length === 0) ? 'medium' : 'low';
+    var allFlags = bandFlags.slice();
+    allFlags.push('writing_pending');
+    return {
+      submission_id: submissionId,
+      student_id: payload.student_id,
+      diagnostic_id: DIAGNOSTIC_SLUG,
+      assessment_type: 'diagnostic',
+      subject: 'academic_english',
+      recommended_course: 'academic_english',
+      recommended_level: recLevel,
+      recommended_tier: null,
+      starting_unit: null,
+      confidence: confidence,
+      breakdown: breakdown,
+      flags: allFlags,
+      computed_by: 'engine',
+      status: 'computed',
+      schema_version: '1.0'
+    };
+  }
+
+  // Three-step submit: diagnostics (submission) -> results (structured placement) -> reports (pending).
+  // The results step is best-effort, so a results error never blocks the student or the report shell.
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
     fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
     .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
     .then(function(data) {
-      var reportPayload = {
-        diagnostic_id: data[0].id,
-        student_id: payload.student_id,
-        student_name: payload.student_name,
-        diagnostic_label: payload.diagnostic_label,
-        ai_report: 'Pending HT review',
-        status: 'pending'
-      };
-      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+      var submissionId = data[0].id;
+      var resultPayload = buildResult(submissionId, payload);
+      return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resultPayload) })
+        .then(function(rr) { return rr.ok ? rr.json() : null; }, function() { return null; })
+        .then(function(resData) {
+          if (!resData) { try { console.warn('results insert failed; report will carry no result_id'); } catch (e) {} }
+          var resultId = (resData && resData[0]) ? resData[0].id : null;
+          var reportPayload = {
+            diagnostic_id: submissionId,
+            result_id: resultId,
+            student_id: payload.student_id,
+            student_name: payload.student_name,
+            diagnostic_label: payload.diagnostic_label,
+            ai_report: 'Pending HT review',
+            status: 'pending'
+          };
+          return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+        });
     })
     .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
     .catch(function(err) { onError(err); });
