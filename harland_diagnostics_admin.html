@@ -742,10 +742,10 @@ function generateDetailed(){
   var userPrompt='You are writing the DETAILED, TEACHER-FACING analysis for a Harland diagnostic. Below is the full item bank with the student\'s actual answers, grounded in the real questions.\n\n'
     +dataBlock
     +'\n\nReturn ONLY a JSON object (no markdown fences, no preamble) with this exact shape:\n'
-    +'{"items":[{"id":"<item_id>","strand":"<strand>","assesses":"<topic>","student_answer":"<the option text the student chose, or a short phrase>","correct":<true|false>,"interpretation":"<1-2 sentences. For a wrong answer, name the specific misconception the chosen distractor implies. For a correct answer, name the skill it confirms. Specific to THIS item.>"}],'
+    +'{"items":[{"id":"<item_id>","strand":"<strand>","assesses":"<topic>","student_answer":"<the option text the student chose, or a short phrase>","correct":<true|false>,"interpretation":"<If the answer is WRONG: 1-2 full sentences naming the specific misconception the chosen distractor implies, grounded in THIS item. If the answer is CORRECT: a brief phrase of roughly 4-10 words confirming the skill (e.g. \\"Secure on the colon-before-list rule.\\"). Reserve the detail for the misses; keep correct-answer notes short.>"}],'
     +'"strand_directions":[{"strand":"<Reading|Grammar|Vocabulary|Writing>","direction":"<2-3 sentences: where this student sits in this strand and what to teach first, grounded in the answers above>"}],'
     +'"synthesis":"<2 to 4 short paragraphs: the teacher\'s working read - current level, clearest strengths and gaps, and how to open the first units. Reference specific evidence. Plain, direct, professional, not AI-sounding.>"}\n'
-    +'Include every item in "items". Keep each interpretation grounded in the actual question and the actual answer.';
+    +'Include every item in "items", grounded in the actual question and the actual answer, but concentrate the analysis on the wrong answers; correct answers get only a brief confirmation.';
   fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:4000,
       system:'You are a Head Teacher at Harland Education, an academic tutoring academy in Taipei serving international-school students. You write precise, evidence-grounded teacher-facing analysis, interpreting each answer in terms of the specific skill or misconception it reveals. You never invent facts unsupported by the data. When asked for JSON, output strictly valid JSON only.',
