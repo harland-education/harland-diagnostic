@@ -297,8 +297,9 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
 var U='',K='',AK='',PROXY='',W='',reports=[],students=[],activeId=null,activeDiag=null,activeResult=null,CATALOG={},placements=[],ITEMS={},activeItems=[];
 var STREAM_MODEL='claude-sonnet-4-6';
 // Which criterion spine grounds each diagnostic (extend as diagnostics get bands).
-var RUBRIC_MAP={ english_diagnostic_g8_10:{spine:'common_core_ela',subject:'english'},
-                 english_diagnostic_g5_7:{spine:'common_core_ela',subject:'english'} };
+var RUBRIC_MAP={ english_diagnostic_g8_10:{spine:'common_core_ela',subject:'english',levels:[8,9,10]},
+                 english_diagnostic_g5_7:{spine:'common_core_ela',subject:'english',levels:[5,6,7]},
+                 math_placement:{spine:'common_core_math',subject:'math_placement',levels:[9,10,11]} };
 var RUBRICS={}, activeRubric=null;
 
 function doConnect(){
@@ -771,11 +772,23 @@ function detFormatItem(it, mcq){
 // Common Core criterion ladder as prompt lines (shared by both streams).
 function criterionLadderLines(rubric){
   if(!rubric || !rubric.length) return [];
-  var out=['=== CRITERION LADDER (Common Core English spine; Harland level ~ US grade) ===',
+  var spine=(rubric[0] && rubric[0].spine) ? rubric[0].spine : 'criterion';
+  var out=['=== CRITERION LADDER ('+spine+'; Harland level ~ US grade) ===',
            'Anchor the level read and teaching to these descriptors.'];
-  var byStrand={}; rubric.forEach(function(b){ (byStrand[b.strand]=byStrand[b.strand]||[]).push(b); });
-  ['Reading','Grammar','Vocabulary','Writing'].forEach(function(st){
-    var bands=byStrand[st]; if(!bands||!bands.length) return;
+  var byStrand={}, order=[];
+  rubric.forEach(function(b){
+    var s=b.strand||'General';
+    if(!byStrand[s]){ byStrand[s]=[]; order.push(s); }
+    byStrand[s].push(b);
+  });
+  // Order strands by their lowest level, then alphabetically -- deterministic for any subject.
+  order.sort(function(a,b){
+    function minLv(x){ var m=999; byStrand[x].forEach(function(bb){ if((bb.level||0)<m) m=bb.level||0; }); return m; }
+    var d=minLv(a)-minLv(b);
+    return d!==0 ? d : (a<b?-1:(a>b?1:0));
+  });
+  order.forEach(function(st){
+    var bands=byStrand[st];
     bands.sort(function(a,b){return (a.level||0)-(b.level||0);});
     out.push(st.toUpperCase()+':');
     bands.forEach(function(b){ out.push('  L'+b.level+' ('+(b.grade_band||'')+', '+(b.cc_strand||'')+'): '+b.descriptor); });
