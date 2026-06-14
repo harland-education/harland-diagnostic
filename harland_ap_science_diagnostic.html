@@ -490,7 +490,7 @@ function startDiagnostic(){
   document.getElementById('hdr-name').textContent = name + ' - Multi-Science Assessment';
 }
 
-function postToSupabase(rawData, scores, aiReport) {
+function postToSupabase(rawData, mcqScores, recommendation) {
   if (!SB_URL) { return; }
   var headers = {
     'apikey': SB_KEY,
@@ -499,57 +499,57 @@ function postToSupabase(rawData, scores, aiReport) {
     'Prefer': 'return=representation'
   };
   var studentName = STUDENT_NAME || 'Unknown';
+  rawData.preferences = rawData.preferences || {};
+  rawData.preferences.recommendation_analysis = recommendation;
   var diagBody = {
     student_id: null,
     student_name: studentName,
     diagnostic_type: 'ap_science',
     diagnostic_label: 'AP Science Readiness',
+    diagnostic_id: 'ap_science',
+    assessment_type: 'diagnostic',
     raw_responses: {
       open: rawData.open || {},
       mcq: rawData.mcq || {},
       scales: rawData.scales || {}
     },
-    mcq_scores: scores,
+    mcq_scores: mcqScores,
     self_ratings: rawData.scales || {},
     preferences: rawData.preferences || {}
   };
-  console.log('Posting to Supabase:', SB_URL);
-  console.log('Diagnostic body:', JSON.stringify(diagBody).slice(0,200));
+  // Three-step: diagnostics (submission) -> results (subject recommendation) -> reports (pending).
+  // The results step is best-effort, so a results error never blocks the student or the report shell.
   fetch(SB_URL + '/rest/v1/diagnostics', {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(diagBody)
   })
   .then(function(r) {
-    console.log('Diagnostics response status:', r.status);
-    if (!r.ok) {
-      return r.text().then(function(t) { throw new Error('Diagnostics save failed: ' + t); });
-    }
+    if (!r.ok) { return r.text().then(function(t) { throw new Error('Diagnostics save failed: ' + t); }); }
     return r.json();
   })
   .then(function(diagData) {
-    console.log('Diagnostic saved:', JSON.stringify(diagData).slice(0,100));
     var diagId = Array.isArray(diagData) ? diagData[0].id : diagData.id;
-    var reportBody = {
-      diagnostic_id: diagId,
-      student_id: null,
-      student_name: studentName,
-      diagnostic_label: 'AP Science Readiness',
-      ai_report: aiReport || 'Pending HT review',
-      status: 'pending'
-    };
-    return fetch(SB_URL + '/rest/v1/reports', {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(reportBody)
-    });
+    var resultBody = buildResult(diagId, recommendation);
+    return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resultBody) })
+      .then(function(rr) { return rr.ok ? rr.json() : null; }, function() { return null; })
+      .then(function(resData) {
+        if (!resData) { try { console.warn('results insert failed; report will carry no result_id'); } catch (e) {} }
+        var resultId = (resData && resData[0]) ? resData[0].id : null;
+        var reportBody = {
+          diagnostic_id: diagId,
+          result_id: resultId,
+          student_id: null,
+          student_name: studentName,
+          diagnostic_label: 'AP Science Readiness',
+          ai_report: 'Pending HT review',
+          status: 'pending'
+        };
+        return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportBody) });
+      });
   })
   .then(function(r) {
-    console.log('Reports response status:', r.status);
-    if (!r.ok) {
-      return r.text().then(function(t) { throw new Error('Report save failed: ' + t); });
-    }
-    console.log('Successfully saved to Supabase.');
+    if (!r.ok) { return r.text().then(function(t) { throw new Error('Report save failed: ' + t); }); }
     return r.json();
   })
   .catch(function(e) {
@@ -668,14 +668,74 @@ function scoreMCQ(mcq){
   return{correct,attempted,total:Object.keys(CORRECT).length};
 }
 
+// Standard per-item MCQ scores (so the detailed report can ground each scored question on the item bank).
+function standardMcqScores(){
+  var m={};
+  Object.keys(CORRECT).forEach(function(k){
+    m[k]={ chosen:(ANS[k]||null), answer:CORRECT[k], correct: ANS[k] ? (ANS[k]===CORRECT[k]) : null };
+  });
+  return m;
+}
+
+// Subject-recommendation engine. This diagnostic exists to suggest WHICH AP science to start, so the
+// result blends three signals per subject: sparse MCQ accuracy (2-3 items each), self-rated comfort,
+// and the student's own interest ranking. Open concept responses are teacher-reviewed and refine it.
+function buildRecommendation(data){
+  var subj=[
+    { key:'physics',   name:'Physics',   course:'AP Physics 1', mcqIds:['A1','A2','A4'], comfort:SCALES.phys_comfort },
+    { key:'chemistry', name:'Chemistry', course:'AP Chemistry', mcqIds:['B2','B4'],      comfort:SCALES.chem_comfort },
+    { key:'biology',   name:'Biology',   course:'AP Biology',   mcqIds:['C2','C4'],      comfort:SCALES.bio_comfort }
+  ];
+  var order=['physics','chemistry','biology'];
+  var rank=(data.preferences && data.preferences.science_rank) ? data.preferences.science_rank : (rankOrder || order);
+  function tierOf(p){ return p>=0.75 ? 'Competitive' : (p>=0.45 ? 'Approaching' : 'Developing'); }
+  var bySubject={};
+  subj.forEach(function(s){
+    var correct=0; s.mcqIds.forEach(function(id){ if(ANS[id] && ANS[id]===CORRECT[id]) correct++; });
+    var total=s.mcqIds.length;
+    var mcqAcc = total ? correct/total : 0;
+    var comfortNorm = (typeof s.comfort==='number') ? (s.comfort-1)/4 : 0.5;
+    var idx=rank.indexOf(s.key); if(idx<0) idx=1;
+    var prefScore=(3-idx-1)/2;                         // idx0 -> 1.0, idx1 -> 0.5, idx2 -> 0.0
+    var composite=0.45*mcqAcc + 0.30*comfortNorm + 0.25*prefScore;
+    bySubject[s.key]={ name:s.name, course:s.course, mcq_correct:correct, mcq_total:total,
+                       comfort:(typeof s.comfort==='number'?s.comfort:null), pref_rank:idx+1,
+                       composite:Math.round(composite*100)/100, tier:tierOf(0.6*mcqAcc + 0.4*comfortNorm) };
+  });
+  function argmaxBy(f){ var bk=order[0]; order.forEach(function(k){ if(f(bySubject[k])>f(bySubject[bk])) bk=k; }); return bk; }
+  var bestKey=argmaxBy(function(o){ return o.composite; });
+  var bestMcq=argmaxBy(function(o){ return o.mcq_total ? o.mcq_correct/o.mcq_total : 0; });
+  var bestPref=argmaxBy(function(o){ return -o.pref_rank; });
+  var divergence=!(bestKey===bestMcq && bestKey===bestPref);
+  var rec=bySubject[bestKey];
+  return { by_subject:bySubject, recommended_subject:rec.name, recommended_course:rec.course, recommended_tier:rec.tier,
+           signal_divergence:divergence, best_by_performance:bySubject[bestMcq].name, best_by_interest:bySubject[bestPref].name,
+           note:'Recommendation blends MCQ accuracy (sparse: 2-3 items per subject), self-rated comfort, and stated interest. Open concept responses are teacher-reviewed and refine the call. Guidance, not a definitive placement.' };
+}
+
+// Maps the recommendation to a structured results row. The headline is the recommended subject
+// (recommended_course); recommended_level/tier carry the readiness tier within that subject.
+function buildResult(submissionId, rec){
+  var order=['physics','chemistry','biology'];
+  var breakdown=order.map(function(k){ var o=rec.by_subject[k];
+    return { strand:o.name, raw_score:o.mcq_correct, max_score:o.mcq_total, indicated_level:o.tier, comfort:o.comfort, composite:o.composite }; });
+  var flags=['open_response_pending'];
+  if(rec.signal_divergence){ flags.push('signal_divergence: strongest performance in '+rec.best_by_performance+', strongest interest in '+rec.best_by_interest); }
+  var confidence = rec.signal_divergence ? 'low' : 'medium';
+  return { submission_id:submissionId, student_id:null, diagnostic_id:'ap_science', assessment_type:'diagnostic',
+           subject:'ap_science', recommended_course:rec.recommended_course, recommended_level:rec.recommended_tier,
+           recommended_tier:rec.recommended_tier, starting_unit:null, confidence:confidence, breakdown:breakdown,
+           flags:flags, computed_by:'engine', status:'computed', schema_version:'1.0' };
+}
+
 function submit(){
   var btn=document.getElementById('subBtn');
   btn.disabled=true;
   btn.textContent='Submitting...';
 
   var data=collectAll();
-  var mcq=scoreMCQ(data.mcq);
 
+  // Per-subject percentage summary (kept for reference in preferences).
   var physMCQ=[ANS.A1===CORRECT.A1,ANS.A2===CORRECT.A2,ANS.A4===CORRECT.A4].filter(Boolean).length;
   var physOpen=[tv('A3'),tv('A5')].filter(function(v){return v.length>15;}).length;
   var physPct=Math.round((physMCQ/3*0.6 + physOpen/2*0.4)*100);
@@ -688,10 +748,14 @@ function submit(){
   var bioOpen=[tv('C1'),tv('C3')].filter(function(v){return v.length>15;}).length;
   var bioPct=Math.round((bioMCQ/2*0.5 + bioOpen/2*0.5)*100);
 
-  var scores={physics_pct:physPct,chem_pct:chemPct,bio_pct:bioPct};
+  data.preferences=data.preferences||{};
+  data.preferences.subject_percentages={physics_pct:physPct,chem_pct:chemPct,bio_pct:bioPct};
 
-  // Save to Supabase
-  postToSupabase(data, scores, '');
+  var recommendation=buildRecommendation(data);
+  var mcqScores=standardMcqScores();
+
+  // Save to Supabase (three-step: diagnostics -> results -> reports)
+  postToSupabase(data, mcqScores, recommendation);
 
   // Show clean thank-you screen
   document.getElementById('diagnostic').style.display='none';
