@@ -628,6 +628,38 @@ function searchP(q){
 
 // ===== Report streams: tabs + detailed (teacher) =====
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// Escape raw control chars that appear INSIDE JSON string values (a common model output flaw),
+// leaving structural whitespace untouched.
+function escapeRawCtrlInStrings(s){
+  var out='', inStr=false, esc=false;
+  for(var i=0;i<s.length;i++){
+    var c=s[i];
+    if(inStr){
+      if(esc){ out+=c; esc=false; continue; }
+      if(c==='\\'){ out+=c; esc=true; continue; }
+      if(c==='"'){ out+=c; inStr=false; continue; }
+      if(c==='\n'){ out+='\\n'; continue; }
+      if(c==='\r'){ out+='\\r'; continue; }
+      if(c==='\t'){ out+='\\t'; continue; }
+      out+=c; continue;
+    }
+    if(c==='"'){ out+=c; inStr=true; continue; }
+    out+=c;
+  }
+  return out;
+}
+// Tolerant parse of a JSON object from model output: strips fences/preamble, trailing commas,
+// and unescaped newlines inside strings. Returns the object or null.
+function parseModelJSON(text){
+  if(!text) return null;
+  var s=String(text).replace(/```json/gi,'').replace(/```/g,'').trim();
+  var a=s.indexOf('{'), b=s.lastIndexOf('}');
+  if(a>=0 && b>a) s=s.slice(a,b+1);
+  s=s.replace(/,\s*([}\]])/g,'$1');
+  try{ return JSON.parse(s); }catch(e){}
+  try{ return JSON.parse(escapeRawCtrlInStrings(s)); }catch(e2){}
+  return null;
+}
 
 function showStream(name){
   ['exec','detailed','parent'].forEach(function(s){
@@ -849,13 +881,13 @@ function generateDetailed(){
     +'"synthesis":"<2 to 4 short paragraphs: the teacher\'s working read - where the student sits against the Common Core criterion ladder, clearest strengths and gaps, and how to open the first units. Reference specific evidence and the level descriptors. Plain, direct, professional, not AI-sounding.>"}\n'
     +'Include every item in "items", grounded in the actual question and the actual answer, but concentrate the analysis on the wrong answers; correct answers get only a brief confirmation. Anchor the level read and teaching directions to the criterion ladder, naming the Harland level / Common Core band where it helps.';
   fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:4000,
+    body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:8000,
       system:'You are a Head Teacher at Harland Education, an academic tutoring academy in Taipei serving international-school students. You write precise, evidence-grounded teacher-facing analysis, interpreting each answer in terms of the specific skill or misconception it reveals. You never invent facts unsupported by the data. When asked for JSON, output strictly valid JSON only.',
       messages:[{role:'user',content:userPrompt}]})
   }).then(function(res){if(!res.ok)return res.text().then(function(t){throw new Error(t);});return res.json();})
   .then(function(d){
     var text=(d.content&&d.content[0]&&d.content[0].text)||'';
-    var parsed=null; try{ parsed=JSON.parse(text.replace(/```json/gi,'').replace(/```/g,'').trim()); }catch(e){ parsed=null; }
+    var parsed=parseModelJSON(text);
     if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the synthesis box for manual use.'); renderDetailed(null, text); renderFooter('detailed'); return; }
     var di={items:parsed.items||[], strand_directions:parsed.strand_directions||[]};
     var prose=parsed.synthesis||'';
@@ -915,13 +947,13 @@ function generateParent(){
     +'Then write a parallel Traditional Chinese (Taiwan) version for Taiwan parents. It is NOT a literal translation: write it natively, warm-premium and parent-natural, the way one thoughtful parent speaks to another, concrete and emotionally true, never literary or strategic or brochure-like. Full-width punctuation throughout. A single space between any Latin word and the adjacent Chinese character. No em dashes. Same substance as the English, no scores or levels.\n\n'
     +'Return ONLY a JSON object (no markdown fences, no preamble): {"english":"<the English report, paragraphs separated by \\n\\n>","chinese":"<the Traditional Chinese report, paragraphs separated by \\n\\n>"}';
   fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:2500,
+    body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:4000,
       system:'You are a Head Teacher at Harland Education, a 1-on-1 tutoring academy in Taipei serving international-school families. You write parent-facing notes that are warm, honest, and constructive, in the plainspoken warm-premium Harland voice. You never expose internal scoring or placement mechanics to parents, never use sales language or guarantees, and never use em dashes. You are fluent in writing parent-natural Taiwan Traditional Chinese. When asked for JSON, output strictly valid JSON only.',
       messages:[{role:'user',content:userPrompt}]})
   }).then(function(res){if(!res.ok)return res.text().then(function(t){throw new Error(t);});return res.json();})
   .then(function(d){
     var text=(d.content&&d.content[0]&&d.content[0].text)||'';
-    var parsed=null; try{ parsed=JSON.parse(text.replace(/```json/gi,'').replace(/```/g,'').trim()); }catch(e){ parsed=null; }
+    var parsed=parseModelJSON(text);
     if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the English box for manual use.'); renderParent(text,'',false); renderFooter('parent'); return; }
     var en=parsed.english||'', zh=parsed.chinese||'';
     api('reports?id=eq.'+activeId,'PATCH',{ai_parent:en, ai_parent_zh:zh}).then(function(dd){
