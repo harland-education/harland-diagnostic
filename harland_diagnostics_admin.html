@@ -299,7 +299,8 @@ var STREAM_MODEL='claude-sonnet-4-6';
 // Which criterion spine grounds each diagnostic (extend as diagnostics get bands).
 var RUBRIC_MAP={ english_diagnostic_g8_10:{spine:'common_core_ela',subject:'english',levels:[8,9,10]},
                  english_diagnostic_g5_7:{spine:'common_core_ela',subject:'english',levels:[5,6,7]},
-                 math_placement:{spine:'common_core_math',subject:'math_placement',levels:[9,10,11]} };
+                 math_placement:{spine:'common_core_math',subject:'math_placement',levels:[9,10,11]},
+                 g6_7_math:{spine:'common_core_math',subject:'g6_7_math',levels:[6,7]} };
 var RUBRICS={}, activeRubric=null;
 
 function doConnect(){
