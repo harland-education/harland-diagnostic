@@ -122,6 +122,7 @@
 
   var STUDENT_ID = null;
   var DIAGNOSTIC_TYPE  = 'math_placement_algebra_geometry';
+  var DIAGNOSTIC_SLUG  = 'math_placement'; // canonical id in diagnostics_catalog
   var DIAGNOSTIC_LABEL = 'Math Placement (Algebra I / Geometry / Algebra II)';
 
   var CONFIG = {
@@ -656,6 +657,7 @@
     return {
       student_id: STUDENT_ID, student_name: studentName,
       diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
+      diagnostic_id: DIAGNOSTIC_SLUG, assessment_type: 'diagnostic',
       raw_responses: rawResponses, mcq_scores: mcqScores,
       self_ratings: selfRatings, preferences: preferences
     };
