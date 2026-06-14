@@ -109,6 +109,7 @@
 
   var DIAGNOSTIC_TYPE  = 'ap_economics_readiness';
   var DIAGNOSTIC_LABEL = 'AP Economics Readiness';
+  var DIAGNOSTIC_SLUG  = 'ap_economics';
 
   var CONFIG = {
     diagnosticTitle:    'AP Economics Readiness',
@@ -695,28 +696,92 @@
         rawResponses[q.id] = order;
       }
     }
+    /* Readiness map: per-section MCQ accuracy -> readiness tier (readiness to start the AP course).
+       The scored sections are the content strands below. Open-response items are teacher-reviewed
+       and not tiered. Overall tier is the weakest section. Guidance, not an AP score prediction. */
+    var SECTION_OF = { 'Microeconomics': 'Microeconomics', 'Macroeconomics': 'Macroeconomics', 'Graphs and Quantitative Skills': 'Graphs and Quantitative Skills' };
+    var sectionOrder = ['Microeconomics', 'Macroeconomics', 'Graphs and Quantitative Skills'];
+    var bySection = {}; var k;
+    for (k = 0; k < sectionOrder.length; k++) { bySection[sectionOrder[k]] = { correct: 0, total: 0 }; }
+    for (var n = 0; n < QUESTIONS.length; n++) {
+      var qn = QUESTIONS[n];
+      if (qn.type !== 'mcq') continue;
+      var sec = SECTION_OF[qn.domain];
+      if (!sec) continue;
+      bySection[sec].total++;
+      if (mcqScores[qn.id] && mcqScores[qn.id].correct === true) { bySection[sec].correct++; }
+    }
+    function tierOf(pct) { return pct >= 0.75 ? 'Competitive' : (pct >= 0.45 ? 'Approaching' : 'Developing'); }
+    var tierRank = { 'Developing': 1, 'Approaching': 2, 'Competitive': 3 };
+    var sectionTiers = {}; var weakSections = []; var minRank = 9;
+    for (k = 0; k < sectionOrder.length; k++) {
+      var rec = bySection[sectionOrder[k]];
+      var pct = rec.total ? (rec.correct / rec.total) : 0;
+      var tier = tierOf(pct);
+      sectionTiers[sectionOrder[k]] = rec.correct + '/' + rec.total + ' (' + tier + ')';
+      if (tier === 'Developing') { weakSections.push(sectionOrder[k]); }
+      if (tierRank[tier] < minRank) { minRank = tierRank[tier]; }
+    }
+    var overallTier = (minRank === 1) ? 'Developing' : (minRank === 2 ? 'Approaching' : 'Competitive');
+    preferences.readiness_analysis = {
+      by_section: bySection, section_tiers: sectionTiers, overall_tier: overallTier, weak_sections: weakSections,
+      note: 'Per-section readiness from MCQs only. Thresholds: Developing under 45%, Approaching 45-75%, Competitive over 75%. Overall tier is the weakest section. Open-response items are teacher-reviewed and not tiered. Guidance for the teacher, not an AP score prediction.'
+    };
+    preferences.level_analysis = { by_strand: bySection, strand_levels: sectionTiers };
+
     return {
       student_id: STUDENT_ID, student_name: studentName,
       diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
+      diagnostic_id: DIAGNOSTIC_SLUG, assessment_type: 'diagnostic',
       raw_responses: rawResponses, mcq_scores: mcqScores,
       self_ratings: selfRatings, preferences: preferences
     };
   }
 
+  // Maps the readiness analysis to a structured results row (per-section tier model).
+  // Conservative by design: open-response items are teacher-scored and item counts are small.
+  function buildResult(submissionId, payload) {
+    var prefs = payload.preferences || {};
+    var ra = prefs.readiness_analysis || {};
+    var bsx = ra.by_section || {};
+    var sectionOrder = ['Microeconomics', 'Macroeconomics', 'Graphs and Quantitative Skills'];
+    function tierOf(pct) { return pct >= 0.75 ? 'Competitive' : (pct >= 0.45 ? 'Approaching' : 'Developing'); }
+    var breakdown = []; var k;
+    for (k = 0; k < sectionOrder.length; k++) {
+      var rec = bsx[sectionOrder[k]] || { correct: 0, total: 0 };
+      var pct = rec.total ? (rec.correct / rec.total) : 0;
+      breakdown.push({ strand: sectionOrder[k], raw_score: rec.correct, max_score: rec.total, indicated_level: tierOf(pct) });
+    }
+    var overall = ra.overall_tier || 'Developing';
+    var flags = [];
+    if (ra.weak_sections && ra.weak_sections.length) { flags.push('priority_sections: ' + ra.weak_sections.join('; ')); }
+    flags.push('open_response_pending');
+    var confidence = (overall === 'Competitive') ? 'medium' : 'low';
+    return {
+      submission_id: submissionId, student_id: payload.student_id, diagnostic_id: DIAGNOSTIC_SLUG,
+      assessment_type: 'diagnostic', subject: 'ap_economics',
+      recommended_course: 'AP Economics', recommended_level: overall, recommended_tier: overall,
+      starting_unit: null, confidence: confidence, breakdown: breakdown, flags: flags,
+      computed_by: 'engine', status: 'computed', schema_version: '1.0'
+    };
+  }
+
+  // Three-step submit: diagnostics -> results (best-effort) -> reports.
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
     fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
     .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
     .then(function(data) {
-      var reportPayload = {
-        diagnostic_id: data[0].id,
-        student_id: payload.student_id,
-        student_name: payload.student_name,
-        diagnostic_label: payload.diagnostic_label,
-        ai_report: 'Pending HT review',
-        status: 'pending'
-      };
-      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+      var submissionId = data[0].id;
+      var resultPayload = buildResult(submissionId, payload);
+      return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resultPayload) })
+        .then(function(rr) { return rr.ok ? rr.json() : null; }, function() { return null; })
+        .then(function(resData) {
+          if (!resData) { try { console.warn('results insert failed; report will carry no result_id'); } catch (e) {} }
+          var resultId = (resData && resData[0]) ? resData[0].id : null;
+          var reportPayload = { diagnostic_id: submissionId, result_id: resultId, student_id: payload.student_id, student_name: payload.student_name, diagnostic_label: payload.diagnostic_label, ai_report: 'Pending HT review', status: 'pending' };
+          return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+        });
     })
     .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
     .catch(function(err) { onError(err); });
