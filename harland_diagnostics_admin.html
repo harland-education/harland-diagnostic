@@ -144,6 +144,15 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
 .det-strand-dir{font-size:12.5px;color:var(--ink);line-height:1.5;background:var(--cream-warm);border-left:2px solid var(--gold);padding:7px 10px;margin-bottom:6px;}
 .det-strand-dir b{color:var(--gold-dark);}
 .det-actions{display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;}
+/* parent stream */
+.par-empty{font-size:12.5px;color:var(--slate);line-height:1.5;background:var(--cream-warm);border:1px solid var(--border-soft);padding:14px;}
+.par-lang{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold-dark);margin:12px 0 4px;}
+.par-ta{width:100%;min-height:150px;box-sizing:border-box;font-family:var(--font-body);font-size:12.5px;line-height:1.55;color:var(--ink);background:var(--white);border:1px solid var(--border-soft);padding:10px;resize:vertical;}
+.par-release{display:flex;align-items:center;gap:12px;margin-top:14px;padding:11px 13px;background:var(--cream-warm);border:1px solid var(--border-soft);border-left:3px solid var(--gold-dark);flex-wrap:wrap;}
+.par-rel-status{font-size:11.5px;font-weight:600;letter-spacing:0.04em;}
+.par-rel-status.on{color:var(--success);}
+.par-rel-status.off{color:var(--slate);}
+.par-note{font-size:11px;color:var(--mist);line-height:1.45;margin-top:8px;}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 .field label{display:block;font-size:12px;font-weight:500;color:var(--slate);margin-bottom:5px;letter-spacing:0.02em;}
 .fi{width:100%;font-size:13px;padding:10px 12px;border:1.5px solid var(--border-soft);font-family:var(--font-body);background:var(--white);color:var(--ink);}
@@ -261,8 +270,7 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
           <div id="detailed-body"></div>
         </div>
         <div class="stream-pane" id="pane-parent" style="display:none;">
-          <div class="mlabel">Parent-facing summary</div>
-          <div class="stream-stub">The parent-facing stream is built in the next step, after the voice and sensitivity guidance is locked. It will be generated from the reviewed result, stripped of internal mechanics and scoring, written in full brand voice, and gated behind a release control so it is never sent automatically.</div>
+          <div id="parent-body"></div>
         </div>
       </div>
       <div class="mright">
@@ -386,6 +394,7 @@ function openModal(id){
   document.getElementById('m-placement').innerHTML='<div class="pl-head"><span class="pl-eyebrow">Placement</span></div><div class="pl-none-note">Loading…</div>';
   showStream('exec');
   renderDetailed(r.detailed_items, r.edited_detailed||r.ai_detailed||'');
+  renderParent(r.edited_parent||r.ai_parent||'', r.edited_parent_zh||r.ai_parent_zh||'', r.parent_released===true);
   document.getElementById('modal').className='on';
 
   // Fetch diagnostic record to show raw responses
@@ -846,6 +855,86 @@ function saveDetailed(){
     if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
     if(btn){btn.disabled=false;btn.textContent='Saved \u2713';setTimeout(function(){var b=document.getElementById('det-save-btn'); if(b){b.textContent='Save detailed report';}},1500);}
   }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='Save detailed report';} alert('Save failed: '+e.message); });
+}
+
+// ===== Parent stream (bilingual EN + zh-Hant, release-gated) =====
+function renderParent(en, zh, released){
+  var el=document.getElementById('parent-body'); if(!el) return;
+  var has = (en && en.trim()) || (zh && zh.trim());
+  var h='<div class="det-actions"><button class="det-gen-btn" id="par-gen-btn" onclick="generateParent()">'+(has?'Regenerate':'Generate parent report')+'</button>'
+    +'<span class="pl-hint">Parent-facing, constructive, internal mechanics removed. Generated in English and Traditional Chinese.</span></div>';
+  if(!has){
+    h+='<div class="par-empty">No parent-facing report yet. Generate one to get a warm, constructive summary for the family - genuine strengths, the key growth areas, and the focus going forward - in English and parent-natural Traditional Chinese. No scores, levels, or internal tiers. Review and edit before releasing.</div>';
+    el.innerHTML=h; return;
+  }
+  h+='<div class="par-lang">English (parent-facing)</div>';
+  h+='<textarea class="par-ta" id="par-en">'+escH(en||'')+'</textarea>';
+  h+='<div class="par-lang">\u7e41\u9ad4\u4e2d\u6587 (Traditional Chinese, parent-facing)</div>';
+  h+='<textarea class="par-ta" id="par-zh">'+escH(zh||'')+'</textarea>';
+  h+='<div class="par-note">The Traditional Chinese is generated for Taiwan parents and should be read by a fluent reviewer before release.</div>';
+  h+='<div class="det-actions" style="margin-top:10px;"><button class="mbtn mbtn-gold" id="par-save-btn" onclick="saveParent()">Save edits</button></div>';
+  h+='<div class="par-release"><span class="par-rel-status '+(released?'on':'off')+'" id="par-rel-status">'+(released?'Released to parents':'Not released')+'</span>'
+    +'<button class="mbtn" id="par-rel-btn" onclick="releaseParent('+(released?'false':'true')+')">'+(released?'Mark as not released':'Mark as released')+'</button>'
+    +'<span class="pl-hint">Releasing is a deliberate step. Nothing is sent automatically.</span></div>';
+  el.innerHTML=h;
+}
+
+function buildParentPrompt(diag, result, rubric, items, name, label){
+  // Reuse the grounded fact block (placement, strand levels, mcq summary, criterion ladder).
+  return buildExecPrompt(diag, result, rubric, items, name, label);
+}
+
+function generateParent(){
+  var r=reports.find(function(x){return x.id===activeId;}); if(!r) return;
+  if(!AK||!PROXY){alert('Connect with your Anthropic key and Worker URL to generate.');return;}
+  if(!activeDiag){alert('Diagnostic data is still loading. Please wait a moment.');return;}
+  var btn=document.getElementById('par-gen-btn'); if(btn){btn.disabled=true;btn.textContent='Generating...';}
+  var dataBlock=buildParentPrompt(activeDiag, activeResult, activeRubric, activeItems, r.student_name||'your child', r.diagnostic_label||'Diagnostic');
+  var first=(r.student_name||'').trim().split(/\s+/)[0]||'your child';
+  var userPrompt='Write the PARENT-FACING summary of this diagnostic for '+(r.student_name||'the student')+'. The facts below are for your grounding only; the parents must NOT see scores, percentages, numeric levels, tiers, confidence, distractor analysis, or any comparison to other students.\n\n'
+    +dataBlock
+    +'\n\nWrite for the parents of '+first+'. Open by acknowledging something real and encouraging about where '+first+' is. Name two or three genuine strengths in plain terms. Then name the key growth areas honestly but constructively, as things to work on rather than failures. Close with what the teaching will focus on first, so the parents know the path forward. Warm, specific, honest. No scores or levels, no jargon, no sales language, no guarantees, no sign-off or teacher name.\n\n'
+    +'Voice: plainspoken warm-premium, the way a serious educator speaks to a parent who is trusting them with their child. American spelling. Use "1-on-1" if relevant. Never call Harland a school, only an academy or program. No em dashes. No "X, not Y" contrasts. No semicolons. Be concise; every sentence earns its place.\n\n'
+    +'Then write a parallel Traditional Chinese (Taiwan) version for Taiwan parents. It is NOT a literal translation: write it natively, warm-premium and parent-natural, the way one thoughtful parent speaks to another, concrete and emotionally true, never literary or strategic or brochure-like. Full-width punctuation throughout. A single space between any Latin word and the adjacent Chinese character. No em dashes. Same substance as the English, no scores or levels.\n\n'
+    +'Return ONLY a JSON object (no markdown fences, no preamble): {"english":"<the English report, paragraphs separated by \\n\\n>","chinese":"<the Traditional Chinese report, paragraphs separated by \\n\\n>"}';
+  fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:2500,
+      system:'You are a Head Teacher at Harland Education, a 1-on-1 tutoring academy in Taipei serving international-school families. You write parent-facing notes that are warm, honest, and constructive, in the plainspoken warm-premium Harland voice. You never expose internal scoring or placement mechanics to parents, never use sales language or guarantees, and never use em dashes. You are fluent in writing parent-natural Taiwan Traditional Chinese. When asked for JSON, output strictly valid JSON only.',
+      messages:[{role:'user',content:userPrompt}]})
+  }).then(function(res){if(!res.ok)return res.text().then(function(t){throw new Error(t);});return res.json();})
+  .then(function(d){
+    var text=(d.content&&d.content[0]&&d.content[0].text)||'';
+    var parsed=null; try{ parsed=JSON.parse(text.replace(/```json/gi,'').replace(/```/g,'').trim()); }catch(e){ parsed=null; }
+    if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the English box for manual use.'); renderParent(text,'',false); return; }
+    var en=parsed.english||'', zh=parsed.chinese||'';
+    api('reports?id=eq.'+activeId,'PATCH',{ai_parent:en, ai_parent_zh:zh}).then(function(dd){
+      if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
+      renderParent(en, zh, (r.parent_released===true));
+    }).catch(function(e){ renderParent(en, zh, false); alert('Generated, but saving failed: '+e.message); });
+  }).catch(function(e){
+    var b=document.getElementById('par-gen-btn'); if(b){b.disabled=false;b.textContent='Generate parent report';}
+    alert('Parent generation failed: '+(e.message||'unknown error'));
+  });
+}
+
+function saveParent(){
+  if(!activeId)return;
+  var en=document.getElementById('par-en'), zh=document.getElementById('par-zh');
+  var btn=document.getElementById('par-save-btn'); if(btn){btn.disabled=true;btn.textContent='Saving...';}
+  api('reports?id=eq.'+activeId,'PATCH',{edited_parent:(en?en.value:''), edited_parent_zh:(zh?zh.value:'')}).then(function(dd){
+    if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
+    if(btn){btn.disabled=false;btn.textContent='Saved \u2713';setTimeout(function(){var b=document.getElementById('par-save-btn'); if(b){b.textContent='Save edits';}},1500);}
+  }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='Save edits';} alert('Save failed: '+e.message); });
+}
+
+function releaseParent(toRelease){
+  if(!activeId)return;
+  if(toRelease){ if(!confirm('Mark this parent-facing report as released? This records that it has been reviewed and is cleared to share. It does not send anything automatically.')) return; }
+  api('reports?id=eq.'+activeId,'PATCH',{parent_released:toRelease}).then(function(dd){
+    var row=(dd&&dd.length)?dd[0]:null;
+    if(row){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=row;}
+    renderParent(row?(row.edited_parent||row.ai_parent||''):'', row?(row.edited_parent_zh||row.ai_parent_zh||''):'', toRelease);
+  }).catch(function(e){ alert('Update failed: '+e.message); });
 }
 
 function loadStudents(){
