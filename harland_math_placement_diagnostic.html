@@ -654,6 +654,15 @@
       note: 'Suggested start = the first course in the Algebra I -> Geometry -> Algebra II sequence with fewer than 4 of 6 MCQ correct. Geometry runs partly parallel to the algebra strand, so review the per-topic gaps and the open-response reasoning before finalizing. This is a starting suggestion for the teacher, not an automatic placement. Open-response items are not auto-scored.'
     };
 
+    // Per-course level read in the shape the admin grounding reads (preferences.level_analysis.strand_levels).
+    var strandLevels = {};
+    for (c = 0; c < courseOrder.length; c++) {
+      var rcx = byCourse[courseOrder[c]] || { correct: 0, total: 0 };
+      var wlab = rcx.correct >= 5 ? 'secure' : (rcx.correct >= 4 ? 'developing' : 'not yet secure');
+      strandLevels[courseOrder[c]] = rcx.correct + '/' + rcx.total + ' correct (' + wlab + ')';
+    }
+    preferences.level_analysis = { by_strand: byCourse, strand_levels: strandLevels };
+
     return {
       student_id: STUDENT_ID, student_name: studentName,
       diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
@@ -663,20 +672,73 @@
     };
   }
 
+  // Maps the placement analysis to a structured results row. Conservative by design:
+  // the open-response reasoning items are teacher-scored, so the auto signal never claims 'high'.
+  function buildResult(submissionId, payload) {
+    var prefs = payload.preferences || {};
+    var pa = prefs.placement_analysis || {};
+    var bc = pa.by_course || {};
+    var courseOrder = ['Algebra I', 'Geometry', 'Algebra II'];
+    var labelOf = { 'Algebra I': 'Algebra I', 'Geometry': 'Geometry', 'Algebra II': 'Algebra II' };
+    var breakdown = []; var c;
+    for (c = 0; c < courseOrder.length; c++) {
+      var rec = bc[courseOrder[c]] || { correct: 0, total: 0 };
+      var w = rec.correct >= 5 ? 'secure' : (rec.correct >= 4 ? 'developing' : 'not yet secure');
+      breakdown.push({ strand: courseOrder[c], raw_score: rec.correct, max_score: rec.total, indicated_level: rec.correct + '/' + rec.total + ' (' + w + ')' });
+    }
+    var start = pa.suggested_start || '';
+    var recLevel = labelOf[start] || 'beyond_algebra_ii';
+    var failRec = bc[start];
+    var confidence = 'low';
+    if (!failRec) { confidence = 'medium'; }            // mastered all three courses
+    else if (failRec.correct <= 2) { confidence = 'medium'; }  // clearly below threshold
+    var flags = [];
+    if (pa.weak_topics && pa.weak_topics.length) { flags.push('weak_topics: ' + pa.weak_topics.join('; ')); }
+    flags.push('reasoning_items_pending');
+    return {
+      submission_id: submissionId,
+      student_id: payload.student_id,
+      diagnostic_id: DIAGNOSTIC_SLUG,
+      assessment_type: 'diagnostic',
+      subject: 'math_placement',
+      recommended_course: start || 'Beyond Algebra II',
+      recommended_level: recLevel,
+      recommended_tier: null,
+      starting_unit: null,
+      confidence: confidence,
+      breakdown: breakdown,
+      flags: flags,
+      computed_by: 'engine',
+      status: 'computed',
+      schema_version: '1.0'
+    };
+  }
+
+  // Three-step submit: diagnostics (submission) -> results (structured placement) -> reports (pending).
+  // The results step is best-effort, so a results error never blocks the student or the report shell.
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
     fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
     .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
     .then(function(data) {
-      var reportPayload = {
-        diagnostic_id: data[0].id,
-        student_id: payload.student_id,
-        student_name: payload.student_name,
-        diagnostic_label: payload.diagnostic_label,
-        ai_report: 'Pending HT review',
-        status: 'pending'
-      };
-      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+      var submissionId = data[0].id;
+      var resultPayload = buildResult(submissionId, payload);
+      return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resultPayload) })
+        .then(function(rr) { return rr.ok ? rr.json() : null; }, function() { return null; })
+        .then(function(resData) {
+          if (!resData) { try { console.warn('results insert failed; report will carry no result_id'); } catch (e) {} }
+          var resultId = (resData && resData[0]) ? resData[0].id : null;
+          var reportPayload = {
+            diagnostic_id: submissionId,
+            result_id: resultId,
+            student_id: payload.student_id,
+            student_name: payload.student_name,
+            diagnostic_label: payload.diagnostic_label,
+            ai_report: 'Pending HT review',
+            status: 'pending'
+          };
+          return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+        });
     })
     .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
     .catch(function(err) { onError(err); });
