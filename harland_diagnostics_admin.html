@@ -288,6 +288,10 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
 <script>
 var U='',K='',AK='',PROXY='',W='',reports=[],students=[],activeId=null,activeDiag=null,activeResult=null,CATALOG={},placements=[],ITEMS={},activeItems=[];
 var STREAM_MODEL='claude-sonnet-4-6';
+// Which criterion spine grounds each diagnostic (extend as diagnostics get bands).
+var RUBRIC_MAP={ english_diagnostic_g8_10:{spine:'common_core_ela',subject:'english'},
+                 english_diagnostic_g5_7:{spine:'common_core_ela',subject:'english'} };
+var RUBRICS={}, activeRubric=null;
 
 function doConnect(){
   var u=document.getElementById('f-url').value.trim();
@@ -393,7 +397,7 @@ function openModal(id){
     var diag=d&&d.length?d[0]:null;
     activeDiag=diag;
     loadPlacement(diag);
-    loadItems(diag,function(items){activeItems=items;});
+    loadItems(diag,function(items,slug){activeItems=items;loadRubric(slug,function(bands){activeRubric=bands;});});
     var el=document.getElementById('m-responses');
     if(!diag){el.innerHTML='<div style="color:#9A9AA8;font-size:12px;">No response data.</div>';return;}
     var html='';
@@ -625,24 +629,34 @@ function showStream(name){
 
 function loadItems(diag, cb){
   var slug = diag && (diag.diagnostic_id || diag.diagnostic_type);
-  if(slug && ITEMS[slug]){ cb(ITEMS[slug]); return; }
+  if(slug && ITEMS[slug]){ cb(ITEMS[slug], slug); return; }
   if(slug){
     api('diagnostic_items?diagnostic_id=eq.'+encodeURIComponent(slug)+'&order=item_order&select=*').then(function(d){
-      if(d && d.length){ ITEMS[slug]=d; cb(d); } else { resolveItemsByKeys(diag, cb); }
+      if(d && d.length){ ITEMS[slug]=d; cb(d, slug); } else { resolveItemsByKeys(diag, cb); }
     }).catch(function(){ resolveItemsByKeys(diag, cb); });
   } else { resolveItemsByKeys(diag, cb); }
 }
 // Fallback: when the slug is missing or unmatched, identify the item bank from the answered item ids.
 function resolveItemsByKeys(diag, cb){
   var mcq=(diag && diag.mcq_scores)||{}; var keys=Object.keys(mcq);
-  if(!keys.length){ cb([]); return; }
+  if(!keys.length){ cb([], null); return; }
   api('diagnostic_items?item_id=in.('+keys.join(',')+')&select=*').then(function(d){
-    if(!d || !d.length){ cb([]); return; }
+    if(!d || !d.length){ cb([], null); return; }
     var counts={}; d.forEach(function(it){ counts[it.diagnostic_id]=(counts[it.diagnostic_id]||0)+1; });
     var best=null,bestN=0; for(var k in counts){ if(counts[k]>bestN){ bestN=counts[k]; best=k; } }
     var items=d.filter(function(it){ return it.diagnostic_id===best; }).sort(function(a,b){ return (a.item_order||0)-(b.item_order||0); });
-    ITEMS[best]=items; cb(items);
-  }).catch(function(){ cb([]); });
+    ITEMS[best]=items; cb(items, best);
+  }).catch(function(){ cb([], null); });
+}
+// Fetch the criterion bands (Common Core or other spine) for a diagnostic, cached by spine:subject.
+function loadRubric(slug, cb){
+  var m = slug && RUBRIC_MAP[slug];
+  if(!m){ cb(null); return; }
+  var key = m.spine+':'+m.subject;
+  if(RUBRICS[key]){ cb(RUBRICS[key]); return; }
+  api('rubric_bands?spine=eq.'+encodeURIComponent(m.spine)+'&subject=eq.'+encodeURIComponent(m.subject)+'&order=level,strand&select=*').then(function(d){
+    RUBRICS[key]=d||[]; cb(RUBRICS[key]);
+  }).catch(function(){ cb(null); });
 }
 
 function renderDetailed(di, prose){
@@ -691,7 +705,7 @@ function detFormatItem(it, mcq){
     +'Options: '+optStr+'\n'
     +'Correct: '+correctL+' ('+(it.correct_answer||'')+')   Student chose: '+chosenL+' ('+chosenTxt+') -> '+verdict;
 }
-function buildDetailedPrompt(diag, result, items, name, label){
+function buildDetailedPrompt(diag, result, items, rubric, name, label){
   var mcq=diag.mcq_scores||{};
   var raw=diag.raw_responses||{}; if(typeof raw==='string'){try{raw=JSON.parse(raw);}catch(e){raw={};}}
   var L=[];
@@ -707,6 +721,19 @@ function buildDetailedPrompt(diag, result, items, name, label){
   var la=(diag.preferences||{}).level_analysis;
   if(la && la.strand_levels){ var sl=[]; for(var k in la.strand_levels){sl.push(k+': '+la.strand_levels[k]);} L.push('DIAGNOSTIC STRAND LEVELS: '+sl.join('; ')); }
   L.push('');
+  // Criterion ladder (Common Core spine): the standard the level read and teaching direction are anchored to.
+  if(rubric && rubric.length){
+    L.push('=== CRITERION LADDER (Common Core English spine; Harland level ~ US grade) ===');
+    L.push('Anchor the level read and each strand\'s teaching direction to these descriptors.');
+    var byStrand={}; rubric.forEach(function(b){ (byStrand[b.strand]=byStrand[b.strand]||[]).push(b); });
+    ['Reading','Grammar','Vocabulary','Writing'].forEach(function(st){
+      var bands=byStrand[st]; if(!bands||!bands.length) return;
+      bands.sort(function(a,b){return (a.level||0)-(b.level||0);});
+      L.push(st.toUpperCase()+':');
+      bands.forEach(function(b){ L.push('  L'+b.level+' ('+(b.grade_band||'')+', '+(b.cc_strand||'')+'): '+b.descriptor); });
+    });
+    L.push('');
+  }
   var readingSecs={};
   items.forEach(function(it){ if(it.strand==='Reading'){(readingSecs[it.section]=readingSecs[it.section]||[]).push(it);} });
   Object.keys(readingSecs).forEach(function(sec){
@@ -738,14 +765,14 @@ function generateDetailed(){
   if(!activeDiag){alert('Diagnostic data is still loading. Please wait a moment.');return;}
   if(!activeItems||!activeItems.length){alert('No item bank found for this diagnostic. The detailed report needs an item bank; currently only the Grade 8-10 English diagnostic has one.');return;}
   var btn=document.getElementById('det-gen-btn'); if(btn){btn.disabled=true;btn.textContent='Generating...';}
-  var dataBlock=buildDetailedPrompt(activeDiag, activeResult, activeItems, r.student_name||'the student', r.diagnostic_label||'Diagnostic');
-  var userPrompt='You are writing the DETAILED, TEACHER-FACING analysis for a Harland diagnostic. Below is the full item bank with the student\'s actual answers, grounded in the real questions.\n\n'
+  var dataBlock=buildDetailedPrompt(activeDiag, activeResult, activeItems, activeRubric, r.student_name||'the student', r.diagnostic_label||'Diagnostic');
+  var userPrompt='You are writing the DETAILED, TEACHER-FACING analysis for a Harland diagnostic. Below is the full item bank with the student\'s actual answers, grounded in the real questions, and the Common Core criterion ladder the level read is anchored to.\n\n'
     +dataBlock
     +'\n\nReturn ONLY a JSON object (no markdown fences, no preamble) with this exact shape:\n'
     +'{"items":[{"id":"<item_id>","strand":"<strand>","assesses":"<topic>","student_answer":"<the option text the student chose, or a short phrase>","correct":<true|false>,"interpretation":"<If the answer is WRONG: 1-2 full sentences naming the specific misconception the chosen distractor implies, grounded in THIS item. If the answer is CORRECT: a brief phrase of roughly 4-10 words confirming the skill (e.g. \\"Secure on the colon-before-list rule.\\"). Reserve the detail for the misses; keep correct-answer notes short.>"}],'
-    +'"strand_directions":[{"strand":"<Reading|Grammar|Vocabulary|Writing>","direction":"<2-3 sentences: where this student sits in this strand and what to teach first, grounded in the answers above>"}],'
-    +'"synthesis":"<2 to 4 short paragraphs: the teacher\'s working read - current level, clearest strengths and gaps, and how to open the first units. Reference specific evidence. Plain, direct, professional, not AI-sounding.>"}\n'
-    +'Include every item in "items", grounded in the actual question and the actual answer, but concentrate the analysis on the wrong answers; correct answers get only a brief confirmation.';
+    +'"strand_directions":[{"strand":"<Reading|Grammar|Vocabulary|Writing>","direction":"<2-3 sentences: where this student sits on the criterion ladder for this strand and what to teach first. Reference the relevant Common Core level descriptor and the pattern of answers above.>"}],'
+    +'"synthesis":"<2 to 4 short paragraphs: the teacher\'s working read - where the student sits against the Common Core criterion ladder, clearest strengths and gaps, and how to open the first units. Reference specific evidence and the level descriptors. Plain, direct, professional, not AI-sounding.>"}\n'
+    +'Include every item in "items", grounded in the actual question and the actual answer, but concentrate the analysis on the wrong answers; correct answers get only a brief confirmation. Anchor the level read and teaching directions to the criterion ladder, naming the Harland level / Common Core band where it helps.';
   fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:4000,
       system:'You are a Head Teacher at Harland Education, an academic tutoring academy in Taipei serving international-school students. You write precise, evidence-grounded teacher-facing analysis, interpreting each answer in terms of the specific skill or misconception it reveals. You never invent facts unsupported by the data. When asked for JSON, output strictly valid JSON only.',
