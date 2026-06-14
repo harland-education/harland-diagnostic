@@ -705,6 +705,60 @@ function detFormatItem(it, mcq){
     +'Options: '+optStr+'\n'
     +'Correct: '+correctL+' ('+(it.correct_answer||'')+')   Student chose: '+chosenL+' ('+chosenTxt+') -> '+verdict;
 }
+// Common Core criterion ladder as prompt lines (shared by both streams).
+function criterionLadderLines(rubric){
+  if(!rubric || !rubric.length) return [];
+  var out=['=== CRITERION LADDER (Common Core English spine; Harland level ~ US grade) ===',
+           'Anchor the level read and teaching to these descriptors.'];
+  var byStrand={}; rubric.forEach(function(b){ (byStrand[b.strand]=byStrand[b.strand]||[]).push(b); });
+  ['Reading','Grammar','Vocabulary','Writing'].forEach(function(st){
+    var bands=byStrand[st]; if(!bands||!bands.length) return;
+    bands.sort(function(a,b){return (a.level||0)-(b.level||0);});
+    out.push(st.toUpperCase()+':');
+    bands.forEach(function(b){ out.push('  L'+b.level+' ('+(b.grade_band||'')+', '+(b.cc_strand||'')+'): '+b.descriptor); });
+  });
+  return out;
+}
+function mcqStrandSummary(items, mcq){
+  var ov={c:0,t:0}, by={};
+  (items||[]).forEach(function(it){
+    if(it.format!=='mcq') return;
+    var s=mcq[it.item_id]; if(!s) return;
+    ov.t++; var st=it.strand||'Other'; by[st]=by[st]||{c:0,t:0}; by[st].t++;
+    if(s.correct===true){ ov.c++; by[st].c++; }
+  });
+  return {overall:ov, byStrand:by};
+}
+// Executive (admin) prompt: grounded in the structured result + strand levels + criterion ladder, no per-item dump.
+function buildExecPrompt(diag, result, rubric, items, name, label){
+  var mcq=diag.mcq_scores||{};
+  var raw=diag.raw_responses||{}; if(typeof raw==='string'){try{raw=JSON.parse(raw);}catch(e){raw={};}}
+  var L=[];
+  L.push('STUDENT: '+name);
+  L.push('DIAGNOSTIC: '+label);
+  if(result){
+    L.push('COMPUTED PLACEMENT (authoritative - your summary must agree with this): '+(result.subject||'')+' level '+(result.recommended_level||'?')+(result.recommended_tier?(', tier '+result.recommended_tier):'')+(result.confidence?(' (confidence '+result.confidence+')'):''));
+    if(result.recommended_course) L.push('RECOMMENDED COURSE: '+result.recommended_course+(result.starting_unit?(', starting unit '+result.starting_unit):''));
+    if(result.breakdown && result.breakdown.length){
+      L.push('STRAND BREAKDOWN: '+result.breakdown.map(function(b){return (b.strand||'')+' '+(b.raw_score!=null?b.raw_score:'?')+'/'+(b.max_score!=null?b.max_score:'?')+(b.indicated_level?(' ('+b.indicated_level+')'):'');}).join('; '));
+    }
+    if(result.flags && result.flags.length) L.push('FLAGS: '+result.flags.join(', '));
+  } else {
+    L.push('(No computed result row yet - infer the working level from the data below and the criterion ladder, and say it is provisional pending teacher confirmation.)');
+  }
+  var la=(diag.preferences||{}).level_analysis;
+  if(la && la.strand_levels){ var sl=[]; for(var k in la.strand_levels){sl.push(k+': '+la.strand_levels[k]);} L.push('DIAGNOSTIC STRAND LEVELS: '+sl.join('; ')); }
+  var sum=mcqStrandSummary(items, mcq);
+  if(sum.overall.t){ var parts=[]; for(var st in sum.byStrand){ parts.push(st+' '+sum.byStrand[st].c+'/'+sum.byStrand[st].t); } L.push('MCQ SCORE: '+sum.overall.c+'/'+sum.overall.t+' overall ('+parts.join(', ')+')'); }
+  var wItem=(items||[]).filter(function(it){return it.strand==='Writing';})[0];
+  if(wItem){ var essay=raw[wItem.item_id]; L.push('WRITING: '+(essay&&String(essay).trim()?'submitted, pending teacher review (writing_pending)':'not submitted')); }
+  var ratings=diag.self_ratings||{}; var rk=Object.keys(ratings);
+  if(rk.length){ var rr=[]; rk.forEach(function(k){ if(ratings[k]!=null) rr.push(k+': '+ratings[k]); }); if(rr.length) L.push('STUDENT SELF-RATINGS: '+rr.join('; ')); }
+  L.push('');
+  var ladder=criterionLadderLines(rubric);
+  if(ladder.length){ L=L.concat(ladder); L.push(''); }
+  return L.join('\n');
+}
 function buildDetailedPrompt(diag, result, items, rubric, name, label){
   var mcq=diag.mcq_scores||{};
   var raw=diag.raw_responses||{}; if(typeof raw==='string'){try{raw=JSON.parse(raw);}catch(e){raw={};}}
@@ -722,18 +776,8 @@ function buildDetailedPrompt(diag, result, items, rubric, name, label){
   if(la && la.strand_levels){ var sl=[]; for(var k in la.strand_levels){sl.push(k+': '+la.strand_levels[k]);} L.push('DIAGNOSTIC STRAND LEVELS: '+sl.join('; ')); }
   L.push('');
   // Criterion ladder (Common Core spine): the standard the level read and teaching direction are anchored to.
-  if(rubric && rubric.length){
-    L.push('=== CRITERION LADDER (Common Core English spine; Harland level ~ US grade) ===');
-    L.push('Anchor the level read and each strand\'s teaching direction to these descriptors.');
-    var byStrand={}; rubric.forEach(function(b){ (byStrand[b.strand]=byStrand[b.strand]||[]).push(b); });
-    ['Reading','Grammar','Vocabulary','Writing'].forEach(function(st){
-      var bands=byStrand[st]; if(!bands||!bands.length) return;
-      bands.sort(function(a,b){return (a.level||0)-(b.level||0);});
-      L.push(st.toUpperCase()+':');
-      bands.forEach(function(b){ L.push('  L'+b.level+' ('+(b.grade_band||'')+', '+(b.cc_strand||'')+'): '+b.descriptor); });
-    });
-    L.push('');
-  }
+  var ladder=criterionLadderLines(rubric);
+  if(ladder.length){ L=L.concat(ladder); L.push(''); }
   var readingSecs={};
   items.forEach(function(it){ if(it.strand==='Reading'){(readingSecs[it.section]=readingSecs[it.section]||[]).push(it);} });
   Object.keys(readingSecs).forEach(function(sec){
@@ -906,21 +950,16 @@ function generateAI(){
   btn.textContent='Generating...';
   btn.disabled=true;
 
-  var dataBlock=buildDiagPrompt(activeDiag, r.student_name||'the student', r.diagnostic_label||'Diagnostic');
+  var dataBlock=buildExecPrompt(activeDiag, activeResult, activeRubric, activeItems, r.student_name||'the student', r.diagnostic_label||'Diagnostic');
 
-  var userPrompt='Write an internal diagnostic report for Harland Education.\n\n'
+  var userPrompt='Write the internal EXECUTIVE diagnostic report for Harland Education. It is grounded in the computed result and the Common Core criterion ladder below; your level read must agree with the computed placement.\n\n'
     +dataBlock
-    +'\nReport structure -- use exactly these headings:\n\n'
-    +'OVERALL SUMMARY\n'
-    +'2-3 sentences. Direct statement of the student\'s current level and key finding.\n\n'
-    +'STRENGTHS\n'
-    +'Specific areas of competence, referenced to the actual data above.\n\n'
-    +'AREAS FOR DEVELOPMENT\n'
-    +'Specific gaps or misconceptions, referenced to the actual data. Be honest.\n\n'
-    +'PROGRAMME RECOMMENDATION\n'
-    +'Which Harland programme and level to recommend (Advanced or Expert), which subject(s), '
-    +'and estimated unit count. Justify briefly.\n\n'
-    +'Write like a knowledgeable teacher, not AI. Be direct and specific.';
+    +'\nWrite four short sections, each label on its own line in Title Case followed by prose:\n\n'
+    +'Overall summary\n2-3 sentences stating the student\'s current level against the criterion ladder and the single key finding.\n\n'
+    +'Strengths\nSpecific areas of competence, referenced to the data and named against the Common Core band where it helps.\n\n'
+    +'Areas for development\nThe specific gaps or misconceptions, referenced to the data. Be honest and specific.\n\n'
+    +'Recommendation\nConfirm the recommended level, course, and tier from the computed placement (or, if none, give a provisional level pending teacher confirmation), and justify briefly against the criteria. Note if writing is pending review.\n\n'
+    +'PLAIN TEXT ONLY. Do not use markdown: no #, no asterisks or bold, no bullet characters. Write like a knowledgeable teacher, direct and specific, not like AI.';
 
   // Send to Cloudflare Worker proxy (avoids CORS restriction on direct browser->Anthropic calls)
   // The Worker extracts _apiKey and forwards to Anthropic with it as a header
@@ -929,13 +968,12 @@ function generateAI(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
       _apiKey: AK,
-      model:'claude-sonnet-4-20250514',
+      model:STREAM_MODEL,
       max_tokens:1200,
-      system:'You are a Head Teacher at Harland Education, a premium 1-on-1 tutoring company in Taipei serving international school students. '
-        +'You write internal diagnostic reports reviewed and edited by the teacher before being sent to parents. '
-        +'Harland programmes: Academic English K-12, Science/Maths/Humanities tutoring, Test Prep (SAT, AP, IB, IELTS, TOEFL). '
-        +'Levels: Advanced (high school content) and Expert (AP/IB). Each unit = 11 lessons. '
-        +'Write with the authority of a professional educator. Be specific and evidence-based. Do not sound like AI.',
+      system:'You are a Head Teacher at Harland Education, an academic 1-on-1 tutoring academy in Taipei serving international-school students. '
+        +'You write internal diagnostic reports that the teacher reviews and edits before anything is shared with parents. '
+        +'Ground every statement in the data and the Common Core criterion ladder provided, and keep your level read consistent with the computed placement. '
+        +'Write in plain prose with no markdown formatting. Be specific, evidence-based, and direct; do not sound like AI.',
       messages:[{role:'user',content:userPrompt}]
     })
   })
