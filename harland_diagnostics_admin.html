@@ -109,9 +109,9 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
 .pl-in{font-size:13px;padding:7px 10px;border:1.5px solid var(--border-soft);background:var(--white);font-family:var(--font-body);color:var(--ink);}
 .pl-in:focus{outline:none;border-color:var(--gold);}
 .pl-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.pl-save{font-size:12px;font-weight:500;padding:8px 18px;border:none;background:var(--obsidian);color:var(--cream);cursor:pointer;font-family:var(--font-body);transition:background .15s;}
-.pl-save:hover{background:var(--ink);}
-.pl-save.saved{background:var(--success);}
+.pl-save{font-size:12px;font-weight:500;padding:8px 18px;border:1.5px solid var(--gold-dark);background:var(--white);color:var(--gold-dark);cursor:pointer;font-family:var(--font-body);transition:background .15s;}
+.pl-save:hover{background:var(--gold-pale);}
+.pl-save.saved{background:var(--success-wash);border-color:var(--success);color:var(--success);}
 .pl-hint{font-size:11px;color:var(--mist);}
 .pl-none-note{font-size:12.5px;color:var(--slate);line-height:1.5;}
 /* placements table */
@@ -284,7 +284,7 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
       </div>
       </div>
     </div>
-    <div class="mftr">
+    <div class="mftr" id="mftr">
       <button class="mbtn" onclick="closeModal()">Cancel</button>
       <button class="mbtn" onclick="generateAI()" id="gen-btn">Generate AI draft</button>
       <button class="mbtn mbtn-gold" onclick="saveR('reviewed')">Save as reviewed</button>
@@ -634,6 +634,30 @@ function showStream(name){
     var p=document.getElementById('pane-'+s); if(p) p.style.display=(s===name?'flex':'none');
     var t=document.getElementById('stab-'+s); if(t) t.className='stab'+(s===name?' on':'');
   });
+  renderFooter(name);
+}
+// The footer is the action bar for the active stream.
+function renderFooter(stream){
+  var f=document.getElementById('mftr'); if(!f) return;
+  var r=reports.find(function(x){return x.id===activeId;})||{};
+  var h='<button class="mbtn" onclick="closeModal()">Cancel</button>';
+  if(stream==='detailed'){
+    var dHas=!!((r.detailed_items&&r.detailed_items.items&&r.detailed_items.items.length)||r.edited_detailed||r.ai_detailed);
+    h+='<button class="mbtn" id="det-gen-btn" onclick="generateDetailed()">'+(dHas?'Regenerate':'Generate detailed report')+'</button>'
+      +'<button class="mbtn mbtn-gold" id="det-save-btn" onclick="saveDetailed()">Save detailed report</button>';
+  } else if(stream==='parent'){
+    var pHas=!!(r.edited_parent||r.ai_parent||r.edited_parent_zh||r.ai_parent_zh);
+    var rel=r.parent_released===true;
+    h+='<button class="mbtn" id="par-gen-btn" onclick="generateParent()">'+(pHas?'Regenerate':'Generate parent report')+'</button>'
+      +'<button class="mbtn mbtn-gold" id="par-save-btn" onclick="saveParent()">Save edits</button>'
+      +'<button class="mbtn'+(rel?'':' mbtn-g')+'" id="par-rel-btn" onclick="releaseParent('+(rel?'false':'true')+')">'+(rel?'Unrelease':'Mark as released')+'</button>'
+      +'<span class="par-rel-status '+(rel?'on':'off')+'" id="par-rel-status" style="align-self:center;">'+(rel?'Released to parents':'Not released')+'</span>';
+  } else {
+    h+='<button class="mbtn" id="gen-btn" onclick="generateAI()">Generate AI draft</button>'
+      +'<button class="mbtn mbtn-gold" onclick="saveR(\'reviewed\')">Save as reviewed</button>'
+      +'<button class="mbtn mbtn-g" onclick="saveR(\'sent\')">Mark as sent</button>';
+  }
+  f.innerHTML=h;
 }
 
 function loadItems(diag, cb){
@@ -671,10 +695,9 @@ function loadRubric(slug, cb){
 function renderDetailed(di, prose){
   var el=document.getElementById('detailed-body'); if(!el) return;
   var hasData = di && di.items && di.items.length;
-  var h='<div class="det-actions"><button class="det-gen-btn" id="det-gen-btn" onclick="generateDetailed()">'+(hasData||prose?'Regenerate':'Generate detailed report')+'</button>'
-    +'<span class="pl-hint">Per-question interpretation, grounded in the item bank. Review and edit before use.</span></div>';
+  var h='';
   if(!hasData && !prose){
-    h+='<div class="det-empty">No detailed teacher report yet. Generate one for a per-question walk-through (each item, the student\'s answer, and what it signals) plus a suggested teaching direction per strand, grounded in this diagnostic\'s item bank.</div>';
+    h+='<div class="det-empty">No detailed teacher report yet. Use Generate detailed report below for a per-question walk-through (each item, the student\'s answer, and what it signals) plus a suggested teaching direction per strand, grounded in this diagnostic\'s item bank.</div>';
     el.innerHTML=h; return;
   }
   if(hasData){
@@ -697,7 +720,6 @@ function renderDetailed(di, prose){
   }
   h+='<div class="det-section-label">Synthesis (editable)</div>';
   h+='<textarea class="mta" id="det-prose" style="min-height:130px;">'+escH(prose||'')+'</textarea>';
-  h+='<div class="det-actions"><button class="mbtn mbtn-gold" id="det-save-btn" onclick="saveDetailed()">Save detailed report</button></div>';
   el.innerHTML=h;
 }
 
@@ -834,13 +856,13 @@ function generateDetailed(){
   .then(function(d){
     var text=(d.content&&d.content[0]&&d.content[0].text)||'';
     var parsed=null; try{ parsed=JSON.parse(text.replace(/```json/gi,'').replace(/```/g,'').trim()); }catch(e){ parsed=null; }
-    if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the synthesis box for manual use.'); renderDetailed(null, text); return; }
+    if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the synthesis box for manual use.'); renderDetailed(null, text); renderFooter('detailed'); return; }
     var di={items:parsed.items||[], strand_directions:parsed.strand_directions||[]};
     var prose=parsed.synthesis||'';
     api('reports?id=eq.'+activeId,'PATCH',{ai_detailed:prose, detailed_items:di}).then(function(dd){
       if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
-      renderDetailed(di, prose);
-    }).catch(function(e){ renderDetailed(di, prose); alert('Generated, but saving failed: '+e.message); });
+      renderDetailed(di, prose); renderFooter('detailed');
+    }).catch(function(e){ renderDetailed(di, prose); renderFooter('detailed'); alert('Generated, but saving failed: '+e.message); });
   }).catch(function(e){
     var b=document.getElementById('det-gen-btn'); if(b){b.disabled=false;b.textContent='Generate detailed report';}
     alert('Detailed generation failed: '+(e.message||'unknown error')+'\n\nYou can still write it manually.');
@@ -861,21 +883,16 @@ function saveDetailed(){
 function renderParent(en, zh, released){
   var el=document.getElementById('parent-body'); if(!el) return;
   var has = (en && en.trim()) || (zh && zh.trim());
-  var h='<div class="det-actions"><button class="det-gen-btn" id="par-gen-btn" onclick="generateParent()">'+(has?'Regenerate':'Generate parent report')+'</button>'
-    +'<span class="pl-hint">Parent-facing, constructive, internal mechanics removed. Generated in English and Traditional Chinese.</span></div>';
+  var h='';
   if(!has){
-    h+='<div class="par-empty">No parent-facing report yet. Generate one to get a warm, constructive summary for the family - genuine strengths, the key growth areas, and the focus going forward - in English and parent-natural Traditional Chinese. No scores, levels, or internal tiers. Review and edit before releasing.</div>';
+    h+='<div class="par-empty">No parent-facing report yet. Use Generate parent report below for a warm, constructive summary for the family - genuine strengths, the key growth areas, and the focus going forward - in English and parent-natural Traditional Chinese. No scores, levels, or internal tiers. Review and edit before releasing.</div>';
     el.innerHTML=h; return;
   }
   h+='<div class="par-lang">English (parent-facing)</div>';
   h+='<textarea class="par-ta" id="par-en">'+escH(en||'')+'</textarea>';
   h+='<div class="par-lang">\u7e41\u9ad4\u4e2d\u6587 (Traditional Chinese, parent-facing)</div>';
   h+='<textarea class="par-ta" id="par-zh">'+escH(zh||'')+'</textarea>';
-  h+='<div class="par-note">The Traditional Chinese is generated for Taiwan parents and should be read by a fluent reviewer before release.</div>';
-  h+='<div class="det-actions" style="margin-top:10px;"><button class="mbtn mbtn-gold" id="par-save-btn" onclick="saveParent()">Save edits</button></div>';
-  h+='<div class="par-release"><span class="par-rel-status '+(released?'on':'off')+'" id="par-rel-status">'+(released?'Released to parents':'Not released')+'</span>'
-    +'<button class="mbtn" id="par-rel-btn" onclick="releaseParent('+(released?'false':'true')+')">'+(released?'Mark as not released':'Mark as released')+'</button>'
-    +'<span class="pl-hint">Releasing is a deliberate step. Nothing is sent automatically.</span></div>';
+  h+='<div class="par-note">The Traditional Chinese is generated for Taiwan parents and should be read by a fluent reviewer before release. Save edits and release using the bar below.</div>';
   el.innerHTML=h;
 }
 
@@ -905,12 +922,12 @@ function generateParent(){
   .then(function(d){
     var text=(d.content&&d.content[0]&&d.content[0].text)||'';
     var parsed=null; try{ parsed=JSON.parse(text.replace(/```json/gi,'').replace(/```/g,'').trim()); }catch(e){ parsed=null; }
-    if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the English box for manual use.'); renderParent(text,'',false); return; }
+    if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the English box for manual use.'); renderParent(text,'',false); renderFooter('parent'); return; }
     var en=parsed.english||'', zh=parsed.chinese||'';
     api('reports?id=eq.'+activeId,'PATCH',{ai_parent:en, ai_parent_zh:zh}).then(function(dd){
       if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
-      renderParent(en, zh, (r.parent_released===true));
-    }).catch(function(e){ renderParent(en, zh, false); alert('Generated, but saving failed: '+e.message); });
+      renderParent(en, zh, (r.parent_released===true)); renderFooter('parent');
+    }).catch(function(e){ renderParent(en, zh, false); renderFooter('parent'); alert('Generated, but saving failed: '+e.message); });
   }).catch(function(e){
     var b=document.getElementById('par-gen-btn'); if(b){b.disabled=false;b.textContent='Generate parent report';}
     alert('Parent generation failed: '+(e.message||'unknown error'));
@@ -933,7 +950,7 @@ function releaseParent(toRelease){
   api('reports?id=eq.'+activeId,'PATCH',{parent_released:toRelease}).then(function(dd){
     var row=(dd&&dd.length)?dd[0]:null;
     if(row){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=row;}
-    renderParent(row?(row.edited_parent||row.ai_parent||''):'', row?(row.edited_parent_zh||row.ai_parent_zh||''):'', toRelease);
+    renderParent(row?(row.edited_parent||row.ai_parent||''):'', row?(row.edited_parent_zh||row.ai_parent_zh||''):'', toRelease); renderFooter('parent');
   }).catch(function(e){ alert('Update failed: '+e.message); });
 }
 
