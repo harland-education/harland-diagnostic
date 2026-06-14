@@ -654,6 +654,16 @@
       note: 'Per-strand and per-grade scores are from MCQs only. Readiness compares Grade 6 vs Grade 7 item performance (threshold 70% each). weak_strands lists strands below 60%. This is guidance for the teacher to personalise the plan, not an automatic placement. Open-response items are not auto-scored.'
     };
 
+    // Per-strand level read in the shape the admin grounding reads (preferences.level_analysis.strand_levels).
+    var strandLevels = {};
+    for (s = 0; s < strandOrder.length; s++) {
+      var rc = byStrand[strandOrder[s]] || { correct: 0, total: 0 };
+      var pc = rc.total ? (rc.correct / rc.total) : 0;
+      var wl = pc >= 0.8 ? 'secure' : (pc >= 0.6 ? 'developing' : 'not yet secure');
+      strandLevels[strandOrder[s]] = rc.correct + '/' + rc.total + ' correct (' + wl + ')';
+    }
+    preferences.level_analysis = { by_strand: byStrand, strand_levels: strandLevels };
+
     return {
       student_id: STUDENT_ID, student_name: studentName,
       diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
@@ -663,20 +673,80 @@
     };
   }
 
+  // Maps the gap analysis to a structured results row (grade-level readiness model).
+  // Conservative by design: the open-response reasoning items are teacher-scored.
+  function buildResult(submissionId, payload) {
+    var prefs = payload.preferences || {};
+    var ga = prefs.gap_analysis || {};
+    var bs = ga.by_strand || {};
+    var bg = ga.by_grade_level || {};
+    var strandOrder = ['The Number System', 'Ratios & Proportional Relationships', 'Expressions & Equations', 'Geometry', 'Statistics & Probability'];
+    var breakdown = []; var s;
+    for (s = 0; s < strandOrder.length; s++) {
+      var rec = bs[strandOrder[s]] || { correct: 0, total: 0 };
+      var pct = rec.total ? (rec.correct / rec.total) : 0;
+      var w = pct >= 0.8 ? 'secure' : (pct >= 0.6 ? 'developing' : 'not yet secure');
+      breakdown.push({ strand: strandOrder[s], raw_score: rec.correct, max_score: rec.total, indicated_level: rec.correct + '/' + rec.total + ' (' + w + ')' });
+    }
+    var g6 = bg['Grade 6'] || { correct: 0, total: 0 };
+    var g7 = bg['Grade 7'] || { correct: 0, total: 0 };
+    var g6pct = g6.total ? (g6.correct / g6.total) : 0;
+    var g7pct = g7.total ? (g7.correct / g7.total) : 0;
+    var recLevel, recCourse;
+    if (g6pct < 0.7) { recLevel = 'Grade 6'; recCourse = 'Consolidate Grade 6'; }
+    else if (g7pct < 0.7) { recLevel = 'Grade 7'; recCourse = 'Grade 7 focus'; }
+    else { recLevel = 'Grade 8 ready'; recCourse = 'Pre-Algebra ready'; }
+    var confidence = 'low';
+    if (g6pct >= 0.85 && g7pct >= 0.85) { confidence = 'medium'; }
+    else if (g6pct < 0.5) { confidence = 'medium'; }
+    var flags = [];
+    if (ga.weak_strands && ga.weak_strands.length) { flags.push('weak_strands: ' + ga.weak_strands.join('; ')); }
+    flags.push('grade_split: Grade 6 ' + g6.correct + '/' + g6.total + ', Grade 7 ' + g7.correct + '/' + g7.total);
+    flags.push('reasoning_items_pending');
+    return {
+      submission_id: submissionId,
+      student_id: payload.student_id,
+      diagnostic_id: DIAGNOSTIC_SLUG,
+      assessment_type: 'diagnostic',
+      subject: 'g6_7_math',
+      recommended_course: recCourse,
+      recommended_level: recLevel,
+      recommended_tier: null,
+      starting_unit: null,
+      confidence: confidence,
+      breakdown: breakdown,
+      flags: flags,
+      computed_by: 'engine',
+      status: 'computed',
+      schema_version: '1.0'
+    };
+  }
+
+  // Three-step submit: diagnostics (submission) -> results (structured placement) -> reports (pending).
+  // The results step is best-effort, so a results error never blocks the student or the report shell.
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
     fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
     .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
     .then(function(data) {
-      var reportPayload = {
-        diagnostic_id: data[0].id,
-        student_id: payload.student_id,
-        student_name: payload.student_name,
-        diagnostic_label: payload.diagnostic_label,
-        ai_report: 'Pending HT review',
-        status: 'pending'
-      };
-      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+      var submissionId = data[0].id;
+      var resultPayload = buildResult(submissionId, payload);
+      return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resultPayload) })
+        .then(function(rr) { return rr.ok ? rr.json() : null; }, function() { return null; })
+        .then(function(resData) {
+          if (!resData) { try { console.warn('results insert failed; report will carry no result_id'); } catch (e) {} }
+          var resultId = (resData && resData[0]) ? resData[0].id : null;
+          var reportPayload = {
+            diagnostic_id: submissionId,
+            result_id: resultId,
+            student_id: payload.student_id,
+            student_name: payload.student_name,
+            diagnostic_label: payload.diagnostic_label,
+            ai_report: 'Pending HT review',
+            status: 'pending'
+          };
+          return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+        });
     })
     .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
     .catch(function(err) { onError(err); });
