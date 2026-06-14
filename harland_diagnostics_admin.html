@@ -300,7 +300,9 @@ var STREAM_MODEL='claude-sonnet-4-6';
 var RUBRIC_MAP={ english_diagnostic_g8_10:{spine:'common_core_ela',subject:'english',levels:[8,9,10]},
                  english_diagnostic_g5_7:{spine:'common_core_ela',subject:'english',levels:[5,6,7]},
                  math_placement:{spine:'common_core_math',subject:'math_placement',levels:[9,10,11]},
-                 g6_7_math:{spine:'common_core_math',subject:'g6_7_math',levels:[6,7]} };
+                 g6_7_math:{spine:'common_core_math',subject:'g6_7_math',levels:[6,7]},
+                 ssat_upper:{spine:'ssat_upper',subject:'ssat_upper',levels:[1,2,3]},
+                 isee_lower:{spine:'isee_lower',subject:'isee_lower',levels:[1,2,3]} };
 var RUBRICS={}, activeRubric=null;
 
 function doConnect(){
@@ -774,7 +776,9 @@ function detFormatItem(it, mcq){
 function criterionLadderLines(rubric){
   if(!rubric || !rubric.length) return [];
   var spine=(rubric[0] && rubric[0].spine) ? rubric[0].spine : 'criterion';
-  var out=['=== CRITERION LADDER ('+spine+'; Harland level ~ US grade) ===',
+  var maxLv=0; rubric.forEach(function(b){ if((b.level||0)>maxLv) maxLv=b.level||0; });
+  var scaleNote=(maxLv>=5) ? 'Harland level ~ US grade' : 'levels are readiness tiers, low to high';
+  var out=['=== CRITERION LADDER ('+spine+'; '+scaleNote+') ===',
            'Anchor the level read and teaching to these descriptors.'];
   var byStrand={}, order=[];
   rubric.forEach(function(b){
