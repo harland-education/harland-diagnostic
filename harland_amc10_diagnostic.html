@@ -181,6 +181,7 @@
   var STUDENT_ID = null;
   var DIAGNOSTIC_TYPE  = 'amc10_diagnostic';
   var DIAGNOSTIC_LABEL = 'AMC 10 Diagnostic';
+  var DIAGNOSTIC_SLUG  = 'amc10';
 
   var CONFIG = {
     brandSub:     'Harland Academic Coaching',
@@ -665,20 +666,60 @@
   }
 
   /* ---------- SUBMIT ---------- */
+  // Maps the AMC performance analysis to a structured results row. Contest model: a per-topic
+  // breakdown plus a projected-score band (Developing/Approaching/Competitive). Reads everything
+  // from payload.preferences so the submit signature stays unchanged. No readiness rubric spine.
+  function buildResult(submissionId, payload) {
+    var prefs = payload.preferences || {};
+    var tb = prefs.topic_breakdown || { correct: {}, total: {} };
+    var tc = tb.correct || {}, tt = tb.total || {};
+    function tierOf(p) { return p >= 0.75 ? 'Competitive' : (p >= 0.45 ? 'Approaching' : 'Developing'); }
+    var order = ['Algebra', 'Geometry', 'Number Theory', 'Combinatorics', 'Probability'];
+    var breakdown = []; var k;
+    for (k = 0; k < order.length; k++) {
+      var t = order[k];
+      if (tt[t]) { var p = tc[t] / tt[t]; breakdown.push({ strand: t, raw_score: tc[t], max_score: tt[t], indicated_level: tierOf(p) }); }
+    }
+    var mid = (typeof prefs.estimated_score_mid === 'number') ? prefs.estimated_score_mid : 0;
+    var contestTier = mid >= 100 ? 'Competitive' : (mid >= 60 ? 'Approaching' : 'Developing');
+    var attempted = prefs.raw_attempted || 0;
+    var attemptRate = QUESTIONS.length ? (attempted / QUESTIONS.length) : 0;
+    var confidence = attemptRate >= 0.8 ? 'medium' : 'low';
+    var flags = ['projected_amc10_score: ~' + mid + ' of 150 (range ' + prefs.estimated_score_low + '-' + prefs.estimated_score_high + ')'];
+    if (attemptRate < 0.8) { flags.push('low_attempt_rate: ' + attempted + '/' + QUESTIONS.length + ' attempted'); }
+    return {
+      submission_id: submissionId, student_id: payload.student_id, diagnostic_id: DIAGNOSTIC_SLUG,
+      assessment_type: 'diagnostic', subject: 'amc10', recommended_course: 'AMC 10 preparation',
+      recommended_level: contestTier, recommended_tier: contestTier, starting_unit: null,
+      confidence: confidence, breakdown: breakdown, flags: flags, computed_by: 'engine',
+      status: 'computed', schema_version: '1.0'
+    };
+  }
+
+  // Three-step submit: diagnostics -> results (best-effort) -> reports.
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
     fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
     .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
     .then(function(data) {
-      var reportPayload = {
-        diagnostic_id: data[0].id,
-        student_id: payload.student_id,
-        student_name: payload.student_name,
-        diagnostic_label: payload.diagnostic_label,
-        ai_report: 'Pending HT review',
-        status: 'pending'
-      };
-      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+      var submissionId = data[0].id;
+      var resultPayload = buildResult(submissionId, payload);
+      return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resultPayload) })
+        .then(function(rr) { return rr.ok ? rr.json() : null; }, function() { return null; })
+        .then(function(resData) {
+          if (!resData) { try { console.warn('results insert failed; report will carry no result_id'); } catch (e) {} }
+          var resultId = (resData && resData[0]) ? resData[0].id : null;
+          var reportPayload = {
+            diagnostic_id: submissionId,
+            result_id: resultId,
+            student_id: payload.student_id,
+            student_name: payload.student_name,
+            diagnostic_label: payload.diagnostic_label,
+            ai_report: 'Pending HT review',
+            status: 'pending'
+          };
+          return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+        });
     })
     .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
     .catch(function(err) { onError(err); });
@@ -717,12 +758,22 @@
     preferences.raw_correct          = results.rawCorrect;
     preferences.raw_attempted        = results.rawAttempted;
     preferences.time_used_seconds    = timeUsed;
+    preferences.topic_breakdown      = { correct: results.topicCorrect, total: results.topicTotal };
+    preferences.band_breakdown       = { correct: results.bandCorrect, total: results.bandTotal };
+    preferences.performance_analysis = {
+      projected_score_mid: Math.round(results.projScore),
+      projected_score_range: [results.lower, results.upper],
+      raw: results.rawCorrect + '/' + QUESTIONS.length + ' correct (' + results.rawAttempted + ' attempted)',
+      note: 'Projected from 15 sampled problems scaled to a full 25-question AMC 10. The estimate is a guide, not a guaranteed score; small samples carry noise. Topic and difficulty breakdowns show relative strengths for prep planning.'
+    };
 
     var payload = {
       student_id: STUDENT_ID,
       student_name: name,
       diagnostic_type: DIAGNOSTIC_TYPE,
       diagnostic_label: DIAGNOSTIC_LABEL,
+      diagnostic_id: DIAGNOSTIC_SLUG,
+      assessment_type: 'diagnostic',
       raw_responses: rawResponses,
       mcq_scores: mcqScores,
       self_ratings: selfRatings,
