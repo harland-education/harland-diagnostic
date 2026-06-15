@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+  ============================================================
+  HARLAND EDUCATION -- DIAGNOSTIC TEMPLATE
+  Version: 1.0
+  Last Updated: 2025
+
+  HOW TO USE THIS TEMPLATE
+  ============================================================
+  1. Edit the CONFIG section below (lines marked CONFIGURE)
+  2. Edit the QUESTIONS array to add your questions
+  3. Save as a new file, e.g. harland_sat_readiness.html
+  4. Upload to GitHub and share the Pages link with the student
+
+  QUESTION TYPES SUPPORTED:
+    "mcq"     -- Multiple choice, one correct answer, auto-scored
+    "text"    -- Open-ended written response
+    "scale"   -- Self-rating slider (1 to N)
+    "ranking" -- Student ranks a list of items by clicking arrows
+
+  ES5 ONLY -- Do not use: const, let, arrow functions =>,
+  template literals ``, async/await, or unicode characters
+  in JavaScript strings (no em dashes, arrows, subscripts).
+  ============================================================
+  -->
+  <title>Harland Education -- Diagnostic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ===== BRAND TOKENS ===== */
+    :root {
+      --navy:  #1B2A4A;
+      --gold:  #C9A84C;
+      --cream: #F7F5F0;
+      --white: #FFFFFF;
+      --light-gold: #EDD98A;
+      --grey:  #6B7280;
+      --light-grey: #E5E3DF;
+      --error: #C0392B;
+      --success: #27AE60;
+      --font-serif: 'Libre Baskerville', Georgia, serif;
+      --font-sans:  'DM Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--cream);
+      color: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      background-color: var(--navy);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .site-header .logo-mark {
+      width: 38px;
+      height: 38px;
+      background-color: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--navy);
+      flex-shrink: 0;
+    }
+    .site-header .brand-name {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+    .site-header .brand-sub {
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .progress-bar-wrap {
+      background-color: var(--navy);
+      padding: 0 32px 16px;
+    }
+    .progress-track {
+      height: 3px;
+      background-color: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background-color: var(--gold);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+    .progress-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 6px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ===== MAIN WRAPPER ===== */
+    .main-wrap {
+      flex: 1;
+      max-width: 760px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    /* ===== SCREENS ===== */
+    /* Each screen is hidden by default; JS adds class "active" to show it */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ===== NAME ENTRY SCREEN ===== */
+    .name-screen-title {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      color: var(--navy);
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+    .name-screen-desc {
+      font-size: 15px;
+      color: var(--grey);
+      line-height: 1.6;
+      margin-bottom: 36px;
+      max-width: 540px;
+    }
+    .info-card {
+      background-color: var(--white);
+      border: 1px solid var(--light-grey);
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .info-card p {
+      font-size: 14px;
+      color: var(--grey);
+      line-height: 1.6;
+    }
+    .info-card p + p { margin-top: 8px; }
+    .info-card strong { color: var(--navy); font-weight: 600; }
+
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .field-input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid var(--light-grey);
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 16px;
+      color: var(--navy);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field-input:focus { border-color: var(--gold); }
+    .field-error {
+      font-size: 13px;
+      color: var(--error);
+      margin-top: 6px;
+      display: none;
+    }
+
+    /* ===== DOMAIN SECTION HEADER ===== */
+    .domain-header {
+      margin: 36px 0 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--navy);
+    }
+    .domain-header:first-of-type { margin-top: 0; }
+    .domain-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .domain-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      color: var(--navy);
+    }
+
+    /* ===== QUESTION CARD ===== */
+    .question-card {
+      background-color: var(--white);
+      border: 1px solid var(--light-grey);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .question-number {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .question-text {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--navy);
+      margin-bottom: 18px;
+    }
+    .question-hint {
+      font-size: 13px;
+      color: var(--grey);
+      margin-top: -12px;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    /* ===== MCQ OPTIONS ===== */
+    .mcq-options { list-style: none; }
+    .mcq-options li { margin-bottom: 10px; }
+    .mcq-options label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1.5px solid var(--light-grey);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s;
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--navy);
+    }
+    .mcq-options label:hover { border-color: var(--gold); background-color: #FDFCF8; }
+    .mcq-options input[type="radio"] { display: none; }
+    .mcq-options input[type="radio"]:checked + label {
+      border-color: var(--navy);
+      background-color: #EEF0F4;
+      font-weight: 500;
+    }
+    .option-letter {
+      font-weight: 700;
+      color: var(--gold);
+      flex-shrink: 0;
+      min-width: 18px;
+    }
+
+    /* ===== OPEN TEXT ===== */
+    .text-response {
+      width: 100%;
+      min-height: 110px;
+      padding: 13px 16px;
+      border: 1.5px solid var(--light-grey);
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      color: var(--navy);
+      background: var(--white);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.5;
+    }
+    .text-response:focus { border-color: var(--gold); }
+    .text-char-count {
+      font-size: 12px;
+      color: var(--grey);
+      text-align: right;
+      margin-top: 6px;
+    }
+
+    /* ===== SCALE RATING ===== */
+    .scale-wrap { padding: 4px 0; }
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--grey);
+      margin-bottom: 12px;
+    }
+    .scale-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .scale-btn {
+      flex: 1;
+      min-width: 36px;
+      max-width: 60px;
+      aspect-ratio: 1;
+      border: 1.5px solid var(--light-grey);
+      border-radius: 8px;
+      background: var(--white);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .scale-btn:hover { border-color: var(--gold); }
+    .scale-btn.selected {
+      background-color: var(--navy);
+      border-color: var(--navy);
+      color: var(--white);
+    }
+
+    /* ===== RANKING ===== */
+    .rank-list { list-style: none; }
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--white);
+      border: 1.5px solid var(--light-grey);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 15px;
+      color: var(--navy);
+      user-select: none;
+    }
+    .rank-position {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold);
+      min-width: 26px;
+      text-align: center;
+    }
+    .rank-text { flex: 1; line-height: 1.4; }
+    .rank-controls { display: flex; flex-direction: column; gap: 4px; }
+    .rank-btn {
+      background: none;
+      border: 1px solid var(--light-grey);
+      border-radius: 4px;
+      width: 26px;
+      height: 22px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--grey);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s, color 0.1s;
+    }
+    .rank-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .rank-btn:disabled { opacity: 0.25; cursor: default; }
+    .rank-btn:disabled:hover { background: none; color: var(--grey); border-color: var(--light-grey); }
+    .rank-hint {
+      font-size: 12px;
+      color: var(--grey);
+      margin-top: -4px;
+      margin-bottom: 10px;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      display: inline-block;
+      background-color: var(--navy);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background-color: #263D6A; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled {
+      background-color: var(--light-grey);
+      color: var(--grey);
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-row {
+      margin-top: 36px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* ===== REQUIRED MARKER ===== */
+    .required-note {
+      font-size: 13px;
+      color: var(--grey);
+      margin-bottom: 28px;
+    }
+    .req { color: var(--error); }
+
+    /* ===== SUBMIT ERROR ===== */
+    .submit-error {
+      background-color: #FDECEA;
+      border: 1px solid #F5C6C2;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--error);
+      margin-top: 16px;
+      display: none;
+    }
+
+    /* ===== THANK YOU SCREEN ===== */
+    .thankyou-wrap {
+      text-align: center;
+      padding: 40px 0;
+    }
+    .thankyou-icon {
+      width: 72px;
+      height: 72px;
+      background-color: var(--navy);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+    }
+    .thankyou-icon svg { width: 34px; height: 34px; }
+    .thankyou-title {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+    .thankyou-body {
+      font-size: 16px;
+      color: var(--grey);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+    .thankyou-divider {
+      width: 60px;
+      height: 3px;
+      background-color: var(--gold);
+      margin: 28px auto;
+      border-radius: 2px;
+    }
+    .thankyou-next {
+      font-size: 14px;
+      color: var(--navy);
+      font-weight: 500;
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      background-color: var(--navy);
+      padding: 20px 32px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      .main-wrap { padding: 28px 16px 48px; }
+      .name-screen-title { font-size: 22px; }
+      .scale-buttons { gap: 5px; }
+    }
+
+    /* IELTS reading/transcript passage box */
+    .passage-box {
+      background: #FBF8F2;
+      border: 1px solid #E8DFC8;
+      border-left: 3px solid #C9A84C;
+      border-radius: 6px;
+      padding: 16px 18px;
+      margin: 0 0 18px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #2A2A2E;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .passage-box p { margin: 0 0 0.8em; }
+    .passage-box p:last-child { margin: 0; }
+    .passage-box p:first-child { font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     CONFIGURATION -- EDIT THIS SECTION FOR EACH NEW DIAGNOSTIC
+     ============================================================ -->
+<script>
+
+  /* ----------------------------------------------------------
+     1. SUPABASE CREDENTIALS
+     Copy the legacy anon key from Supabase Settings -> API -> Legacy anon tab
+     ---------------------------------------------------------- */
+  var SB_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
+  /*
+     CONFIGURE: Paste the full eyJhbG... key above.
+     Keep it in single quotes. Do not break across lines.
+  */
+
+  /* ----------------------------------------------------------
+     2. STUDENT LINKING
+     If you are sending this link to a specific student whose
+     record already exists in Supabase, paste their UUID below.
+     If this is a generic open link, leave as null.
+     ---------------------------------------------------------- */
+  var STUDENT_ID = null;
+  /*
+     CONFIGURE: e.g. var STUDENT_ID = 'f3c1cf03-787e-4946-ada2-3b6fc72cdafd';
+     Found in Admin Dashboard -> Students tab -> Copy UUID
+  */
+
+  /* ----------------------------------------------------------
+     3. DIAGNOSTIC IDENTITY
+     These values appear in the database and admin dashboard.
+     diagnostic_type: a short machine-readable key (no spaces)
+     diagnostic_label: the human-readable name shown in the dashboard
+     ---------------------------------------------------------- */
+  var DIAGNOSTIC_TYPE  = 'ielts_academic';
+  var DIAGNOSTIC_LABEL = 'IELTS Academic Diagnostic';
+  var DIAGNOSTIC_SLUG  = 'ielts_academic';
+  /*
+     CONFIGURE: e.g.
+       var DIAGNOSTIC_TYPE  = 'sat_readiness_2025';
+       var DIAGNOSTIC_LABEL = 'SAT Readiness Diagnostic 2025';
+  */
+
+  /* ----------------------------------------------------------
+     4. DISPLAY TEXT
+     What students see on the name entry screen and thank-you page.
+     ---------------------------------------------------------- */
+  var CONFIG = {
+    diagnosticTitle:    'IELTS Academic Diagnostic',
+    diagnosticSubtitle: 'Reading, Writing, Listening and Speaking',
+    introHeading:    'IELTS Academic Diagnostic',
+    introDescription: 'This diagnostic gives your teacher a clear picture of your current IELTS Academic level and the gap to your target band. The Reading section is scored automatically. Your Writing and Speaking responses are assessed by your teacher against the official IELTS band descriptors.',
+    infoPoints: [
+      'This assessment takes approximately 50 minutes.',
+      'In the real test Reading is timed. Here, work carefully but do not rush.',
+      'For Writing, aim for the suggested word counts. For Speaking, you will outline your response in writing and your teacher will assess your spoken English live.',
+      'Listening is shown here as a short transcript screen. A full listening test with audio is arranged separately.',
+      'You cannot save and return, so please complete it in one sitting.'
+    ],
+    nameLabel:        'Your Full Name',
+    nameHint:         'Please enter your name exactly as you want it to appear on your report.',
+    thankyouTitle:    'Assessment Complete',
+    thankyouBody:     'Thank you for completing the IELTS Academic diagnostic. Your teacher will review your Reading score and assess your Writing and Speaking responses, then prepare a personalised report with your indicative band and a study plan.',
+    thankyouNext:     'You may close this window.',
+    submitButtonLabel: 'Submit My Responses'
+  };
+
+  /* ----------------------------------------------------------
+     5. QUESTIONS ARRAY
+     This is the main content of the diagnostic.
+
+     Each question is an object with these fields:
+
+       id       {string}  Unique key used in the database.
+                          Use short snake_case, e.g. 'q1_velocity'
+                          No spaces, no special characters.
+
+       domain   {string}  Section heading. Questions with the same
+                          domain are grouped under one header.
+                          e.g. 'Physics', 'Reading and Writing', 'Preferences'
+
+       type     {string}  One of: 'mcq', 'text', 'scale', 'ranking'
+
+       text     {string}  The question text shown to the student.
+                          Use plain ASCII. No unicode arrows or dashes.
+
+       -- For type: 'mcq' --
+       options  {array}   Array of answer strings. First option = A, etc.
+       answer   {number}  Zero-based index of the correct answer (0=A, 1=B...)
+                          Set to null if no correct answer (opinion question).
+
+       -- For type: 'text' --
+       hint     {string}  Optional placeholder hint inside the textarea.
+       minLength {number} Minimum characters required (0 = not required).
+
+       -- For type: 'scale' --
+       min      {number}  Lowest value on the scale (usually 1).
+       max      {number}  Highest value on the scale (usually 5 or 10).
+       labelLow {string}  Label at the left end, e.g. 'Not confident at all'
+       labelHigh {string} Label at the right end, e.g. 'Very confident'
+
+       -- For type: 'ranking' --
+       items    {array}   Array of strings the student will rank.
+                          Items start in the order listed here.
+
+       required {boolean} If true, student cannot submit without answering.
+                          MCQ questions are always effectively required.
+     ---------------------------------------------------------- */
+  var QUESTIONS = [
+
+    /* ===== ABOUT YOU ===== */
+    {
+      id: 'p_target', domain: 'About You', type: 'mcq',
+      text: 'What overall IELTS band score are you aiming for?',
+      options: ['5.5 or below', '6.0', '6.5', '7.0', '7.5 or above'],
+      answer: null
+    },
+    {
+      id: 'p_purpose', domain: 'About You', type: 'mcq',
+      text: 'What do you mainly need IELTS for?',
+      options: ['Undergraduate university admission', 'Postgraduate university admission', 'Professional registration or work', 'Immigration or a visa', 'Other or not sure'],
+      answer: null
+    },
+    {
+      id: 'p_timeline', domain: 'About You', type: 'mcq',
+      text: 'When do you plan to take the test?',
+      options: ['Within 1 month', '1 to 3 months', '3 to 6 months', 'More than 6 months, or not yet scheduled'],
+      answer: null
+    },
+    {
+      id: 'p_prior', domain: 'About You', type: 'mcq',
+      text: 'Have you taken the IELTS test before?',
+      options: ['Never', 'Once', 'Twice or more'],
+      answer: null
+    },
+    {
+      id: 'sa_reading', domain: 'About You', type: 'scale',
+      text: 'How would you rate your current READING ability in academic English?',
+      min: 1, max: 5, labelLow: 'Very limited', labelHigh: 'Near-native', required: true
+    },
+    {
+      id: 'sa_listening', domain: 'About You', type: 'scale',
+      text: 'How would you rate your current LISTENING ability in academic English?',
+      min: 1, max: 5, labelLow: 'Very limited', labelHigh: 'Near-native', required: true
+    },
+    {
+      id: 'sa_writing', domain: 'About You', type: 'scale',
+      text: 'How would you rate your current WRITING ability in academic English?',
+      min: 1, max: 5, labelLow: 'Very limited', labelHigh: 'Near-native', required: true
+    },
+    {
+      id: 'sa_speaking', domain: 'About You', type: 'scale',
+      text: 'How would you rate your current SPEAKING ability in academic English?',
+      min: 1, max: 5, labelLow: 'Very limited', labelHigh: 'Near-native', required: true
+    },
+
+    /* ===== READING: PASSAGE 1 ===== */
+    {
+      id: 'r1_tfng_regulations', domain: 'Reading: Passage 1',
+      passage: 'Urban Beekeeping\n\nOnce confined to the countryside, beekeeping has found a surprising new home in the world\'s largest cities. Rooftops in London, Paris, and New York now host thousands of hives, tended by a growing community of amateur and professional beekeepers. The trend began in earnest in the early 2010s, when several cities relaxed regulations that had previously made keeping bees in urban areas difficult or illegal.\n\nSupporters argue that cities are, in some ways, better for bees than the countryside. Urban areas offer a remarkable diversity of flowering plants, from park flowerbeds to balcony gardens, which bloom across a longer season than the monocultures of industrial farmland. City bees are also less exposed to the agricultural pesticides that have been linked to declining bee populations worldwide. As a result, urban hives often produce more honey per year than their rural counterparts.\n\nHowever, the rapid growth in urban beekeeping has raised concerns. Some scientists warn that placing too many honeybee hives in a single area may create competition for nectar, putting pressure on wild pollinators such as bumblebees and solitary bees, which are often more important for pollination than honeybees. A study in one European capital found that the number of hives had grown faster than the available flowers could support.\n\nExperts now suggest that cities should balance enthusiasm with planning. Rather than simply adding more hives, they recommend planting more pollinator-friendly flowers and monitoring the health of wild bee populations. Beekeeping, they argue, should be part of a wider effort to make cities greener, not a goal pursued for its own sake.',
+      type: 'mcq',
+      text: 'Statement: Before the 2010s, rules in some cities made urban beekeeping difficult. Choose TRUE, FALSE, or NOT GIVEN according to the passage.',
+      options: ['True', 'False', 'Not Given'], answer: 0
+    },
+    {
+      id: 'r1_tfng_honey', domain: 'Reading: Passage 1', type: 'mcq',
+      text: 'Statement: Urban hives always produce less honey than rural hives. Choose TRUE, FALSE, or NOT GIVEN according to the passage.',
+      options: ['True', 'False', 'Not Given'], answer: 1
+    },
+    {
+      id: 'r1_tfng_origin', domain: 'Reading: Passage 1', type: 'mcq',
+      text: 'Statement: Urban beekeeping first began in New York. Choose TRUE, FALSE, or NOT GIVEN according to the passage.',
+      options: ['True', 'False', 'Not Given'], answer: 2
+    },
+    {
+      id: 'r1_mcq_concern', domain: 'Reading: Passage 1', type: 'mcq',
+      text: 'What concern do some scientists raise about urban beekeeping?',
+      options: ['Honeybees can spread disease to humans', 'Too many hives may compete with wild pollinators for nectar', 'City honey is unsafe to eat', 'Bees damage park flowerbeds'],
+      answer: 1
+    },
+    {
+      id: 'r1_mcq_advice', domain: 'Reading: Passage 1', type: 'mcq',
+      text: 'What do experts recommend that cities do?',
+      options: ['Ban beekeeping in city centres', 'Add as many hives as possible', 'Plant more pollinator-friendly flowers and monitor wild bees', 'Move all hives back to the countryside'],
+      answer: 2
+    },
+    {
+      id: 'r1_main_idea', domain: 'Reading: Passage 1', type: 'mcq',
+      text: 'Which statement best summarises the writer\'s overall view?',
+      options: ['Urban beekeeping should be stopped', 'Urban beekeeping is harmless and should expand freely', 'Urban beekeeping has benefits but needs careful planning', 'Rural beekeeping is always better than urban beekeeping'],
+      answer: 2
+    },
+
+    /* ===== READING: PASSAGE 2 ===== */
+    {
+      id: 'r2_tfng_benyus', domain: 'Reading: Passage 2',
+      passage: 'Biomimicry: Designing with Nature\n\nBiomimicry is the practice of solving human design problems by imitating strategies found in the natural world. The term, popularised by the scientist Janine Benyus in the late 1990s, rests on a simple premise: the organisms alive today are the result of billions of years of evolution, during which nature has already tested and refined an enormous range of solutions to challenges such as movement, insulation, and structural strength.\n\nOne of the most frequently cited examples is the design of high-speed trains in Japan. Early models produced a loud booming noise when they emerged from tunnels, caused by the sudden change in air pressure. Engineers reshaped the front of the train to resemble the beak of the kingfisher, a bird that dives into water with barely a splash. The redesigned train was not only quieter but also faster and more energy-efficient.\n\nBiomimicry is not limited to imitating shapes. Increasingly, designers study the processes and systems that natural organisms use. Researchers examining the structure of spider silk, for instance, hope to reproduce a material that is stronger than steel by weight yet entirely biodegradable, and which spiders produce at ordinary temperatures without toxic chemicals. Replicating this process in a laboratory has proved extraordinarily difficult, and a fully commercial version does not yet exist.\n\nCritics caution that biomimicry is sometimes used loosely as a marketing label, attached to products whose connection to nature is superficial. Genuine biomimicry, they argue, requires a deep understanding of the biological principle at work, not merely a resemblance. Nevertheless, as pressure grows to design products that are sustainable and efficient, many believe that the natural world will remain one of the richest sources of engineering inspiration available.',
+      type: 'mcq',
+      text: 'Statement: The word biomimicry was first invented in the 1990s. Choose TRUE, FALSE, or NOT GIVEN according to the passage.',
+      options: ['True', 'False', 'Not Given'], answer: 2
+    },
+    {
+      id: 'r2_tfng_silk', domain: 'Reading: Passage 2', type: 'mcq',
+      text: 'Statement: Spider silk has been successfully manufactured for commercial sale. Choose TRUE, FALSE, or NOT GIVEN according to the passage.',
+      options: ['True', 'False', 'Not Given'], answer: 1
+    },
+    {
+      id: 'r2_mcq_train', domain: 'Reading: Passage 2', type: 'mcq',
+      text: 'Why did engineers redesign the front of the Japanese high-speed train?',
+      options: ['To make it look more attractive', 'To reduce the loud noise it made when leaving tunnels', 'To increase the number of passengers it could carry', 'To protect it from water damage'],
+      answer: 1
+    },
+    {
+      id: 'r2_mcq_silk_why', domain: 'Reading: Passage 2', type: 'mcq',
+      text: 'According to the passage, why is spider silk of interest to researchers?',
+      options: ['It is very cheap to buy', 'It is strong yet biodegradable and made without toxic chemicals', 'It is the hardest material known to science', 'It glows in the dark'],
+      answer: 1
+    },
+    {
+      id: 'r2_inference_critics', domain: 'Reading: Passage 2', type: 'mcq',
+      text: 'What do critics of biomimicry argue?',
+      options: ['It is far too expensive to be useful', 'The term is sometimes used superficially as a marketing label', 'Nature offers no useful design ideas', 'It can only be applied to trains'],
+      answer: 1
+    },
+
+    /* ===== LISTENING (transcript-based screen) ===== */
+    {
+      id: 'l_proxy_bring', domain: 'Listening',
+      passage: 'Note: in the full IELTS test this section is delivered as audio. It is shown here as a transcript so your teacher can gauge how well you follow spoken-style English. A full listening assessment with audio is arranged separately.\n\nTranscript (a tutor speaking to a student about a field trip):\n\nTUTOR: So, for your field trip next week, remember to bring waterproof clothing. The forecast is unreliable at this time of year.\nSTUDENT: Should I bring my own lunch?\nTUTOR: No, lunch is provided at the field centre. But you will need to bring a refillable water bottle. And do not forget a notebook, because you will be recording observations throughout the day.',
+      type: 'mcq',
+      text: 'According to the tutor, which item must the student bring?',
+      options: ['A packed lunch', 'A refillable water bottle', 'A spare pair of shoes', 'Nothing, everything is provided'],
+      answer: 1
+    },
+    {
+      id: 'l_proxy_lunch', domain: 'Listening', type: 'mcq',
+      text: 'What does the tutor say about lunch?',
+      options: ['The student must bring their own lunch', 'Lunch is provided at the field centre', 'There will be no lunch break', 'Students must pay for lunch on the day'],
+      answer: 1
+    },
+
+    /* ===== WRITING TASK 1 ===== */
+    {
+      id: 'w_task1', domain: 'Writing: Task 1', type: 'text',
+      text: 'You should spend about 20 minutes on this task. The table below shows the percentage of households with home internet access in four countries in 2005 and 2020.\n\nCountry A: 45 percent in 2005, 92 percent in 2020.\nCountry B: 30 percent in 2005, 88 percent in 2020.\nCountry C: 62 percent in 2005, 95 percent in 2020.\nCountry D: 18 percent in 2005, 70 percent in 2020.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.',
+      hint: 'Write at least 150 words. Describe the main trends and comparisons. Do not give your opinion in this task.',
+      minLength: 350, required: true
+    },
+
+    /* ===== WRITING TASK 2 ===== */
+    {
+      id: 'w_task2', domain: 'Writing: Task 2', type: 'text',
+      text: 'You should spend about 40 minutes on this task. Some people think that all young people should be required to study a foreign language at school. Others believe it should be an optional subject. Discuss both views and give your own opinion. Give reasons for your answer and include any relevant examples from your own knowledge or experience. Write at least 250 words.',
+      hint: 'Write at least 250 words. Present both views and your own opinion, with reasons and examples.',
+      minLength: 500, required: true
+    },
+
+    /* ===== SPEAKING ===== */
+    {
+      id: 's_prompt', domain: 'Speaking', type: 'text',
+      text: 'Speaking, Part 2 style. In the full test you would speak for one to two minutes. Here, please write a few sentences outlining what you would say, so your teacher can plan your speaking assessment.\n\nDescribe a person who has influenced you. You should say who the person is, how you know them, and what they are like, and explain why they have influenced you.',
+      hint: 'Write 4 to 6 sentences outlining what you would say. Your spoken fluency will be assessed live by your teacher.',
+      minLength: 150, required: true
+    }
+
+  ];
+
+</script>
+<!-- END CONFIGURATION -- do not edit below unless you know what you are doing -->
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="logo-mark">H</div>
+  <div>
+    <div class="brand-name">Harland Education</div>
+    <div class="brand-sub">Diagnostic Assessment</div>
+  </div>
+</header>
+
+<!-- ===== PROGRESS BAR (hidden on name screen and thank-you) ===== -->
+<div class="progress-bar-wrap" id="progressWrap" style="display:none;">
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">Question 0 of 0</div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main-wrap">
+
+  <!-- ---- SCREEN 1: NAME ENTRY ---- -->
+  <section class="screen active" id="screenName">
+    <h1 class="name-screen-title" id="introHeadingEl"></h1>
+    <p class="name-screen-desc" id="introDescEl"></p>
+
+    <div class="info-card" id="infoCardEl">
+      <!-- Populated by JS -->
+    </div>
+
+    <div style="margin-bottom: 24px;">
+      <label class="field-label" for="studentName" id="nameLabelEl"></label>
+      <input
+        class="field-input"
+        type="text"
+        id="studentName"
+        autocomplete="name"
+        spellcheck="false"
+      >
+      <div class="field-error" id="nameError">Please enter your name before continuing.</div>
+      <div style="font-size:13px; color:var(--grey); margin-top:8px;" id="nameHintEl"></div>
+    </div>
+
+    <button class="btn-primary" id="btnStartDiagnostic">Begin Assessment</button>
+  </section>
+
+  <!-- ---- SCREEN 2: QUESTIONS ---- -->
+  <section class="screen" id="screenQuestions">
+    <p class="required-note">Fields marked <span class="req">*</span> are required.</p>
+    <div id="questionsContainer">
+      <!-- Questions rendered by JS -->
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" id="btnSubmit"></button>
+    </div>
+    <div class="submit-error" id="submitError">
+      Please answer all required questions before submitting.
+    </div>
+  </section>
+
+  <!-- ---- SCREEN 3: THANK YOU ---- -->
+  <section class="screen" id="screenThankYou">
+    <div class="thankyou-wrap">
+      <div class="thankyou-icon">
+        <!-- Checkmark SVG -- pure ASCII safe -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2 class="thankyou-title" id="thankyouTitleEl"></h2>
+      <p class="thankyou-body" id="thankyouBodyEl"></p>
+      <div class="thankyou-divider"></div>
+      <p class="thankyou-next" id="thankyouNextEl"></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  &copy; Harland Education &mdash; Xinyi District, Taipei &mdash; Confidential Assessment Material
+</footer>
+
+<!-- ===== MAIN SCRIPT (ES5 ONLY) ===== -->
+<script>
+
+  /* ==========================================================
+     UTILITY: show/hide screens
+     ========================================================== */
+  function showScreen(screenId) {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) {
+      screens[i].classList.remove('active');
+    }
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  /* ==========================================================
+     INITIALISE: populate text from CONFIG
+     ========================================================== */
+  function initDisplay() {
+    document.title = CONFIG.diagnosticTitle + ' | Harland Education';
+    document.getElementById('introHeadingEl').textContent  = CONFIG.introHeading;
+    document.getElementById('introDescEl').textContent     = CONFIG.introDescription;
+    document.getElementById('nameLabelEl').textContent     = CONFIG.nameLabel;
+    document.getElementById('nameHintEl').textContent      = CONFIG.nameHint;
+    document.getElementById('btnSubmit').textContent       = CONFIG.submitButtonLabel;
+    document.getElementById('thankyouTitleEl').textContent = CONFIG.thankyouTitle;
+    document.getElementById('thankyouBodyEl').textContent  = CONFIG.thankyouBody;
+    document.getElementById('thankyouNextEl').textContent  = CONFIG.thankyouNext;
+
+    /* Info card bullet points */
+    var cardEl = document.getElementById('infoCardEl');
+    var cardHtml = '';
+    for (var i = 0; i < CONFIG.infoPoints.length; i++) {
+      cardHtml += '<p><strong>' + (i + 1) + '.</strong> ' + CONFIG.infoPoints[i] + '</p>';
+    }
+    cardEl.innerHTML = cardHtml;
+  }
+
+  /* ==========================================================
+     NAME SCREEN: start button handler
+     ========================================================== */
+  document.getElementById('btnStartDiagnostic').onclick = function() {
+    var name = document.getElementById('studentName').value.trim();
+    if (!name) {
+      document.getElementById('nameError').style.display = 'block';
+      document.getElementById('studentName').focus();
+      return;
+    }
+    document.getElementById('nameError').style.display = 'none';
+    renderQuestions();
+    showScreen('screenQuestions');
+    document.getElementById('progressWrap').style.display = 'block';
+    updateProgress();
+    window.scrollTo(0, 0);
+  };
+
+  /* ==========================================================
+     RENDER QUESTIONS
+     Reads the QUESTIONS array and builds the question cards.
+     ========================================================== */
+
+  /* State object -- stores student answers keyed by question id */
+  var ANSWERS = {};
+
+  /* Track current ranking order for ranking questions */
+  var RANKING_STATE = {};
+
+  function renderQuestions() {
+    var container = document.getElementById('questionsContainer');
+    var html = '';
+    var currentDomain = null;
+    var qNum = 0;
+
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      qNum++;
+
+      /* Domain header -- only emit when domain changes */
+      if (q.domain !== currentDomain) {
+        currentDomain = q.domain;
+        html += '<div class="domain-header">'
+              + '<div class="domain-label">Section</div>'
+              + '<div class="domain-title">' + escHtml(q.domain) + '</div>'
+              + '</div>';
+      }
+
+      /* Question card open */
+      html += '<div class="question-card" id="card_' + escHtml(q.id) + '">';
+      html += '<div class="question-number">Question ' + qNum + (q.required ? ' <span class="req">*</span>' : '') + '</div>';
+      if (q.passage) {
+        html += '<div class="passage-box">' + formatPassage(q.passage) + '</div>';
+      }
+      html += '<div class="question-text">' + escHtml(q.text).replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') + '</div>';
+
+      /* Render by type */
+      if (q.type === 'mcq') {
+        html += renderMcq(q);
+      } else if (q.type === 'text') {
+        html += renderText(q);
+      } else if (q.type === 'scale') {
+        html += renderScale(q);
+      } else if (q.type === 'ranking') {
+        html += renderRanking(q);
+      }
+
+      html += '</div>'; /* close question-card */
+    }
+
+    container.innerHTML = html;
+
+    /* Attach event listeners after DOM is built */
+    attachListeners();
+  }
+
+  /* --- MCQ --- */
+  function renderMcq(q) {
+    var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    var html = '<ul class="mcq-options">';
+    for (var i = 0; i < q.options.length; i++) {
+      var inputId = 'mcq_' + q.id + '_' + i;
+      html += '<li>'
+            + '<input type="radio" name="mcq_' + escHtml(q.id) + '" id="' + inputId + '" value="' + i + '">'
+            + '<label for="' + inputId + '">'
+            + '<span class="option-letter">' + letters[i] + '</span>'
+            + escHtml(q.options[i])
+            + '</label>'
+            + '</li>';
+    }
+    html += '</ul>';
+    return html;
+  }
+
+  /* --- OPEN TEXT --- */
+  function renderText(q) {
+    var hint = q.hint ? escHtml(q.hint) : '';
+    var html = '<textarea class="text-response" id="txt_' + escHtml(q.id) + '"'
+             + ' placeholder="' + hint + '"'
+             + ' rows="5"></textarea>'
+             + '<div class="text-char-count" id="cc_' + escHtml(q.id) + '">0 characters</div>';
+    return html;
+  }
+
+  /* --- SCALE --- */
+  function renderScale(q) {
+    var html = '<div class="scale-wrap">'
+             + '<div class="scale-labels">'
+             + '<span>' + escHtml(q.labelLow) + '</span>'
+             + '<span>' + escHtml(q.labelHigh) + '</span>'
+             + '</div>'
+             + '<div class="scale-buttons">';
+    for (var v = q.min; v <= q.max; v++) {
+      html += '<button type="button" class="scale-btn" data-qid="' + escHtml(q.id) + '" data-val="' + v + '">' + v + '</button>';
+    }
+    html += '</div></div>';
+    return html;
+  }
+
+  /* --- RANKING --- */
+  function renderRanking(q) {
+    /* Initialise state with original order */
+    RANKING_STATE[q.id] = q.items.slice();
+    var html = '<p class="rank-hint">Use the arrows to reorder. Top = most preferred.</p>'
+             + '<ul class="rank-list" id="ranklist_' + escHtml(q.id) + '">';
+    for (var i = 0; i < q.items.length; i++) {
+      html += buildRankItem(q.id, i, q.items.length, q.items[i]);
+    }
+    html += '</ul>';
+    return html;
+  }
+
+  function buildRankItem(qid, idx, total, text) {
+    var upDisabled   = (idx === 0)         ? 'disabled' : '';
+    var downDisabled = (idx === total - 1)  ? 'disabled' : '';
+    return '<li class="rank-item" id="rankitem_' + escHtml(qid) + '_' + idx + '">'
+         + '<div class="rank-position">' + (idx + 1) + '</div>'
+         + '<div class="rank-text">' + escHtml(text) + '</div>'
+         + '<div class="rank-controls">'
+         + '<button type="button" class="rank-btn" ' + upDisabled + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',-1)" title="Move up">&#9650;</button>'
+         + '<button type="button" class="rank-btn" ' + downDisabled + ' onclick="moveRankItem(\'' + escHtml(qid) + '\',' + idx + ',1)" title="Move down">&#9660;</button>'
+         + '</div>'
+         + '</li>';
+  }
+
+  /* Move a ranking item up or down by direction (-1 or +1) */
+  function moveRankItem(qid, idx, direction) {
+    var items = RANKING_STATE[qid];
+    var newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= items.length) return;
+
+    /* Swap */
+    var temp = items[idx];
+    items[idx] = items[newIdx];
+    items[newIdx] = temp;
+    RANKING_STATE[qid] = items;
+
+    /* Re-render the list */
+    var listEl = document.getElementById('ranklist_' + qid);
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      html += buildRankItem(qid, i, items.length, items[i]);
+    }
+    listEl.innerHTML = html;
+    updateProgress();
+  }
+
+  /* ==========================================================
+     ATTACH EVENT LISTENERS
+     Called once after renderQuestions builds the DOM.
+     ========================================================== */
+  function attachListeners() {
+    /* MCQ -- radio buttons */
+    var radios = document.querySelectorAll('.mcq-options input[type="radio"]');
+    for (var i = 0; i < radios.length; i++) {
+      radios[i].onchange = function() {
+        ANSWERS[this.name.replace('mcq_', '')] = parseInt(this.value, 10);
+        updateProgress();
+      };
+    }
+
+    /* Text -- textareas */
+    var textareas = document.querySelectorAll('.text-response');
+    for (var j = 0; j < textareas.length; j++) {
+      (function(ta) {
+        var qid = ta.id.replace('txt_', '');
+        ta.oninput = function() {
+          ANSWERS[qid] = ta.value;
+          var cc = document.getElementById('cc_' + qid);
+          if (cc) cc.textContent = ta.value.length + ' characters';
+          updateProgress();
+        };
+      })(textareas[j]);
+    }
+
+    /* Scale -- buttons */
+    var scaleBtns = document.querySelectorAll('.scale-btn');
+    for (var k = 0; k < scaleBtns.length; k++) {
+      scaleBtns[k].onclick = function() {
+        var qid = this.getAttribute('data-qid');
+        var val = parseInt(this.getAttribute('data-val'), 10);
+        ANSWERS[qid] = val;
+        /* Update selected state */
+        var siblings = document.querySelectorAll('.scale-btn[data-qid="' + qid + '"]');
+        for (var s = 0; s < siblings.length; s++) {
+          siblings[s].classList.remove('selected');
+        }
+        this.classList.add('selected');
+        updateProgress();
+      };
+    }
+  }
+
+  /* ==========================================================
+     PROGRESS BAR
+     Counts how many required questions have been answered.
+     ========================================================== */
+  function countRequired() {
+    var total = 0;
+    var answered = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (!q.required && q.type !== 'mcq') continue;
+      /* MCQ questions are always counted */
+      total++;
+      if (q.type === 'mcq' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'text' && ANSWERS[q.id] && ANSWERS[q.id].length >= (q.minLength || 0)) answered++;
+      else if (q.type === 'scale' && typeof ANSWERS[q.id] !== 'undefined') answered++;
+      else if (q.type === 'ranking') answered++; /* Always has a ranking */
+    }
+    return { total: total, answered: answered };
+  }
+
+  function updateProgress() {
+    var counts = countRequired();
+    var pct = counts.total > 0 ? Math.round((counts.answered / counts.total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = counts.answered + ' of ' + counts.total + ' required questions answered';
+  }
+
+  /* ==========================================================
+     VALIDATION
+     Returns array of question IDs that are required but unanswered.
+     ========================================================== */
+  function validate() {
+    var missing = [];
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+
+      if (q.type === 'mcq') {
+        if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id);
+
+      } else if (q.type === 'text' && q.required) {
+        var val = ANSWERS[q.id] || '';
+        if (val.length < (q.minLength || 1)) missing.push(q.id);
+
+      } else if (q.type === 'scale' && q.required) {
+        if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id);
+
+      } else if (q.type === 'ranking' && q.required) {
+        /* Ranking always has a value, skip */
+      }
+    }
+    return missing;
+  }
+
+  /* Highlight missing questions */
+  function highlightMissing(missingIds) {
+    /* Clear previous highlights */
+    var allCards = document.querySelectorAll('.question-card');
+    for (var i = 0; i < allCards.length; i++) {
+      allCards[i].style.borderColor = '';
+    }
+    for (var j = 0; j < missingIds.length; j++) {
+      var card = document.getElementById('card_' + missingIds[j]);
+      if (card) card.style.borderColor = '#C0392B';
+    }
+    /* Scroll to first missing */
+    if (missingIds.length > 0) {
+      var first = document.getElementById('card_' + missingIds[0]);
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  /* ==========================================================
+     COLLECT FINAL ANSWERS
+     Assembles the payload for Supabase.
+     ========================================================== */
+  /* ==========================================================
+     IELTS BAND ENGINE
+     Reading is the objective signal. Writing and Speaking are
+     teacher-assessed against the IELTS band descriptors, and
+     Listening needs the full audio test. The transcript items
+     are a rough screen only and are not folded into the band.
+     ========================================================== */
+  function formatPassage(str) {
+    var parts = String(str).split('\n\n');
+    var out = '';
+    for (var i = 0; i < parts.length; i++) {
+      out += '<p>' + escHtml(parts[i]).replace(/\n/g, '<br>') + '</p>';
+    }
+    return out;
+  }
+
+  function ieltsReadingBand(acc) {
+    if (acc >= 0.85) return 8.0;
+    if (acc >= 0.75) return 7.5;
+    if (acc >= 0.65) return 7.0;
+    if (acc >= 0.55) return 6.5;
+    if (acc >= 0.45) return 6.0;
+    if (acc >= 0.35) return 5.5;
+    if (acc >= 0.25) return 5.0;
+    if (acc >= 0.15) return 4.5;
+    return 4.0;
+  }
+
+  function computeIeltsAnalysis(mcqScores) {
+    var rCorrect = 0, rTotal = 0, lCorrect = 0, lTotal = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type !== 'mcq' || q.answer === null || q.answer === undefined) continue;
+      var sc = mcqScores[q.id];
+      var ok = !!(sc && sc.correct === true);
+      if (q.domain.indexOf('Reading') === 0) { rTotal++; if (ok) rCorrect++; }
+      else if (q.domain === 'Listening') { lTotal++; if (ok) lCorrect++; }
+    }
+    var rAcc = rTotal ? (rCorrect / rTotal) : 0;
+    var band = ieltsReadingBand(rAcc);
+    var topts = ['5.5 or below', '6.0', '6.5', '7.0', '7.5 or above'];
+    var tIdx = ANSWERS['p_target'];
+    var targetText = (typeof tIdx === 'number' && topts[tIdx]) ? topts[tIdx] : null;
+    return {
+      reading_band: band,
+      reading_raw: rCorrect + '/' + rTotal,
+      reading_accuracy: Math.round(rAcc * 100) / 100,
+      listening_proxy_raw: lCorrect + '/' + lTotal,
+      target_band: targetText,
+      self_ratings: {
+        reading: (typeof ANSWERS['sa_reading'] === 'number') ? ANSWERS['sa_reading'] : null,
+        listening: (typeof ANSWERS['sa_listening'] === 'number') ? ANSWERS['sa_listening'] : null,
+        writing: (typeof ANSWERS['sa_writing'] === 'number') ? ANSWERS['sa_writing'] : null,
+        speaking: (typeof ANSWERS['sa_speaking'] === 'number') ? ANSWERS['sa_speaking'] : null
+      },
+      note: 'Reading band is an indicative estimate from a short screening set, not an official score. Writing and Speaking are assessed by the teacher against the IELTS band descriptors. Listening requires the full audio test; the transcript items are a rough screen only.'
+    };
+  }
+
+  function buildResult(submissionId, payload) {
+    var a = (payload.preferences && payload.preferences.ielts_analysis) || {};
+    var band = (typeof a.reading_band === 'number') ? a.reading_band : null;
+    function tierForBand(b) {
+      if (b === null) return 'Pending';
+      if (b >= 7.0) return 'Proficient (CEFR C1-C2)';
+      if (b >= 5.5) return 'Developing (CEFR B2)';
+      return 'Foundation (CEFR B1)';
+    }
+    var rParts = (a.reading_raw || '0/0').split('/');
+    var breakdown = [
+      { strand: 'Reading', raw_score: parseInt(rParts[0], 10) || 0, max_score: parseInt(rParts[1], 10) || 0, indicated_level: (band !== null ? ('Band ' + band.toFixed(1)) : 'Not scored') },
+      { strand: 'Writing', raw_score: null, max_score: null, indicated_level: 'Pending teacher assessment' },
+      { strand: 'Listening', raw_score: null, max_score: null, indicated_level: 'Pending full audio test' },
+      { strand: 'Speaking', raw_score: null, max_score: null, indicated_level: 'Pending live assessment' }
+    ];
+    var flags = [];
+    if (band !== null) flags.push('reading_indicative_band: ' + band.toFixed(1));
+    if (a.target_band) flags.push('target_band: ' + a.target_band);
+    flags.push('writing_and_speaking_pending_teacher_assessment');
+    flags.push('listening_requires_full_audio_test');
+    return {
+      submission_id: submissionId,
+      student_id: payload.student_id,
+      diagnostic_id: DIAGNOSTIC_SLUG,
+      assessment_type: 'diagnostic',
+      subject: 'ielts_academic',
+      recommended_course: 'IELTS Academic preparation',
+      recommended_level: (band !== null ? ('Reading Band ' + band.toFixed(1)) : 'Pending'),
+      recommended_tier: tierForBand(band),
+      starting_unit: null,
+      confidence: 'low',
+      breakdown: breakdown,
+      flags: flags,
+      computed_by: 'engine',
+      status: 'computed',
+      schema_version: '1.0'
+    };
+  }
+
+  function collectPayload() {
+    var studentName = document.getElementById('studentName').value.trim();
+    var mcqScores   = {};
+    var selfRatings = {};
+    var preferences = {};
+    var rawResponses = {};
+
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+
+      if (q.type === 'mcq') {
+        var chosen = ANSWERS[q.id];
+        var correct = (q.answer !== null && q.answer !== undefined) ? (chosen === q.answer) : null;
+        mcqScores[q.id] = {
+          chosen:  chosen,
+          answer:  q.answer,
+          correct: correct
+        };
+        rawResponses[q.id] = chosen;
+
+      } else if (q.type === 'text') {
+        rawResponses[q.id] = ANSWERS[q.id] || '';
+
+      } else if (q.type === 'scale') {
+        selfRatings[q.id] = ANSWERS[q.id];
+        rawResponses[q.id] = ANSWERS[q.id];
+
+      } else if (q.type === 'ranking') {
+        var order = RANKING_STATE[q.id] || [];
+        preferences[q.id] = order;
+        rawResponses[q.id] = order;
+      }
+    }
+
+    preferences.ielts_analysis = computeIeltsAnalysis(mcqScores);
+
+    return {
+      student_id:        STUDENT_ID,
+      student_name:      studentName,
+      diagnostic_type:   DIAGNOSTIC_TYPE,
+      diagnostic_label:  DIAGNOSTIC_LABEL,
+      diagnostic_id:     DIAGNOSTIC_SLUG,
+      assessment_type:   'diagnostic',
+      raw_responses:     rawResponses,
+      mcq_scores:        mcqScores,
+      self_ratings:      selfRatings,
+      preferences:       preferences
+    };
+  }
+
+  /* ==========================================================
+     SUPABASE SUBMIT
+     Posts to the diagnostics table, then creates a pending report.
+     ========================================================== */
+  function submitToSupabase(payload, onSuccess, onError) {
+    var headers = {
+      'Content-Type':  'application/json',
+      'apikey':        SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Prefer':        'return=representation'
+    };
+
+    /* Three-step: diagnostics (submission) -> results (band estimate) -> reports (pending).
+       The results step is best-effort, so a results error never blocks the student. */
+    fetch(SB_URL + '/rest/v1/diagnostics', {
+      method:  'POST',
+      headers: headers,
+      body:    JSON.stringify(payload)
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('Diagnostic insert failed: ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      var submissionId = data[0].id;
+      var resultPayload = buildResult(submissionId, payload);
+      return fetch(SB_URL + '/rest/v1/results', {
+        method:  'POST',
+        headers: headers,
+        body:    JSON.stringify(resultPayload)
+      })
+      .then(function(rr) { return rr.ok ? rr.json() : null; }, function() { return null; })
+      .then(function(resData) {
+        var resultId = (resData && resData[0]) ? resData[0].id : null;
+        var reportPayload = {
+          diagnostic_id:    submissionId,
+          result_id:        resultId,
+          student_id:       payload.student_id,
+          student_name:     payload.student_name,
+          diagnostic_label: payload.diagnostic_label,
+          ai_report:        'Pending HT review',
+          status:           'pending'
+        };
+        return fetch(SB_URL + '/rest/v1/reports', {
+          method:  'POST',
+          headers: headers,
+          body:    JSON.stringify(reportPayload)
+        });
+      });
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('Report insert failed: ' + res.status);
+      onSuccess();
+    })
+    .catch(function(err) {
+      onError(err);
+    });
+  }
+
+  /* ==========================================================
+     SUBMIT BUTTON HANDLER
+     ========================================================== */
+  document.getElementById('btnSubmit').onclick = function() {
+    var missingIds = validate();
+    if (missingIds.length > 0) {
+      document.getElementById('submitError').style.display = 'block';
+      highlightMissing(missingIds);
+      return;
+    }
+    document.getElementById('submitError').style.display = 'none';
+
+    var btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    var payload = collectPayload();
+
+    submitToSupabase(
+      payload,
+      function() {
+        /* Success */
+        document.getElementById('progressWrap').style.display = 'none';
+        showScreen('screenThankYou');
+        window.scrollTo(0, 0);
+      },
+      function(err) {
+        /* Error */
+        btn.disabled = false;
+        btn.textContent = CONFIG.submitButtonLabel;
+        var errBox = document.getElementById('submitError');
+        errBox.style.display = 'block';
+        errBox.textContent = 'Submission failed. Please check your connection and try again. Error: ' + err.message;
+        console.error('Supabase error:', err);
+      }
+    );
+  };
+
+  /* ==========================================================
+     HTML ESCAPE UTILITY
+     Always escape user-provided content inserted into HTML.
+     ========================================================== */
+  function escHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /* ==========================================================
+     INIT
+     ========================================================== */
+  initDisplay();
+
+</script>
+</body>
+</html>
