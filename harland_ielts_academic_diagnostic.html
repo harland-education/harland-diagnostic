@@ -253,6 +253,14 @@
       .scale-buttons { gap: 6px; }
       .scale-btn { padding: 12px 0; font-size: 15px; }
     }
+    /* IELTS audio listening player */
+    .audio-player { background: var(--obsidian); padding: 22px 24px; margin: 0 0 22px; }
+    .audio-intro { color: var(--gold-light); font-size: 14px; line-height: 1.55; margin: 0 0 16px; }
+    .audio-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .audio-btn { background: var(--gold); color: var(--obsidian); border: none; border-radius: 0; font-family: var(--font-body); font-size: 14px; font-weight: 500; letter-spacing: 0.04em; padding: 12px 26px; cursor: pointer; transition: background 0.15s; }
+    .audio-btn:hover:not(:disabled) { background: var(--gold-light); }
+    .audio-btn:disabled { background: var(--slate); color: var(--cream-warm); cursor: default; }
+    .audio-status { color: var(--mist); font-size: 13px; letter-spacing: 0.04em; }
   </style>
 </head>
 <body>
@@ -308,12 +316,12 @@
     diagnosticTitle:    'IELTS Academic Diagnostic',
     diagnosticSubtitle: 'Reading, Writing, Listening and Speaking',
     introHeading:    'IELTS Academic Diagnostic',
-    introDescription: 'This diagnostic gives your teacher a clear picture of your current IELTS Academic level and the gap to your target band. The Reading section is scored automatically. Your Writing and Speaking responses are assessed by your teacher against the official IELTS band descriptors.',
+    introDescription: 'This diagnostic gives your teacher a clear picture of your current IELTS Academic level and the gap to your target band. The Reading and Listening sections are scored automatically. Your Writing and Speaking responses are assessed by your teacher against the official IELTS band descriptors.',
     infoPoints: [
       'This assessment takes approximately 60 minutes.',
       'In the real test Reading is timed. Here, work carefully but do not rush.',
       'For Writing, aim for the suggested word counts. For Speaking, you will outline your response in writing and your teacher will assess your spoken English live.',
-      'Listening is shown here as a short transcript screen. A full listening test with audio is arranged separately.',
+      'The Listening section uses an audio recording, so please check your sound before you begin. You may play it twice.',
       'You cannot save and return, so please complete it in one sitting.'
     ],
     nameLabel:        'Your Full Name',
@@ -422,11 +430,6 @@
       options: ['True', 'False', 'Not Given'], answer: 0
     },
     {
-      id: 'r1_tfng_honey', domain: 'Reading: Passage 1', type: 'mcq',
-      text: 'Statement: Urban hives always produce less honey than rural hives. Choose TRUE, FALSE, or NOT GIVEN according to the passage.',
-      options: ['True', 'False', 'Not Given'], answer: 1
-    },
-    {
       id: 'r1_tfng_origin', domain: 'Reading: Passage 1', type: 'mcq',
       text: 'Statement: Urban beekeeping first began in New York. Choose TRUE, FALSE, or NOT GIVEN according to the passage.',
       options: ['True', 'False', 'Not Given'], answer: 2
@@ -436,12 +439,6 @@
       text: 'What concern do some scientists raise about urban beekeeping?',
       options: ['Honeybees can spread disease to humans', 'Too many hives may compete with wild pollinators for nectar', 'City honey is unsafe to eat', 'Bees damage park flowerbeds'],
       answer: 1
-    },
-    {
-      id: 'r1_mcq_advice', domain: 'Reading: Passage 1', type: 'mcq',
-      text: 'What do experts recommend that cities do?',
-      options: ['Ban beekeeping in city centres', 'Add as many hives as possible', 'Plant more pollinator-friendly flowers and monitor wild bees', 'Move all hives back to the countryside'],
-      answer: 2
     },
     {
       id: 'r1_main_idea', domain: 'Reading: Passage 1', type: 'mcq',
@@ -464,12 +461,6 @@
       options: ['True', 'False', 'Not Given'], answer: 1
     },
     {
-      id: 'r2_mcq_train', domain: 'Reading: Passage 2', type: 'mcq',
-      text: 'Why did engineers redesign the front of the Japanese high-speed train?',
-      options: ['To make it look more attractive', 'To reduce the loud noise it made when leaving tunnels', 'To increase the number of passengers it could carry', 'To protect it from water damage'],
-      answer: 1
-    },
-    {
       id: 'r2_mcq_silk_why', domain: 'Reading: Passage 2', type: 'mcq',
       text: 'According to the passage, why is spider silk of interest to researchers?',
       options: ['It is very cheap to buy', 'It is strong yet biodegradable and made without toxic chemicals', 'It is the hardest material known to science', 'It glows in the dark'],
@@ -482,20 +473,44 @@
       answer: 1
     },
 
-    /* ===== LISTENING (transcript-based screen) ===== */
+    /* ===== LISTENING (audio) ===== */
     {
-      id: 'l_proxy_bring', domain: 'Listening',
-      passage: 'Note: in the full IELTS test this section is delivered as audio. It is shown here as a transcript so your teacher can gauge how well you follow spoken-style English. A full listening assessment with audio is arranged separately.\n\nTranscript (a tutor speaking to a student about a field trip):\n\nTUTOR: So, for your field trip next week, remember to bring waterproof clothing. The forecast is unreliable at this time of year.\nSTUDENT: Should I bring my own lunch?\nTUTOR: No, lunch is provided at the field centre. But you will need to bring a refillable water bottle. And do not forget a notebook, because you will be recording observations throughout the day.',
+      id: 'l_name', domain: 'Listening',
+      audio: 'harland_ielts_listening_1.mp3',
       type: 'mcq',
-      text: 'According to the tutor, which item must the student bring?',
-      options: ['A packed lunch', 'A refillable water bottle', 'A spare pair of shoes', 'Nothing, everything is provided'],
+      text: 'What is the caller\'s surname?',
+      options: ['Whitfield', 'Whitfeld', 'Whitfeild', 'Whitefield'],
+      answer: 0
+    },
+    {
+      id: 'l_phone', domain: 'Listening', type: 'mcq',
+      text: 'What telephone number does the caller give?',
+      options: ['0796 314 208', '0796 314 280', '0796 340 218', '0769 314 208'],
+      answer: 0
+    },
+    {
+      id: 'l_standard', domain: 'Listening', type: 'mcq',
+      text: 'What does the Standard membership, at 40 pounds a month, cover?',
+      options: ['The gym only', 'The gym and all classes', 'The swimming pool', 'A personal trainer'],
+      answer: 0
+    },
+    {
+      id: 'l_choice', domain: 'Listening', type: 'mcq',
+      text: 'Which membership does the caller decide to take?',
+      options: ['Standard, the gym only', 'The 55 pound membership that adds the classes', 'Premium, with the pool and a personal trainer', 'He decides not to join today'],
       answer: 1
     },
     {
-      id: 'l_proxy_lunch', domain: 'Listening', type: 'mcq',
-      text: 'What does the tutor say about lunch?',
-      options: ['The student must bring their own lunch', 'Lunch is provided at the field centre', 'There will be no lunch break', 'Students must pay for lunch on the day'],
+      id: 'l_class', domain: 'Listening', type: 'mcq',
+      text: 'What is the most popular class at the centre?',
+      options: ['Yoga', 'Circuit training', 'Swimming', 'Spin cycling'],
       answer: 1
+    },
+    {
+      id: 'l_start', domain: 'Listening', type: 'mcq',
+      text: 'When does the caller\'s membership start?',
+      options: ['The 1st of March', 'The 1st of May', 'The 3rd of March', 'The 21st of March'],
+      answer: 0
     },
 
     /* ===== WRITING TASK 1 ===== */
@@ -697,6 +712,9 @@
       if (q.passage) {
         html += '<div class="passage-box">' + formatPassage(q.passage) + '</div>';
       }
+      if (q.audio) {
+        html += renderAudioPlayer(q.audio);
+      }
       html += '<div class="question-text">' + escHtml(q.text).replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') + '</div>';
 
       /* Render by type */
@@ -854,6 +872,26 @@
         updateProgress();
       };
     }
+
+    /* Listening -- audio player (max 2 plays) */
+    var audioEl = document.getElementById('ieltsAudio');
+    var audioBtn = document.getElementById('audioPlayBtn');
+    var audioStatus = document.getElementById('audioStatus');
+    if (audioEl && audioBtn) {
+      var playsLeft = 2;
+      audioBtn.onclick = function() {
+        if (playsLeft <= 0) return;
+        audioBtn.disabled = true;
+        audioStatus.textContent = 'Playing...';
+        var pr = audioEl.play();
+        if (pr && pr['catch']) { pr['catch'](function() { audioBtn.disabled = false; audioStatus.textContent = 'Tap Play to start'; }); }
+      };
+      audioEl.onended = function() {
+        playsLeft--;
+        if (playsLeft > 0) { audioBtn.disabled = false; audioStatus.textContent = playsLeft + ' play remaining'; }
+        else { audioBtn.disabled = true; audioStatus.textContent = 'No plays remaining'; }
+      };
+    }
   }
 
   /* ==========================================================
@@ -938,6 +976,16 @@
      Listening needs the full audio test. The transcript items
      are a rough screen only and are not folded into the band.
      ========================================================== */
+  function renderAudioPlayer(src) {
+    return '<div class="audio-player">'
+      + '<div class="audio-intro">Listen to the recording and answer the questions below as you listen. You may play it a maximum of two times. In the real IELTS test the audio plays once. Please check your sound now.</div>'
+      + '<audio id="ieltsAudio" preload="auto" src="' + escHtml(src) + '"></audio>'
+      + '<div class="audio-controls">'
+      + '<button type="button" id="audioPlayBtn" class="audio-btn">Play recording</button>'
+      + '<span id="audioStatus" class="audio-status">2 plays remaining</span>'
+      + '</div></div>';
+  }
+
   function formatPassage(str) {
     var parts = String(str).split('\n\n');
     var out = '';
@@ -959,6 +1007,17 @@
     return 4.0;
   }
 
+  function ieltsListeningBand(acc) {
+    if (acc >= 0.90) return 8.0;
+    if (acc >= 0.78) return 7.5;
+    if (acc >= 0.66) return 7.0;
+    if (acc >= 0.54) return 6.5;
+    if (acc >= 0.42) return 6.0;
+    if (acc >= 0.30) return 5.5;
+    if (acc >= 0.18) return 5.0;
+    return 4.5;
+  }
+
   function computeIeltsAnalysis(mcqScores) {
     var rCorrect = 0, rTotal = 0, lCorrect = 0, lTotal = 0;
     for (var i = 0; i < QUESTIONS.length; i++) {
@@ -970,7 +1029,10 @@
       else if (q.domain === 'Listening') { lTotal++; if (ok) lCorrect++; }
     }
     var rAcc = rTotal ? (rCorrect / rTotal) : 0;
+    var lAcc = lTotal ? (lCorrect / lTotal) : 0;
     var band = ieltsReadingBand(rAcc);
+    var lBand = ieltsListeningBand(lAcc);
+    var objAvg = Math.round(((band + lBand) / 2) * 2) / 2;
     var topts = ['5.5 or below', '6.0', '6.5', '7.0', '7.5 or above'];
     var tIdx = ANSWERS['p_target'];
     var targetText = (typeof tIdx === 'number' && topts[tIdx]) ? topts[tIdx] : null;
@@ -978,7 +1040,10 @@
       reading_band: band,
       reading_raw: rCorrect + '/' + rTotal,
       reading_accuracy: Math.round(rAcc * 100) / 100,
-      listening_proxy_raw: lCorrect + '/' + lTotal,
+      listening_band: lBand,
+      listening_raw: lCorrect + '/' + lTotal,
+      listening_accuracy: Math.round(lAcc * 100) / 100,
+      objective_overall_band: objAvg,
       target_band: targetText,
       self_ratings: {
         reading: (typeof ANSWERS['sa_reading'] === 'number') ? ANSWERS['sa_reading'] : null,
@@ -986,7 +1051,7 @@
         writing: (typeof ANSWERS['sa_writing'] === 'number') ? ANSWERS['sa_writing'] : null,
         speaking: (typeof ANSWERS['sa_speaking'] === 'number') ? ANSWERS['sa_speaking'] : null
       },
-      note: 'Reading band is an indicative estimate from a short screening set, not an official score. Writing and Speaking are assessed by the teacher against the IELTS band descriptors. Listening requires the full audio test; the transcript items are a rough screen only.'
+      note: 'Reading and Listening bands are indicative estimates from short screening sets, not official scores. Writing and Speaking are assessed by the teacher against the IELTS band descriptors.'
     };
   }
 
@@ -1000,17 +1065,22 @@
       return 'Foundation (CEFR B1)';
     }
     var rParts = (a.reading_raw || '0/0').split('/');
+    var lBand = (typeof a.listening_band === 'number') ? a.listening_band : null;
+    var lParts = (a.listening_raw || '0/0').split('/');
+    var objOverall = (typeof a.objective_overall_band === 'number') ? a.objective_overall_band : null;
     var breakdown = [
       { strand: 'Reading', raw_score: parseInt(rParts[0], 10) || 0, max_score: parseInt(rParts[1], 10) || 0, indicated_level: (band !== null ? ('Band ' + band.toFixed(1)) : 'Not scored') },
+      { strand: 'Listening', raw_score: parseInt(lParts[0], 10) || 0, max_score: parseInt(lParts[1], 10) || 0, indicated_level: (lBand !== null ? ('Band ' + lBand.toFixed(1)) : 'Not scored') },
       { strand: 'Writing', raw_score: null, max_score: null, indicated_level: 'Pending teacher assessment' },
-      { strand: 'Listening', raw_score: null, max_score: null, indicated_level: 'Pending full audio test' },
       { strand: 'Speaking', raw_score: null, max_score: null, indicated_level: 'Pending live assessment' }
     ];
     var flags = [];
     if (band !== null) flags.push('reading_indicative_band: ' + band.toFixed(1));
+    if (lBand !== null) flags.push('listening_indicative_band: ' + lBand.toFixed(1));
+    if (objOverall !== null) flags.push('objective_overall_band_reading_listening: ' + objOverall.toFixed(1));
     if (a.target_band) flags.push('target_band: ' + a.target_band);
     flags.push('writing_and_speaking_pending_teacher_assessment');
-    flags.push('listening_requires_full_audio_test');
+    var levelStr = (band !== null ? ('Reading Band ' + band.toFixed(1)) : 'Reading pending') + (lBand !== null ? (', Listening Band ' + lBand.toFixed(1)) : '');
     return {
       submission_id: submissionId,
       student_id: payload.student_id,
@@ -1018,8 +1088,8 @@
       assessment_type: 'diagnostic',
       subject: 'ielts_academic',
       recommended_course: 'IELTS Academic preparation',
-      recommended_level: (band !== null ? ('Reading Band ' + band.toFixed(1)) : 'Pending'),
-      recommended_tier: tierForBand(band),
+      recommended_level: levelStr,
+      recommended_tier: tierForBand(objOverall !== null ? objOverall : band),
       starting_unit: null,
       confidence: 'low',
       breakdown: breakdown,
