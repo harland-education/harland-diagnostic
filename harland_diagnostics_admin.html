@@ -889,6 +889,23 @@ function buildDetailedPrompt(diag, result, items, rubric, name, label){
     L.push('NOTE: Writing is teacher-assessed; treat as writing_pending.');
     L.push('');
   });
+  items.filter(function(it){return it.strand==='Speaking';}).forEach(function(it){
+    L.push('=== Speaking ===');
+    L.push('PROMPT: '+it.stem);
+    if(it.rubric) L.push('RUBRIC: '+it.rubric);
+    var resp=raw[it.item_id];
+    L.push('STUDENT RESPONSE (written outline; spoken delivery assessed live): '+(resp && String(resp).trim()? resp : '(no response submitted)'));
+    L.push('NOTE: Speaking is teacher-assessed live; treat as speaking_pending.');
+    L.push('');
+  });
+  var listenSecs={};
+  items.forEach(function(it){ if(it.strand==='Listening'){(listenSecs[it.section]=listenSecs[it.section]||[]).push(it);} });
+  Object.keys(listenSecs).forEach(function(sec){
+    var secItems=listenSecs[sec]; var tpass=null; secItems.forEach(function(it){if(it.passage)tpass=it.passage;});
+    L.push('=== Listening (transcript screen) ===');
+    if(tpass){ L.push('TRANSCRIPT:'); L.push(tpass); L.push(''); }
+    secItems.forEach(function(it){ L.push(detFormatItem(it,mcq)); L.push(''); });
+  });
   return L.join('\n');
 }
 
