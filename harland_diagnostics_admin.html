@@ -934,7 +934,8 @@ function renderSpeakingPanel(){
   } else {
     h+='<div class="spk-note">No auto-transcript was captured (the student\'s browser may not support live transcription). Listen to the audio to assess, or deploy the Whisper worker upgrade for reliable server-side transcription.</div>';
   }
-  h+='<button class="mbtn mbtn-gold" id="spk-assess-btn" onclick="assessSpeaking()" style="margin-top:12px;">AI-assess speaking</button>';
+  h+='<button class="mbtn" id="spk-tr-btn" onclick="transcribeSpeaking()" style="margin-top:12px;">Transcribe audio (Whisper)</button>';
+  h+='<button class="mbtn mbtn-gold" id="spk-assess-btn" onclick="assessSpeaking()" style="margin-top:12px;margin-left:8px;">AI-assess speaking</button>';
   h+='<div id="spk-result">'+(r.ai_speaking?renderSpeakingResult(r.ai_speaking):'')+'</div>';
   h+='</div>';
   return h;
@@ -968,6 +969,31 @@ function renderSpeakingResult(stored){
   h+='</div>';
   return h;
 }
+function transcribeSpeaking(){
+  var rec=(activeDiag&&activeDiag.preferences&&activeDiag.preferences.speaking_recording)||null;
+  if(!rec||!rec.audio_path){alert('No recording on this submission.');return;}
+  if(!PROXY){alert('Connect with your Worker URL first.');return;}
+  var btn=document.getElementById('spk-tr-btn'); if(btn){btn.disabled=true;btn.textContent='Transcribing...';}
+  fetch(U+'/storage/v1/object/sign/speaking-recordings/'+rec.audio_path,{method:'POST',headers:{'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:3600})})
+  .then(function(res){if(!res.ok)return res.text().then(function(t){throw new Error(t);});return res.json();})
+  .then(function(d){
+    var su=d.signedURL||d.signedUrl||''; if(!su) throw new Error('could not sign the audio url');
+    return fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_transcribe:true,audioUrl:U+'/storage/v1'+su})});
+  }).then(function(res){if(!res.ok)return res.text().then(function(t){throw new Error(t);});return res.json();})
+  .then(function(d){
+    var t=((d.transcript||d.text)||'').trim();
+    if(!t) throw new Error('empty transcript - is the Whisper worker deployed and the AI binding enabled?');
+    rec.transcript=t;
+    var prefs=activeDiag.preferences||{}; prefs.speaking_recording=rec; activeDiag.preferences=prefs;
+    api('diagnostics?id=eq.'+activeDiag.id,'PATCH',{preferences:prefs}).then(function(){}).catch(function(){});
+    var rr=reports.find(function(x){return x.id===activeId;})||{};
+    renderDetailed(rr.detailed_items||null, rr.edited_detailed||rr.ai_detailed||null);
+  }).catch(function(e){
+    var b=document.getElementById('spk-tr-btn'); if(b){b.disabled=false;b.textContent='Transcribe audio (Whisper)';}
+    alert('Transcription failed: '+(e.message||'unknown error')+'\n\nThis needs the Whisper worker upgrade deployed with Workers AI enabled. Until then, use the browser transcript or listen to the audio.');
+  });
+}
+
 function assessSpeaking(){
   var r=reports.find(function(x){return x.id===activeId;}); if(!r) return;
   if(!AK||!PROXY){alert('Connect with your Anthropic key and Worker URL to generate.');return;}
