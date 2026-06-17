@@ -160,6 +160,16 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
 .add-btn{padding:12px 24px;background:var(--gold);color:var(--obsidian);border:none;font-size:13px;font-weight:500;letter-spacing:0.04em;cursor:pointer;font-family:var(--font-body);transition:background 0.15s;}
 .add-btn:hover{background:var(--gold-light);}
 .ok-msg{font-size:12.5px;color:var(--success);margin-top:10px;}
+.spk-panel{background:var(--card,#FFFEF9);border:1px solid var(--border-soft,#E8E4DC);border-left:3px solid var(--gold,#C9A84C);padding:16px 18px;margin:0 0 14px;}
+.spk-meta{font-size:12px;color:var(--mist,#9A9AA8);margin-bottom:10px;letter-spacing:.04em;}
+.spk-tr-label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--gold-dark,#A07820);margin:14px 0 6px;}
+.spk-transcript{background:var(--cream-warm,#FAF7F0);border:1px solid var(--border-soft,#E8E4DC);padding:12px 14px;font-size:14px;line-height:1.55;color:var(--ink,#1A1A1F);white-space:pre-wrap;}
+.spk-note{font-size:13px;color:var(--slate,#4A4A56);line-height:1.5;margin:12px 0 0;}
+.spk-result-box{margin-top:14px;background:var(--cream-warm,#FAF7F0);border:1px solid var(--border-soft,#E8E4DC);border-left:3px solid var(--gold,#C9A84C);padding:14px 16px;}
+.spk-band{font-size:15px;color:var(--ink,#1A1A1F);margin-bottom:10px;}
+.spk-conf{font-size:12px;color:var(--mist,#9A9AA8);font-weight:normal;}
+.spk-crit{font-size:13px;color:var(--ink,#1A1A1F);line-height:1.5;margin:0 0 6px;}
+.spk-rat{font-size:14px;color:var(--slate,#4A4A56);line-height:1.55;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-soft,#E8E4DC);}
 </style>
 </head>
 <body>
@@ -742,7 +752,7 @@ function renderDetailed(di, prose){
   var h='';
   if(!hasData && !prose){
     h+='<div class="det-empty">No detailed teacher report yet. Use Generate detailed report below for a per-question walk-through (each item, the student\'s answer, and what it signals) plus a suggested teaching direction per strand, grounded in this diagnostic\'s item bank.</div>';
-    el.innerHTML=h; return;
+    el.innerHTML=renderSpeakingPanel()+h; return;
   }
   if(hasData){
     h+='<div class="det-section-label">Per-question analysis</div>';
@@ -764,7 +774,7 @@ function renderDetailed(di, prose){
   }
   h+='<div class="det-section-label">Synthesis (editable)</div>';
   h+='<textarea class="mta" id="det-prose" style="min-height:130px;">'+escH(prose||'')+'</textarea>';
-  el.innerHTML=h;
+  el.innerHTML=renderSpeakingPanel()+h;
 }
 
 function detLetter(i){return String.fromCharCode(65+i);}
@@ -907,6 +917,91 @@ function buildDetailedPrompt(diag, result, items, rubric, name, label){
     secItems.forEach(function(it){ L.push(detFormatItem(it,mcq)); L.push(''); });
   });
   return L.join('\n');
+}
+
+function renderSpeakingPanel(){
+  var rec=(activeDiag&&activeDiag.preferences&&activeDiag.preferences.speaking_recording)||null;
+  if(!rec||!rec.audio_path) return '';
+  var r=reports.find(function(x){return x.id===activeId;})||{};
+  var h='<div class="det-section-label">Speaking (recorded response)</div>';
+  h+='<div class="spk-panel">';
+  h+='<div class="spk-meta">Duration about '+escH(String(rec.duration_sec||'?'))+' seconds'+(rec.mime?(' &middot; '+escH(rec.mime)):'')+'</div>';
+  h+='<button class="mbtn" id="spk-play-btn" onclick="playSpeaking()">Load and play recording</button>';
+  h+='<audio id="spk-audio" controls style="display:none;width:100%;margin-top:10px;"></audio>';
+  if(rec.transcript&&rec.transcript.trim()){
+    h+='<div class="spk-tr-label">Auto-transcript (captured in the browser; rough, may contain errors)</div>';
+    h+='<div class="spk-transcript">'+escH(rec.transcript)+'</div>';
+  } else {
+    h+='<div class="spk-note">No auto-transcript was captured (the student\'s browser may not support live transcription). Listen to the audio to assess, or deploy the Whisper worker upgrade for reliable server-side transcription.</div>';
+  }
+  h+='<button class="mbtn mbtn-gold" id="spk-assess-btn" onclick="assessSpeaking()" style="margin-top:12px;">AI-assess speaking</button>';
+  h+='<div id="spk-result">'+(r.ai_speaking?renderSpeakingResult(r.ai_speaking):'')+'</div>';
+  h+='</div>';
+  return h;
+}
+function playSpeaking(){
+  var rec=(activeDiag&&activeDiag.preferences&&activeDiag.preferences.speaking_recording)||null;
+  if(!rec||!rec.audio_path) return;
+  var btn=document.getElementById('spk-play-btn'); if(btn){btn.disabled=true;btn.textContent='Loading...';}
+  fetch(U+'/storage/v1/object/sign/speaking-recordings/'+rec.audio_path,{
+    method:'POST',headers:{'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json'},
+    body:JSON.stringify({expiresIn:3600})
+  }).then(function(res){if(!res.ok)return res.text().then(function(t){throw new Error(t);});return res.json();})
+  .then(function(d){
+    var su=d.signedURL||d.signedUrl||''; if(!su) throw new Error('no signed url');
+    var a=document.getElementById('spk-audio'); if(a){a.src=U+'/storage/v1'+su;a.style.display='block';a.play();}
+    if(btn){btn.disabled=false;btn.textContent='Reload recording';}
+  }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='Load and play recording';} alert('Could not load recording: '+(e.message||'error')); });
+}
+function renderSpeakingResult(stored){
+  var p; try{p=JSON.parse(stored);}catch(e){return '';}
+  if(!p) return '';
+  var h='<div class="spk-result-box">';
+  h+='<div class="spk-band">Indicative band: <b>'+escH(String(p.indicative_band))+'</b> <span class="spk-conf">('+escH(p.confidence||'low')+' confidence, transcript-based, for teacher confirmation)</span></div>';
+  if(p.criteria){
+    h+='<div class="spk-crit"><b>Fluency &amp; coherence:</b> '+escH(p.criteria.fluency_coherence||'')+'</div>';
+    h+='<div class="spk-crit"><b>Lexical resource:</b> '+escH(p.criteria.lexical_resource||'')+'</div>';
+    h+='<div class="spk-crit"><b>Grammatical range:</b> '+escH(p.criteria.grammatical_range||'')+'</div>';
+    h+='<div class="spk-crit"><b>Pronunciation:</b> '+escH(p.criteria.pronunciation||'')+'</div>';
+  }
+  if(p.rationale) h+='<div class="spk-rat">'+escH(p.rationale)+'</div>';
+  h+='</div>';
+  return h;
+}
+function assessSpeaking(){
+  var r=reports.find(function(x){return x.id===activeId;}); if(!r) return;
+  if(!AK||!PROXY){alert('Connect with your Anthropic key and Worker URL to generate.');return;}
+  var rec=(activeDiag&&activeDiag.preferences&&activeDiag.preferences.speaking_recording)||null;
+  if(!rec){alert('No speaking recording on this submission.');return;}
+  var tr=(rec.transcript||'').trim();
+  if(!tr){ if(!confirm('No transcript was captured for this recording, so the AI can only give a provisional, low-confidence read. Listen to the audio and confirm the band. Continue?')) return; }
+  var btn=document.getElementById('spk-assess-btn'); if(btn){btn.disabled=true;btn.textContent='Assessing...';}
+  var rubric=''; (activeItems||[]).forEach(function(it){ if(it.strand==='Speaking'&&it.rubric) rubric=it.rubric; });
+  var prompt='You are assessing a student\'s IELTS Speaking response for a diagnostic. You are given an automatic transcript of the spoken answer. It may contain transcription errors and it does not capture pronunciation.\n\n'
+    +'PROMPT THE STUDENT ANSWERED: Describe a person who has influenced you (Part 2 long turn).\n\n'
+    +'IELTS SPEAKING RUBRIC:\n'+(rubric||'Score 0-9 on Fluency and Coherence, Lexical Resource, Grammatical Range and Accuracy, and Pronunciation.')+'\n\n'
+    +'TRANSCRIPT (spoken for about '+(rec.duration_sec||'?')+' seconds):\n"'+tr+'"\n\n'
+    +'Return ONLY a JSON object (no markdown, no preamble) with this exact shape:\n'
+    +'{"indicative_band":<number 0-9 to the nearest 0.5>,"criteria":{"fluency_coherence":"<1-2 sentences; note this is estimated from transcript length, timing and disfluencies, not audio>","lexical_resource":"<1-2 sentences>","grammatical_range":"<1-2 sentences>","pronunciation":"Cannot be assessed from a transcript. The teacher should listen to the audio."},"rationale":"<2-3 sentences: the indicative band, the clearest strengths and weaknesses, and an explicit reminder that this is a transcript-based estimate for teacher confirmation, not a final score>","confidence":"<low|medium>"}';
+  fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:1500,
+      system:'You are an experienced IELTS Speaking examiner supporting a Harland teacher. You give an honest, evidence-grounded indicative band from a transcript, you never overstate certainty, and you are explicit that pronunciation and true fluency need the audio. When asked for JSON, output strictly valid JSON only.',
+      messages:[{role:'user',content:prompt}]})
+  }).then(function(res){if(!res.ok)return res.text().then(function(t){throw new Error(t);});return res.json();})
+  .then(function(d){
+    var text=(d.content&&d.content[0]&&d.content[0].text)||'';
+    var parsed=parseModelJSON(text);
+    if(!parsed){ alert('The model did not return valid JSON. Please try again.'); if(btn){btn.disabled=false;btn.textContent='AI-assess speaking';} return; }
+    var stored=JSON.stringify(parsed);
+    api('reports?id=eq.'+activeId,'PATCH',{ai_speaking:stored}).then(function(dd){
+      if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
+      var el=document.getElementById('spk-result'); if(el) el.innerHTML=renderSpeakingResult(stored);
+      if(btn){btn.disabled=false;btn.textContent='Re-assess speaking';}
+    }).catch(function(e){ var el=document.getElementById('spk-result'); if(el) el.innerHTML=renderSpeakingResult(stored); if(btn){btn.disabled=false;btn.textContent='Re-assess speaking';} });
+  }).catch(function(e){
+    if(btn){btn.disabled=false;btn.textContent='AI-assess speaking';}
+    alert('Speaking assessment failed: '+(e.message||'unknown error'));
+  });
 }
 
 function generateDetailed(){
