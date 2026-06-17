@@ -261,6 +261,17 @@
     .audio-btn:hover:not(:disabled) { background: var(--gold-light); }
     .audio-btn:disabled { background: var(--slate); color: var(--cream-warm); cursor: default; }
     .audio-status { color: var(--mist); font-size: 13px; letter-spacing: 0.04em; }
+    /* Speaking recorder */
+    .recorder { background: var(--cream-warm); border: 1px solid var(--border-soft); border-left: 3px solid var(--gold); padding: 20px 22px; margin: 0 0 18px; }
+    .recorder-consent { font-size: 13px; color: var(--slate); line-height: 1.5; margin: 0 0 16px; }
+    .recorder-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .rec-btn { border: none; border-radius: 0; font-family: var(--font-body); font-size: 14px; font-weight: 500; letter-spacing: 0.04em; padding: 12px 26px; cursor: pointer; transition: background 0.15s; }
+    .rec-start { background: var(--gold); color: var(--obsidian); }
+    .rec-start:hover:not(:disabled) { background: var(--gold-light); }
+    .rec-start:disabled { background: var(--mist); color: var(--cream-warm); cursor: default; }
+    .rec-stop { background: var(--error); color: #FFFFFF; }
+    .rec-stop:hover { background: #862020; }
+    .rec-status { color: var(--slate); font-size: 13px; letter-spacing: 0.02em; }
   </style>
 </head>
 <body>
@@ -532,9 +543,10 @@
     /* ===== SPEAKING ===== */
     {
       id: 's_prompt', domain: 'Speaking', type: 'text',
-      text: 'Speaking, Part 2 style. In the full test you would speak for one to two minutes. Here, please write a few sentences outlining what you would say, so your teacher can plan your speaking assessment.\n\nDescribe a person who has influenced you. You should say who the person is, how you know them, and what they are like, and explain why they have influenced you.',
-      hint: 'Write 4 to 6 sentences outlining what you would say. Your spoken fluency will be assessed live by your teacher.',
-      minLength: 150, required: true
+      recorder: true,
+      text: 'Speaking, Part 2. Use the recorder above to record your answer. Try to speak for one to two minutes.\n\nDescribe a person who has influenced you. You should say who the person is, how you know them, and what they are like, and explain why they have influenced you.\n\nThe written box below is optional, for planning notes only. Your recording is the main task.',
+      hint: 'Optional: jot a few notes here to plan your answer before you record.',
+      required: false
     }
 
   ];
@@ -683,6 +695,7 @@
 
   /* State object -- stores student answers keyed by question id */
   var ANSWERS = {};
+  var SPEAKING_REC = { audio_path: null, transcript: '', duration_sec: 0, mime: null };
 
   /* Track current ranking order for ranking questions */
   var RANKING_STATE = {};
@@ -714,6 +727,9 @@
       }
       if (q.audio) {
         html += renderAudioPlayer(q.audio);
+      }
+      if (q.recorder) {
+        html += renderSpeakingRecorder();
       }
       html += '<div class="question-text">' + escHtml(q.text).replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') + '</div>';
 
@@ -892,6 +908,8 @@
         else { audioBtn.disabled = true; audioStatus.textContent = 'No plays remaining'; }
       };
     }
+
+    initSpeakingRecorder();
   }
 
   /* ==========================================================
@@ -984,6 +1002,111 @@
       + '<button type="button" id="audioPlayBtn" class="audio-btn">Play recording</button>'
       + '<span id="audioStatus" class="audio-status">2 plays remaining</span>'
       + '</div></div>';
+  }
+
+  function renderSpeakingRecorder() {
+    return '<div class="recorder" id="speakingRecorder">'
+      + '<div class="recorder-consent">By recording, you agree that your spoken response will be stored securely and reviewed by your Harland teacher to assess your speaking. It is not shared outside Harland.</div>'
+      + '<div class="recorder-controls">'
+      + '<button type="button" id="recStartBtn" class="rec-btn rec-start">Start recording</button>'
+      + '<button type="button" id="recStopBtn" class="rec-btn rec-stop" style="display:none;">Stop recording</button>'
+      + '<span id="recStatus" class="rec-status">Not yet recorded</span>'
+      + '</div>'
+      + '<audio id="recPlayback" controls style="display:none; margin-top:14px; width:100%;"></audio>'
+      + '</div>';
+  }
+
+  function uploadRecording(blob, blobType, durationSec, transcript, statusEl, playbackEl) {
+    var ext = blobType.indexOf('mp4') >= 0 ? 'mp4' : (blobType.indexOf('ogg') >= 0 ? 'ogg' : 'webm');
+    var path = 'speaking/' + DIAGNOSTIC_SLUG + '_' + Date.now() + '_' + Math.floor(Math.random() * 1000000) + '.' + ext;
+    fetch(SB_URL + '/storage/v1/object/speaking-recordings/' + path, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': blobType, 'x-upsert': 'true' },
+      body: blob
+    }).then(function(res) {
+      if (res.ok) {
+        SPEAKING_REC.audio_path = path;
+        SPEAKING_REC.transcript = (transcript || '').trim();
+        SPEAKING_REC.duration_sec = durationSec;
+        SPEAKING_REC.mime = blobType;
+        statusEl.textContent = 'Recording saved (' + durationSec + ' seconds). You can play it back below, or record again to replace it.';
+        try { playbackEl.src = URL.createObjectURL(blob); playbackEl.style.display = 'block'; } catch (e) {}
+        if (typeof updateProgress === 'function') updateProgress();
+      } else {
+        statusEl.textContent = 'Upload failed (' + res.status + '). Please try again, or use the written outline below.';
+      }
+    }).catch(function() {
+      statusEl.textContent = 'Upload failed (network). Please try again, or use the written outline below.';
+    });
+  }
+
+  function initSpeakingRecorder() {
+    var startBtn = document.getElementById('recStartBtn');
+    var stopBtn = document.getElementById('recStopBtn');
+    var statusEl = document.getElementById('recStatus');
+    var playbackEl = document.getElementById('recPlayback');
+    if (!startBtn) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+      statusEl.textContent = 'Recording is not supported in this browser. Please use the written outline below, or try Chrome or Safari.';
+      startBtn.disabled = true;
+      return;
+    }
+    var mediaRecorder = null, chunks = [], speechRec = null, transcriptText = '', startTime = 0, timerInt = null;
+
+    startBtn.onclick = function() {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+        chunks = []; transcriptText = '';
+        var mime = '';
+        var prefs = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
+        for (var i = 0; i < prefs.length; i++) {
+          if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(prefs[i])) { mime = prefs[i]; break; }
+        }
+        mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = function(e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
+        mediaRecorder.onstop = function() {
+          var tracks = stream.getTracks();
+          for (var t = 0; t < tracks.length; t++) tracks[t].stop();
+          var blobType = (mediaRecorder.mimeType || mime || 'audio/webm').split(';')[0];
+          var blob = new Blob(chunks, { type: blobType });
+          var durationSec = Math.round((Date.now() - startTime) / 1000);
+          statusEl.textContent = 'Uploading recording...';
+          uploadRecording(blob, blobType, durationSec, transcriptText, statusEl, playbackEl);
+        };
+        var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SR) {
+          try {
+            speechRec = new SR();
+            speechRec.continuous = true; speechRec.interimResults = false; speechRec.lang = 'en-US';
+            speechRec.onresult = function(ev) {
+              for (var r = ev.resultIndex; r < ev.results.length; r++) {
+                if (ev.results[r].isFinal) transcriptText += ev.results[r][0].transcript + ' ';
+              }
+            };
+            speechRec.onerror = function() {};
+            speechRec.start();
+          } catch (e) { speechRec = null; }
+        }
+        mediaRecorder.start();
+        startTime = Date.now();
+        startBtn.style.display = 'none'; stopBtn.style.display = '';
+        playbackEl.style.display = 'none';
+        statusEl.textContent = 'Recording... 0:00';
+        timerInt = setInterval(function() {
+          var sec = Math.floor((Date.now() - startTime) / 1000);
+          statusEl.textContent = 'Recording... ' + Math.floor(sec / 60) + ':' + (sec % 60 < 10 ? '0' : '') + (sec % 60);
+          if (sec >= 150) { stopBtn.onclick(); }
+        }, 500);
+      }).catch(function() {
+        statusEl.textContent = 'Microphone access was blocked. Please allow the microphone and try again, or use the written outline below.';
+      });
+    };
+
+    stopBtn.onclick = function() {
+      if (timerInt) { clearInterval(timerInt); timerInt = null; }
+      stopBtn.style.display = 'none'; startBtn.style.display = '';
+      if (speechRec) { try { speechRec.stop(); } catch (e) {} }
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    };
   }
 
   function formatPassage(str) {
@@ -1135,6 +1258,7 @@
     }
 
     preferences.ielts_analysis = computeIeltsAnalysis(mcqScores);
+    if (SPEAKING_REC.audio_path) { preferences.speaking_recording = SPEAKING_REC; }
 
     return {
       student_id:        STUDENT_ID,
