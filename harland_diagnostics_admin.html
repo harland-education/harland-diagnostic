@@ -308,6 +308,11 @@ var U='',K='',AK='',PROXY='',W='',reports=[],students=[],activeId=null,activeDia
 var STREAM_MODEL='claude-sonnet-4-6';
 // Which criterion spine grounds each diagnostic (extend as diagnostics get bands).
 var RUBRIC_MAP={ english_diagnostic_g8_10:{spine:'common_core_ela',subject:'english',levels:[8,9,10]},
+                 english_diagnostic_g2_4:{spine:'common_core_ela',subject:'english',levels:[2,3,4]},
+                 english_diagnostic_g4_6:{spine:'common_core_ela',subject:'english',levels:[4,5,6]},
+                 english_diagnostic_g6_8:{spine:'common_core_ela',subject:'english',levels:[6,7,8]},
+                 english_adult_b1_entry:{spine:'cefr_english',subject:'english_adult',levels:[4,5,6,7]},
+                 english_adult_placement_full:{spine:'cefr_english',subject:'english_adult',levels:[1,2,3,4,5,6,7,8,9,10]},
                  english_diagnostic_g5_7:{spine:'common_core_ela',subject:'english',levels:[5,6,7]},
                  math_placement:{spine:'common_core_math',subject:'math_placement',levels:[9,10,11]},
                  g6_7_math:{spine:'common_core_math',subject:'g6_7_math',levels:[6,7]},
@@ -795,7 +800,7 @@ function criterionLadderLines(rubric){
   if(!rubric || !rubric.length) return [];
   var spine=(rubric[0] && rubric[0].spine) ? rubric[0].spine : 'criterion';
   var maxLv=0; rubric.forEach(function(b){ if((b.level||0)>maxLv) maxLv=b.level||0; });
-  var scaleNote=(maxLv>=5) ? 'Harland level ~ US grade' : 'levels are readiness tiers, low to high';
+  var scaleNote=(spine.indexOf('cefr')===0) ? 'CEFR sub-levels, low to high (level 1 = A1.1 ... 10 = C1.2)' : ((maxLv>=5) ? 'Harland level ~ US grade' : 'levels are readiness tiers, low to high');
   var out=['=== CRITERION LADDER ('+spine+'; '+scaleNote+') ===',
            'Anchor the level read and teaching to these descriptors.'];
   var byStrand={}, order=[];
