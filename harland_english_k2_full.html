@@ -774,6 +774,20 @@
   }
   function attachListeners() {
     attachImageOptions();
+    /* K-2 per-item audio: wire the round play buttons (data-audio -> play clip) */
+    var k2PlayBtns = document.querySelectorAll('.k2-play[data-audio]');
+    for (var kp = 0; kp < k2PlayBtns.length; kp++) {
+      k2PlayBtns[kp].onclick = function() {
+        var file = this.getAttribute('data-audio');
+        if (!file) return;
+        try {
+          if (window.__k2CurrentAudio) { window.__k2CurrentAudio.pause(); window.__k2CurrentAudio.currentTime = 0; }
+          window.__k2CurrentAudio = new Audio(file);
+          var pr = window.__k2CurrentAudio.play();
+          if (pr && pr.catch) { pr.catch(function(){}); }
+        } catch (e) {}
+      };
+    }
     var radios = document.querySelectorAll('.mcq-options input[type="radio"]');
     for (var i = 0; i < radios.length; i++) {
       radios[i].onchange = function() { ANSWERS[this.name.replace('mcq_', '')] = parseInt(this.value, 10); updateProgress(); };
