@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Science Diagnostic (Grades 10-12) | Harland Education</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;700&family=Noto+Serif+TC:wght@300;400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="data:image/png;base64,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">
+  <style>
+    :root {
+      --obsidian: #0D0D0F;
+      --ink: #1A1A1F;
+      --slate: #4A4A56;
+      --mist: #9A9AA8;
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --gold-dark: #A07820;
+      --gold-pale: #F5EDDA;
+      --cream: #F8F5EF;
+      --cream-warm: #FAF7F0;
+      --cream-deep: #F2EDE0;
+      --card: #FFFEF9;
+      --border-soft: #E8E4DC;
+      --white: #FFFFFF;
+      --error: #A32D2D;
+      --error-wash: #FCEBEB;
+      --font-display: 'Cormorant Garamond', 'Noto Serif TC', serif;
+      --font-body: 'DM Sans', 'Noto Sans TC', sans-serif;
+      --font-mono: 'SF Mono', Menlo, Consolas, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background-color: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+    .site-header { background-color: var(--obsidian); padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .site-header .brand-logo { height: 38px; width: auto; display: block; }
+    .site-header .header-eyebrow { font-family: var(--font-body); font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light); white-space: nowrap; }
+    .progress-bar-wrap { background-color: var(--obsidian); padding: 0 32px 18px; }
+    .progress-track { height: 3px; background-color: rgba(250,247,240,0.14); overflow: hidden; }
+    .progress-fill { height: 100%; background-color: var(--gold); transition: width 0.4s ease; }
+    .progress-label { font-size: 11px; color: var(--mist); margin-top: 7px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .main-wrap { flex: 1; max-width: 760px; width: 100%; margin: 0 auto; padding: 48px 24px 64px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .welcome-eyebrow { font-family: var(--font-body); font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 16px; }
+    .name-screen-title { font-family: var(--font-display); font-weight: 400; font-size: 36px; color: var(--obsidian); line-height: 1.15; letter-spacing: -0.015em; margin-bottom: 12px; }
+    .name-screen-desc { font-size: 16px; color: var(--slate); line-height: 1.65; margin-bottom: 36px; max-width: 560px; }
+    .info-card { background-color: var(--card); border: 1px solid var(--border-soft); border-left: 3px solid var(--gold); padding: 24px 28px; margin-bottom: 32px; }
+    .info-card p { font-size: 14px; color: var(--slate); line-height: 1.65; }
+    .info-card p + p { margin-top: 9px; }
+    .info-card strong { color: var(--ink); font-weight: 600; }
+    .field-label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate); margin-bottom: 9px; }
+    .field-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border-soft); font-family: var(--font-body); font-size: 16px; color: var(--ink); background: var(--white); outline: none; transition: border-color 0.2s; }
+    .field-input:focus { border-color: var(--gold); }
+    .field-error { font-size: 13px; color: var(--error); margin-top: 6px; display: none; }
+    .domain-header { margin: 40px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); }
+    .domain-header:first-of-type { margin-top: 0; }
+    .domain-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dark); font-weight: 500; margin-bottom: 6px; }
+    .domain-title { font-family: var(--font-display); font-weight: 400; font-size: 24px; color: var(--obsidian); letter-spacing: -0.01em; }
+    .question-card { background-color: var(--card); border: 1px solid var(--border-soft); padding: 26px; margin-bottom: 16px; }
+    .question-number { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-dark); font-weight: 500; margin-bottom: 9px; }
+    .question-text { font-family: var(--font-body); font-size: 16px; line-height: 1.6; color: var(--ink); margin-bottom: 18px; }
+    .question-text sup { font-size: 12px; }
+    .source-block { background: var(--cream-warm); border-left: 3px solid var(--gold); padding: 22px 26px; margin: 18px 0; font-family: var(--font-display); font-weight: 400; font-size: 17px; line-height: 1.85; color: var(--ink); }
+    .source-block p { margin-bottom: 14px; }
+    .source-block p:last-child { margin-bottom: 0; }
+    .source-block strong { font-weight: 600; }
+    .source-attr { font-size: 11.5px; color: var(--slate); margin-top: 12px; font-style: italic; font-family: var(--font-body); }
+    .text-after { margin: 16px 0 18px; font-size: 15px; line-height: 1.6; color: var(--ink); }
+    .text-after p { margin-bottom: 8px; }
+    .mcq-options { list-style: none; }
+    .mcq-options li { margin-bottom: 10px; }
+    .mcq-options label { display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px; border: 1.5px solid var(--border-soft); cursor: pointer; transition: border-color 0.15s, background-color 0.15s; font-size: 15px; line-height: 1.45; color: var(--ink); }
+    .mcq-options label:hover { border-color: var(--gold); background-color: var(--cream-warm); }
+    .mcq-options label sup { font-size: 12px; }
+    .mcq-options input[type="radio"] { display: none; }
+    .mcq-options input[type="radio"]:checked + label { border-color: var(--obsidian); background-color: var(--gold-pale); font-weight: 500; }
+    .option-letter { font-weight: 600; color: var(--gold-dark); flex-shrink: 0; min-width: 18px; }
+    .text-response { width: 100%; min-height: 220px; padding: 13px 16px; border: 1.5px solid var(--border-soft); font-family: var(--font-body); font-size: 15px; color: var(--ink); background: var(--white); resize: vertical; outline: none; transition: border-color 0.2s; line-height: 1.55; }
+    .text-response:focus { border-color: var(--gold); }
+    .text-char-count { font-size: 12px; color: var(--slate); text-align: right; margin-top: 6px; }
+    .scale-wrap { padding: 4px 0; }
+    .scale-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--slate); margin-bottom: 12px; }
+    .scale-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .scale-btn { flex: 1; min-width: 36px; max-width: 60px; aspect-ratio: 1; border: 1.5px solid var(--border-soft); background: var(--white); font-family: var(--font-body); font-size: 15px; font-weight: 500; color: var(--ink); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; display: flex; align-items: center; justify-content: center; }
+    .scale-btn:hover { border-color: var(--gold); }
+    .scale-btn.selected { background-color: var(--obsidian); border-color: var(--obsidian); color: var(--cream); }
+    .rank-list { list-style: none; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--card); border: 1.5px solid var(--border-soft); margin-bottom: 8px; font-size: 15px; color: var(--ink); user-select: none; }
+    .rank-position { font-size: 12px; font-weight: 600; color: var(--gold-dark); min-width: 26px; text-align: center; }
+    .rank-text { flex: 1; line-height: 1.4; }
+    .rank-controls { display: flex; flex-direction: column; gap: 4px; }
+    .rank-btn { background: none; border: 1px solid var(--border-soft); width: 26px; height: 22px; cursor: pointer; font-size: 11px; color: var(--slate); display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s; }
+    .rank-btn:hover { background: var(--obsidian); color: var(--cream); border-color: var(--obsidian); }
+    .rank-btn:disabled { opacity: 0.25; cursor: default; }
+    .rank-btn:disabled:hover { background: none; color: var(--slate); border-color: var(--border-soft); }
+    .rank-hint { font-size: 12px; color: var(--slate); margin-top: -4px; margin-bottom: 10px; }
+    .btn-primary { display: inline-block; background-color: var(--gold); color: var(--obsidian); font-family: var(--font-body); font-size: 15px; font-weight: 500; padding: 16px 38px; border: none; cursor: pointer; letter-spacing: 0.04em; transition: background-color 0.2s, transform 0.1s; }
+    .btn-primary:hover { background-color: var(--gold-light); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { background-color: var(--cream-deep); color: var(--mist); cursor: not-allowed; transform: none; }
+    .btn-row { margin-top: 40px; display: flex; justify-content: flex-end; }
+    .required-note { font-size: 13px; color: var(--slate); margin-bottom: 28px; }
+    .req { color: var(--error); }
+    .submit-error { background-color: var(--error-wash); border: 1px solid var(--error); padding: 14px 18px; font-size: 14px; color: var(--error); margin-top: 16px; display: none; }
+    .thankyou-wrap { text-align: center; padding: 48px 0; }
+    .thankyou-icon { width: 72px; height: 72px; background-color: var(--obsidian); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; }
+    .thankyou-icon svg { width: 34px; height: 34px; }
+    .thankyou-title { font-family: var(--font-display); font-weight: 400; font-size: 32px; color: var(--obsidian); letter-spacing: -0.01em; margin-bottom: 16px; }
+    .thankyou-body { font-size: 16px; color: var(--slate); line-height: 1.7; max-width: 480px; margin: 0 auto 32px; }
+    .thankyou-divider { width: 60px; height: 2px; background-color: var(--gold); margin: 28px auto; }
+    .thankyou-next { font-size: 14px; color: var(--ink); font-weight: 500; }
+    .site-footer { background-color: var(--obsidian); padding: 22px 32px; text-align: center; font-size: 12px; color: var(--mist); letter-spacing: 0.04em; }
+    @media (max-width: 600px) { .main-wrap { padding: 32px 16px 48px; } .name-screen-title { font-size: 28px; } .scale-buttons { gap: 5px; } }
+    /* Listening audio player (obsidian band) */
+    .audio-player { background: var(--obsidian); padding: 22px 24px; margin: 0 0 22px; }
+    .audio-intro { color: var(--gold-light); font-size: 14px; line-height: 1.55; margin: 0 0 16px; }
+    .audio-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .audio-btn { background: var(--gold); color: var(--obsidian); border: none; border-radius: 0; font-family: var(--font-body); font-size: 14px; font-weight: 500; letter-spacing: 0.04em; padding: 12px 26px; cursor: pointer; transition: background 0.15s; }
+    .audio-btn:hover:not(:disabled) { background: var(--gold-light); }
+    .audio-btn:disabled { background: var(--slate); color: var(--cream-warm); cursor: default; }
+    .audio-status { color: var(--mist); font-size: 13px; letter-spacing: 0.04em; }
+    .audio-pending-note { color: var(--gold-light); font-size: 13px; line-height: 1.5; margin: 12px 0 0; }
+    /* Speaking recorder */
+    .recorder { background: var(--cream-warm); border: 1px solid var(--border-soft); border-left: 3px solid var(--gold); padding: 20px 22px; margin: 0 0 18px; }
+    .recorder-consent { font-size: 13px; color: var(--slate); line-height: 1.5; margin: 0 0 16px; }
+    .recorder-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .rec-btn { border: none; border-radius: 0; font-family: var(--font-body); font-size: 14px; font-weight: 500; letter-spacing: 0.04em; padding: 12px 26px; cursor: pointer; transition: background 0.15s; }
+    .rec-start { background: var(--gold); color: var(--obsidian); }
+    .rec-start:hover:not(:disabled) { background: var(--gold-light); }
+    .rec-start:disabled { background: var(--mist); color: var(--cream-warm); cursor: default; }
+    .rec-stop { background: var(--error, #A32D2D); color: #FFFFFF; }
+    .rec-stop:hover { background: #862020; }
+    .rec-status { color: var(--slate); font-size: 13px; letter-spacing: 0.02em; }
+    .writing-alt { margin-top: 14px; }
+    .lvl-pick-group { display: flex; flex-direction: column; gap: 12px; }
+    .lvl-pick { text-align: left; background: #FFFFFF; border: 2px solid var(--border-soft); border-radius: 12px; padding: 15px 18px; cursor: pointer; transition: border-color 0.12s, background 0.12s; display: block; }
+    .lvl-pick:hover { border-color: var(--gold); }
+    .lvl-pick.selected { border-color: var(--gold-dark); background: var(--gold-pale); }
+    .lvl-pick-title { font-family: var(--font-display); font-size: 18px; color: var(--ink); display: block; margin-bottom: 2px; }
+    .lvl-pick.selected .lvl-pick-title { color: var(--gold-dark); }
+    .lvl-pick-sub { font-size: 13.5px; color: var(--slate); line-height: 1.45; display: block; }
+  
+    /* --- science-build classes mapped to brand tokens --- */
+    .masthead { background: var(--cream-warm); border-top: 2px solid var(--obsidian); border-bottom: 1px solid var(--gold); }
+    .masthead-inner { max-width: 760px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .brand-mark { font-family: var(--font-display); font-size: 20px; letter-spacing: 0.04em; color: var(--obsidian); }
+    .brand-mark span { color: var(--gold-dark); font-size: 13px; letter-spacing: 0.18em; }
+    .masthead-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; font-family: var(--font-body); font-weight: 500; color: var(--gold-dark); }
+    .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; font-family: var(--font-body); font-weight: 500; color: var(--gold-dark); margin-bottom: 12px; }
+    .screen-title { font-family: var(--font-display); font-weight: 400; font-size: 34px; line-height: 1.15; color: var(--ink); margin: 0 0 16px; }
+    .lede { font-size: 16px; line-height: 1.6; color: var(--slate); margin: 0 0 24px; }
+    .info-points { margin: 0; padding-left: 20px; }
+    .info-points li { font-size: 14px; line-height: 1.5; color: var(--slate); margin-bottom: 10px; }
+    .field-block { margin-bottom: 26px; }
+    .field-hint { font-size: 13px; color: var(--mist); margin-top: 8px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 500; color: var(--gold-dark); margin-bottom: 10px; }
+    .q-stem { font-size: 16px; line-height: 1.55; color: var(--ink); margin-bottom: 16px; }
+    .q-options { display: flex; flex-direction: column; gap: 10px; }
+    .q-option { text-align: left; background: var(--card); border: 2px solid var(--border-soft); border-radius: 10px; padding: 13px 16px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; transition: border-color .12s, background .12s; }
+    .q-option:hover { border-color: var(--gold); }
+    .q-option.selected { border-color: var(--gold-dark); background: var(--gold-pale); }
+    .q-option-letter { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--gold-dark); flex-shrink: 0; width: 18px; }
+    .q-option-text { font-size: 15px; line-height: 1.45; color: var(--ink); }
+    .section-head { font-family: var(--font-display); font-weight: 400; font-size: 22px; color: var(--ink); margin: 28px 0 6px; }
+    .card-missing { outline: 2px solid var(--error); outline-offset: 2px; border-radius: 12px; }
+
+    /* --- science subject/confidence pickers + report bars --- */
+    .sci-pick-group { display:flex; flex-direction:column; gap:12px; }
+    .sci-pick { text-align:left; background:#FFFFFF; border:2px solid var(--border-soft); border-radius:12px; padding:15px 18px; cursor:pointer; transition:border-color .12s, background .12s; display:block; }
+    .sci-pick:hover { border-color:var(--gold); }
+    .sci-pick.selected { border-color:var(--gold-dark); background:var(--gold-pale); }
+    .sci-pick-title { font-family:var(--font-display); font-size:18px; color:var(--ink); display:block; margin-bottom:2px; }
+    .sci-pick.selected .sci-pick-title { color:var(--gold-dark); }
+    .sci-pick-sub { font-size:13.5px; color:var(--slate); line-height:1.45; display:block; }
+    .sci-check { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:6px; border:2px solid var(--border-soft); margin-right:10px; vertical-align:middle; font-size:14px; color:#FFFFFF; background:transparent; }
+    .sci-pick.selected .sci-check { background:var(--gold-dark); border-color:var(--gold-dark); }
+    .profile-row { margin:14px 0; }
+    .profile-label { display:flex; justify-content:space-between; font-size:14px; color:var(--ink); margin-bottom:5px; }
+    .profile-track { height:10px; background:var(--cream-deep); border-radius:6px; overflow:hidden; }
+    .profile-fill { height:100%; background:var(--gold); border-radius:6px; }
+    .readiness-card { background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:12px; padding:18px 20px; margin:16px 0; }
+    .readiness-card h4 { font-family:var(--font-display); font-weight:400; font-size:19px; color:var(--gold-dark); margin:0 0 8px; }
+</style><body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand-mark">HARLAND <span>EDUCATION</span></div>
+      <div class="masthead-eyebrow">DIAGNOSTIC ASSESSMENT</div>
+    </div>
+  </header>
+
+  <section class="screen active" id="screenIntro">
+    <div class="eyebrow">ADAPTIVE SCIENCE DIAGNOSTIC, GRADES 10-12</div>
+    <h1 class="screen-title">Welcome to Your Science Diagnostic</h1>
+    <p class="lede">This diagnostic measures your science ability across the core competencies that every science depends on, then goes deeper in the subjects you are studying. It begins with a short set of reasoning and data questions, then adapts to your answers to find your level. There are no grades and nothing to study for. Work carefully and do your best on each question.</p>
+
+    <div class="info-card">
+      <ol class="info-points">
+        <li>This diagnostic takes about 35 to 45 minutes. There is no time limit, so work at your own pace.</li>
+        <li>Please do not use a calculator beyond simple arithmetic, and no notes, search engine, or outside help. We need to see your own thinking.</li>
+        <li>The questions adapt to your answers, so different students see different questions.</li>
+        <li>For each question, choose the single best answer. If you are unsure, choose the answer that seems most likely.</li>
+        <li>You measure your reasoning skills across all the sciences, and your knowledge in the subjects you choose below.</li>
+      </ol>
+    </div>
+
+    <div class="field-block">
+      <label class="field-label" for="studentName">YOUR FULL NAME</label>
+      <input class="field-input" type="text" id="studentName" autocomplete="name" spellcheck="false">
+      <div class="field-error" id="nameError">Please enter your name before continuing.</div>
+      <div class="field-hint">Please enter your name exactly as you want it to appear on your report.</div>
+    </div>
+
+    <div class="field-block">
+      <div class="field-label">WHICH SCIENCES ARE YOU STUDYING?</div>
+      <div class="field-hint" style="margin-bottom:14px;">Choose all that apply. Everyone answers the shared science-reasoning questions; your choices add the subject knowledge sections that match your courses.</div>
+      <div class="sci-pick-group" id="subjectGroup">
+        <button type="button" class="sci-pick" data-subject="Biology"><span class="sci-check">&#10003;</span><span class="sci-pick-title" style="display:inline;">Biology</span><span class="sci-pick-sub">Cells, genetics, ecology, body systems (e.g. IB Biology, AP Biology).</span></button>
+        <button type="button" class="sci-pick" data-subject="Chemistry"><span class="sci-check">&#10003;</span><span class="sci-pick-title" style="display:inline;">Chemistry</span><span class="sci-pick-sub">Atoms, bonding, reactions, the mole (e.g. IB Chemistry, AP Chemistry).</span></button>
+        <button type="button" class="sci-pick" data-subject="Physics"><span class="sci-check">&#10003;</span><span class="sci-pick-title" style="display:inline;">Physics</span><span class="sci-pick-sub">Motion, forces, energy, electricity (e.g. IB Physics, AP Physics).</span></button>
+        <button type="button" class="sci-pick" data-subject="ALL"><span class="sci-check">&#10003;</span><span class="sci-pick-title" style="display:inline;">I am exploring / taking general science</span><span class="sci-pick-sub">Not specialised yet. We will check all three subject areas.</span></button>
+      </div>
+      <div class="field-error" id="subjectError">Please choose at least one option.</div>
+    </div>
+
+    <div class="field-block">
+      <div class="field-label">HOW DO YOU FEEL ABOUT SCIENCE RIGHT NOW?</div>
+      <div class="field-hint" style="margin-bottom:14px;">This just sets a starting point. The questions adapt to you as you go, so it is fine if you are not sure.</div>
+      <div class="sci-pick-group" id="confidenceGroup">
+        <button type="button" class="sci-pick" data-conf="10"><span class="sci-pick-title">Still building my foundation</span><span class="sci-pick-sub">I am working on the core ideas and find some science topics hard.</span></button>
+        <button type="button" class="sci-pick" data-conf="11"><span class="sci-pick-title">Comfortable at my grade level</span><span class="sci-pick-sub">I can handle most of what we cover in class.</span></button>
+        <button type="button" class="sci-pick" data-conf="12"><span class="sci-pick-title">Confident and ready to stretch</span><span class="sci-pick-sub">I find science fairly easy and enjoy harder, multi-step problems.</span></button>
+        <button type="button" class="sci-pick" data-conf="0"><span class="sci-pick-title">I am not sure</span><span class="sci-pick-sub">Let the diagnostic find the best level for me.</span></button>
+      </div>
+      <div class="field-error" id="confError">Please choose where to start.</div>
+    </div>
+
+    <button class="btn-primary" id="btnStart">Begin Diagnostic</button>
+  </section>
+
+  <section class="screen" id="screenQuestions">
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><div class="progress-label" id="progressLabel"></div></div>
+    <div id="questionList"></div>
+    <div class="btn-row" id="continueRow" style="display:none;"><button class="btn-primary" id="btnContinue">Continue</button></div>
+    <div class="btn-row" id="submitRow" style="display:none;"><button class="btn-primary" id="btnSubmit">Submit Diagnostic</button></div>
+  </section>
+
+  <section class="screen" id="screenResult">
+    <div class="eyebrow">DIAGNOSTIC COMPLETE</div>
+    <h1 class="screen-title" id="resultTitle">Thank You</h1>
+    <div id="resultBody"></div>
+  </section>
+
+<script>
+  var ITEM_BANK = [
+    { id: 'b_l10_cell', tier: 10, strand: 'Biology', core: false, type: 'mcq', stem: 'Which structure is found in plant cells but NOT in typical animal cells?', options: [ 'Mitochondria', 'Cell wall', 'Nucleus', 'Cell membrane' ], answer: 1 },
+    { id: 'b_l10_photo', tier: 10, strand: 'Biology', core: false, type: 'mcq', stem: 'What are the main inputs a plant uses during photosynthesis?', options: [ 'Oxygen and glucose', 'Carbon dioxide and water', 'Nitrogen and water', 'Glucose and oxygen' ], answer: 1 },
+    { id: 'c_l10_molarmass_co2', tier: 10, strand: 'Chemistry', core: false, type: 'mcq', stem: 'What is the molar mass of carbon dioxide, CO2? (C = 12 g/mol, O = 16 g/mol)', options: [ '28 g/mol', '44 g/mol', '32 g/mol', '56 g/mol' ], answer: 1 },
+    { id: 'c_l10_bond', tier: 10, strand: 'Chemistry', core: false, type: 'mcq', stem: 'A bond formed by the transfer of electrons from a metal to a non-metal is best described as:', options: [ 'Covalent', 'Ionic', 'Metallic', 'Hydrogen' ], answer: 1 },
+    { id: 'p_l10_speed', tier: 10, strand: 'Physics', core: false, type: 'mcq', stem: 'A runner travels 100 meters in 20 seconds. What is the average speed?', options: [ '2 m/s', '5 m/s', '20 m/s', '2000 m/s' ], answer: 1 },
+    { id: 'p_l10_newton1', tier: 10, strand: 'Physics', core: false, type: 'mcq', stem: 'A book rests on a table and does not move. This is best explained because:', options: [ 'No forces act on the book', 'The forces on the book are balanced', 'Gravity does not act on the book', 'The book has no mass' ], answer: 1 },
+    { id: 'd_l10_mean', tier: 10, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A student records these values: 4, 6, 8, 10, 12. What is the mean (average)?', options: [ '6', '8', '10', '40' ], answer: 1 },
+    { id: 'd_l10_rate', tier: 10, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A plant grew 12 cm over 4 days. What was its average growth rate?', options: [ '3 cm/day', '48 cm/day', '8 cm/day', '0.33 cm/day' ], answer: 0 },
+    { id: 'e_l10_variable', tier: 10, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'A student tests how light color affects plant growth, measuring plant height. The INDEPENDENT variable is:', options: [ 'Plant height', 'Light color', 'The amount of water', 'The type of pot' ], answer: 1 },
+    { id: 'e_l10_control', tier: 10, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'In an experiment testing a new fertilizer, the CONTROL group should be plants that:', options: [ 'Get twice the fertilizer', 'Get no fertilizer but are otherwise treated the same', 'Are a different species', 'Get less water' ], answer: 1 },
+    { id: 'l_l10_central', tier: 10, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A passage states: \'Most of a tree\'s mass comes from carbon the tree pulls out of the air as carbon dioxide, not from the soil.\' The central idea is that a tree\'s mass comes mainly from:', options: [ 'Water in the soil', 'Carbon taken from the air', 'Minerals in the soil', 'Sunlight energy' ], answer: 1 },
+    { id: 'b_l11_punnett', tier: 11, strand: 'Biology', core: false, type: 'mcq', stem: 'Two organisms heterozygous for a trait (Aa x Aa) are crossed. What fraction of offspring are expected to show the recessive phenotype?', options: [ '1/4', '1/2', '3/4', '0' ], answer: 0 },
+    { id: 'b_l11_dogma', tier: 11, strand: 'Biology', core: false, type: 'mcq', stem: 'During protein synthesis, the correct flow of genetic information is:', options: [ 'Protein to RNA to DNA', 'DNA to RNA to protein', 'RNA to DNA to protein', 'DNA to protein to RNA' ], answer: 1 },
+    { id: 'b_l11_enzyme', tier: 11, strand: 'Biology', core: false, type: 'mcq', stem: 'An enzyme-controlled reaction slows sharply when the temperature rises far above the enzyme\'s optimum. The best explanation is that the enzyme has:', options: [ 'It has run out of substrate', 'It has been denatured, so its active site no longer fits the substrate', 'It has been used up, since enzymes are consumed in the reactions they speed up', 'It has become saturated with product' ], answer: 1 },
+    { id: 'c_l11_stoich_h2o', tier: 11, strand: 'Chemistry', core: false, type: 'mcq', stem: 'For the reaction 2 H2 + O2 -> 2 H2O, how many moles of water form from 4.0 mol of H2 with excess oxygen?', options: [ '2.0 mol', '4.0 mol', '8.0 mol', '1.0 mol' ], answer: 1 },
+    { id: 'c_l11_molarity', tier: 11, strand: 'Chemistry', core: false, type: 'mcq', stem: 'What is the molarity of a solution made by dissolving 0.50 mol of NaCl in enough water to make 250 mL of solution?', options: [ '0.125 M', '1.25 M', '2.0 M', '0.50 M' ], answer: 2 },
+    { id: 'c_l11_trend', tier: 11, strand: 'Chemistry', core: false, type: 'mcq', stem: 'Moving left to right across a period in the periodic table, atomic radius generally:', options: [ 'Increases, because more shells are added', 'Decreases, because increasing nuclear charge pulls electrons in', 'Stays the same', 'Decreases, because electrons are removed' ], answer: 1 },
+    { id: 'p_l11_fma', tier: 11, strand: 'Physics', core: false, type: 'mcq', stem: 'A net force is applied to a 2.0 kg cart, giving it an acceleration of 3.0 m/s^2. What is the net force?', options: [ '1.5 N', '6.0 N', '0.67 N', '5.0 N' ], answer: 1 },
+    { id: 'p_l11_ke', tier: 11, strand: 'Physics', core: false, type: 'mcq', stem: 'What is the kinetic energy of a 4.0 kg object moving at 3.0 m/s?', options: [ '6 J', '12 J', '18 J', '36 J' ], answer: 2 },
+    { id: 'p_l11_ohms', tier: 11, strand: 'Physics', core: false, type: 'mcq', stem: 'A current of 2.0 A flows through a 5.0 ohm resistor. What is the voltage across it?', options: [ '2.5 V', '7 V', '10 V', '0.4 V' ], answer: 2 },
+    { id: 'd_l11_pctchange', tier: 11, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A population rises from 200 to 250. What is the percent increase?', options: [ '20%', '25%', '50%', '125%' ], answer: 1 },
+    { id: 'd_l11_corr', tier: 11, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A scatter plot shows points rising together except one point far below the trend. That single point is best described as:', options: [ 'The mean', 'An outlier', 'The slope', 'A control' ], answer: 1 },
+    { id: 'e_l11_confound', tier: 11, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'A study finds students who eat breakfast score higher on tests. Before concluding breakfast causes higher scores, the biggest concern is:', options: [ 'Other factors (like sleep, income, or study habits) may differ between the two groups', 'Nothing important, since the two groups clearly differ in their scores', 'The study should have measured students\' weight instead of test scores', 'Breakfast must contain a chemical that directly boosts memory' ], answer: 0 },
+    { id: 'l_l11_claim_evidence', tier: 11, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A report says: \'The drug group improved more than the placebo group, but the study had only 8 participants.\' The note about 8 participants is best read as:', options: [ 'Strong proof the drug works', 'A limitation that weakens how much we can conclude', 'Evidence the placebo worked', 'Irrelevant to the conclusion' ], answer: 1 },
+    { id: 'b_l12_feedback', tier: 12, strand: 'Biology', core: false, type: 'mcq', stem: 'When blood glucose rises, insulin is released and glucose is taken into cells, lowering blood glucose. This is an example of:', options: [ 'Positive feedback amplifying the change', 'Negative feedback restoring a set point', 'A genetic mutation', 'Random fluctuation' ], answer: 1 },
+    { id: 'b_l12_mutation', tier: 12, strand: 'Biology', core: false, type: 'mcq', stem: 'A point mutation changes a single DNA base within a protein-coding gene, yet the protein produced is unchanged. The best explanation is:', options: [ 'The mutation was repaired instantly', 'The genetic code is redundant, so different codons can specify the same amino acid', 'Proteins are not made from DNA', 'The cell skipped translation' ], answer: 1 },
+    { id: 'c_l12_limiting_nh3', tier: 12, strand: 'Chemistry', core: false, type: 'mcq', stem: 'For N2 + 3 H2 -> 2 NH3, you start with 1.0 mol N2 and 2.0 mol H2. How many moles of NH3 can form?', options: [ '2.00 mol', '1.33 mol', '0.67 mol', '3.00 mol' ], answer: 1 },
+    { id: 'c_l12_dilution', tier: 12, strand: 'Chemistry', core: false, type: 'mcq', stem: 'Using M1V1 = M2V2, 50 mL of 6.0 M HCl is diluted to a final volume of 300 mL. The final concentration is:', options: [ '0.5 M', '1.0 M', '2.0 M', '36 M' ], answer: 1 },
+    { id: 'c_l12_equilibrium', tier: 12, strand: 'Chemistry', core: false, type: 'mcq', stem: 'For the exothermic equilibrium N2 + 3H2 <-> 2NH3, increasing the temperature will:', options: [ 'Shift the equilibrium toward products (more NH3)', 'Shift the equilibrium toward reactants (less NH3)', 'Have no effect on the equilibrium', 'Stop the reaction entirely' ], answer: 1 },
+    { id: 'p_l12_energy_v', tier: 12, strand: 'Physics', core: false, type: 'mcq', stem: 'A ball is dropped from rest at a height of 5.0 m. Using energy conservation (g = 10 m/s^2, ignore air resistance), its speed just before hitting the ground is about:', options: [ '5.0 m/s', '10.0 m/s', '100 m/s', '7.1 m/s' ], answer: 1 },
+    { id: 'p_l12_momentum', tier: 12, strand: 'Physics', core: false, type: 'mcq', stem: 'A 2.0 kg cart moving at 3.0 m/s collides with and sticks to a stationary 4.0 kg cart. Their common speed after the collision is:', options: [ '3.0 m/s', '1.5 m/s', '1.0 m/s', '0.5 m/s' ], answer: 2 },
+    { id: 'd_l12_slope', tier: 12, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A best-fit line passes through the points (0, 2) and (4, 10). What does its slope represent and equal?', options: [ 'The rate of change; slope = 2', 'The starting value; slope = 2', 'The rate of change; slope = 0.5', 'The total; slope = 8' ], answer: 0 },
+    { id: 'd_l12_error', tier: 12, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'Repeated measurements of the same length give 5.1, 5.2, 5.0, 5.1 cm. The small spread between repeated readings is best described as:', options: [ 'A systematic error shifting all readings one way', 'Random error (limited precision) in the measurements', 'Proof the ruler is broken', 'The independent variable' ], answer: 1 },
+    { id: 'e_l12_causal', tier: 12, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'Which design gives the strongest evidence that a treatment CAUSES an effect?', options: [ 'Observing people who already chose the treatment', 'A randomized controlled trial with a comparable control group', 'Asking experts their opinion', 'A single dramatic case study' ], answer: 1 },
+    { id: 'l_l12_evaluate', tier: 12, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'Two studies disagree: one with 30 subjects finds an effect, one with 3000 subjects finds none. Which is the more reasonable preliminary conclusion?', options: [ 'The 30-subject study is more trustworthy because it found something', 'The larger study carries more weight, though the conflict warrants further investigation', 'Both are equally strong', 'Neither study can tell us anything' ], answer: 1 },
+    { id: 'l_l10_procedure', tier: 10, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A lab procedure reads: \'Add the acid to the water slowly, never the reverse.\' Following the text, a student should:', options: [ 'Pour water into the acid quickly', 'Add acid to water in small amounts', 'Mix equal amounts all at once', 'Heat the acid before adding water' ], answer: 1 },
+    { id: 'e_l11_repeat', tier: 11, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'A student measures a reaction rate once and gets a value. To make the result more reliable, the best next step is to:', options: [ 'Change the equipment and try a different reaction', 'Repeat the measurement several times and average', 'Report the single value as final', 'Ask a classmate for their number instead' ], answer: 1 },
+    { id: 'd_l11_bio_context', tier: 11, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'An enzyme experiment records product formed (mg) at five temperatures, peaking at 37 C then falling. The pattern in the data is best described as:', options: [ 'A steady increase with temperature', 'A peak at an optimum, then a decline', 'No relationship with temperature', 'A straight-line decrease' ], answer: 1 },
+    { id: 'e_l12_replicate', tier: 12, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'Two labs run the same experiment and reach the same result independently. This independent replication mainly strengthens the result\'s:', options: [ 'Convenience', 'Reliability and credibility', 'Cost', 'Reading level' ], answer: 1 },
+    { id: 'l_l12_conflict', tier: 12, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A news article claims a food \'boosts brain power,\' citing one company-funded study. The most important critical question is:', options: [ 'What font the article used', 'Whether the funding source or single study could bias the claim', 'How long the article is', 'Whether the food tastes good' ], answer: 1 },
+  ];
+  var SB_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
+  var STUDENT_ID = null;
+  var DIAGNOSTIC_TYPE = 'science_g10_12_adaptive';
+  var DIAGNOSTIC_LABEL = 'Science Diagnostic (Grades 10-12)';
+
+  /* ===================== STATE ===================== */
+  var SELECTED_SUBJECTS = [];     /* e.g. ['Biology'] or ['Biology','Physics'] or all three */
+  var SELECTED_CONF = null;       /* 10/11/12 self-selected tier, or 0 = not sure */
+  var ANSWERS = {};               /* id -> chosen index */
+  var QUESTIONS = [];             /* the items currently rendered (grows by phase) */
+  var SUBJECT_SET = {};           /* map of subject -> true for quick lookup */
+  var CORE_STRANDS = { 'Data Analysis and Quantitative Skills':1, 'Experimental Design and Scientific Reasoning':1, 'Science Literacy':1 };
+
+  var ROUTER = {
+    phase: 0,                 /* 0 none, 1 core, 2 modules, 99 done */
+    selfSelected: null,
+    coreTier: null,           /* tier resolved from the practices core */
+    corrected: false,
+    path: [],
+    tailShown: false
+  };
+  var THRESH = { up: 0.75, down: 0.45 };
+
+  /* ===================== ITEM POOLS ===================== */
+  function poolCore(tier) {
+    var out = [];
+    for (var i = 0; i < ITEM_BANK.length; i++) {
+      if (ITEM_BANK[i].core === true && ITEM_BANK[i].tier === tier) out.push(ITEM_BANK[i]);
+    }
+    return out;
+  }
+  function poolModule(tier) {
+    /* subject-content items at a tier, only for the subjects the student selected */
+    var out = [];
+    for (var i = 0; i < ITEM_BANK.length; i++) {
+      var it = ITEM_BANK[i];
+      if (it.core === false && it.tier === tier && SUBJECT_SET[it.strand] === true) out.push(it);
+    }
+    return out;
+  }
+
+  /* ===================== INTRO HANDLERS ===================== */
+  (function initSubjectPicks() {
+    var btns = document.querySelectorAll('.sci-pick[data-subject]');
+    for (var i = 0; i < btns.length; i++) {
+      (function(el) {
+        el.onclick = function() {
+          var subj = el.getAttribute('data-subject');
+          if (subj === 'ALL') {
+            /* selecting ALL clears the individual picks and selects only ALL */
+            var all = document.querySelectorAll('.sci-pick[data-subject]');
+            for (var j = 0; j < all.length; j++) all[j].classList.remove('selected');
+            el.classList.add('selected');
+          } else {
+            /* selecting a specific subject clears ALL */
+            var allBtn = document.querySelector('.sci-pick[data-subject="ALL"]');
+            if (allBtn) allBtn.classList.remove('selected');
+            el.classList.toggle('selected');
+          }
+          var err = document.getElementById('subjectError'); if (err) err.style.display = 'none';
+        };
+      })(btns[i]);
+    }
+  })();
+
+  (function initConfidencePicks() {
+    var btns = document.querySelectorAll('.sci-pick[data-conf]');
+    for (var i = 0; i < btns.length; i++) {
+      (function(el) {
+        el.onclick = function() {
+          SELECTED_CONF = parseInt(el.getAttribute('data-conf'), 10);
+          var all = document.querySelectorAll('.sci-pick[data-conf]');
+          for (var j = 0; j < all.length; j++) all[j].classList.remove('selected');
+          el.classList.add('selected');
+          var err = document.getElementById('confError'); if (err) err.style.display = 'none';
+        };
+      })(btns[i]);
+    }
+  })();
+
+  function resolveSubjects() {
+    SELECTED_SUBJECTS = []; SUBJECT_SET = {};
+    var allBtn = document.querySelector('.sci-pick[data-subject="ALL"]');
+    if (allBtn && allBtn.classList.contains('selected')) {
+      SELECTED_SUBJECTS = ['Biology','Chemistry','Physics'];
+    } else {
+      var sel = document.querySelectorAll('.sci-pick[data-subject].selected');
+      for (var i = 0; i < sel.length; i++) {
+        var s = sel[i].getAttribute('data-subject');
+        if (s !== 'ALL') SELECTED_SUBJECTS.push(s);
+      }
+    }
+    for (var k = 0; k < SELECTED_SUBJECTS.length; k++) SUBJECT_SET[SELECTED_SUBJECTS[k]] = true;
+    return SELECTED_SUBJECTS.length > 0;
+  }
+
+  document.getElementById('btnStart').onclick = function() {
+    var name = document.getElementById('studentName').value.trim();
+    if (!name) { document.getElementById('nameError').style.display = 'block'; document.getElementById('studentName').focus(); return; }
+    document.getElementById('nameError').style.display = 'none';
+    if (!resolveSubjects()) { document.getElementById('subjectError').style.display = 'block'; return; }
+    if (SELECTED_CONF === null) { document.getElementById('confError').style.display = 'block'; return; }
+    document.getElementById('subjectError').style.display = 'none';
+    document.getElementById('confError').style.display = 'none';
+    startRouter();
+    showScreen('screenQuestions');
+  };
+
+  /* ===================== ROUTER ===================== */
+  function startRouter() {
+    QUESTIONS = []; ROUTER.path = []; ROUTER.corrected = false; ROUTER.tailShown = false;
+    ROUTER.selfSelected = SELECTED_CONF;
+    /* Phase 1: the practices core. Start tier = self-selected, or 11 (on-level) if 'not sure'. */
+    var startTier = (SELECTED_CONF === 0) ? 11 : SELECTED_CONF;
+    ROUTER.coreTier = startTier;
+    ROUTER.phase = 1;
+    ROUTER.path.push('core_T' + startTier);
+    QUESTIONS = poolCore(startTier);
+    renderQuestions();
+    showStageControls();
+  }
+
+  function scoreOf(items) {
+    var c = 0, t = 0;
+    for (var i = 0; i < items.length; i++) {
+      var q = items[i];
+      if (q.type !== 'mcq') continue;
+      t++;
+      if (ANSWERS[q.id] === q.answer) c++;
+    }
+    return { correct: c, total: t, pct: t > 0 ? c / t : 0 };
+  }
+  function currentVisible() { return QUESTIONS; }
+
+  function advanceCore() {
+    var sc = scoreOf(QUESTIONS);
+    var tier = ROUTER.coreTier;
+    var adj = null;
+    if (sc.pct >= THRESH.up && tier < 12) adj = tier + 1;
+    else if (sc.pct < THRESH.down && tier > 10) adj = tier - 1;
+    if (adj === null) { enterModules(); return; }
+    /* one correction: append the adjacent core block to confirm the tier */
+    ROUTER.corrected = true;
+    ROUTER.coreTier = adj;
+    ROUTER.path.push('core_T' + adj);
+    var add = poolCore(adj);
+    for (var i = 0; i < add.length; i++) QUESTIONS.push(add[i]);
+    renderQuestions();
+    var firstNew = document.getElementById('card_' + add[0].id);
+    if (firstNew) firstNew.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    /* after the correction block, resolve and go to modules on next Continue */
+    ROUTER.phase = 15;
+    showStageControls();
+  }
+
+  function resolveCoreTier() {
+    /* if a correction block was added, settle the tier from the corrected block's score */
+    if (ROUTER.path.length < 2) return ROUTER.coreTier;
+    var lastKey = ROUTER.path[ROUTER.path.length - 1];
+    var lastTier = parseInt(lastKey.replace('core_T',''), 10);
+    var lastItems = [];
+    for (var i = 0; i < QUESTIONS.length; i++) { if (QUESTIONS[i].core === true && QUESTIONS[i].tier === lastTier) lastItems.push(QUESTIONS[i]); }
+    var sc = scoreOf(lastItems);
+    var firstTier = parseInt(ROUTER.path[0].replace('core_T',''), 10);
+    /* conservative: only move to the corrected tier if performance supports it */
+    if (lastTier > firstTier) return (sc.pct >= THRESH.up) ? lastTier : firstTier;
+    if (lastTier < firstTier) return (sc.pct < THRESH.down) ? lastTier : firstTier;
+    return lastTier;
+  }
+
+  function enterModules() {
+    ROUTER.coreTier = resolveCoreTier();
+    var tier = ROUTER.coreTier;
+    ROUTER.phase = 2;
+    var add = poolModule(tier);
+    if (add.length === 0) { enterTail(); return; }
+    ROUTER.path.push('modules_T' + tier);
+    for (var i = 0; i < add.length; i++) QUESTIONS.push(add[i]);
+    renderQuestions();
+    var firstNew = document.getElementById('card_' + add[0].id);
+    if (firstNew) firstNew.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showStageControls();
+  }
+
+  function enterTail() {
+    ROUTER.phase = 99; ROUTER.tailShown = true;
+    showStageControls();
+  }
+
+  function showStageControls() {
+    var cont = document.getElementById('continueRow');
+    var sub = document.getElementById('submitRow');
+    if (ROUTER.tailShown) { if (cont) cont.style.display = 'none'; if (sub) sub.style.display = 'flex'; }
+    else { if (cont) cont.style.display = 'flex'; if (sub) sub.style.display = 'none'; }
+  }
+
+  function missingInVisible() {
+    var miss = [];
+    for (var i = 0; i < QUESTIONS.length; i++) { var q = QUESTIONS[i]; if (q.type === 'mcq' && typeof ANSWERS[q.id] === 'undefined') miss.push(q.id); }
+    return miss;
+  }
+  function flashMissing(ids) {
+    for (var i = 0; i < ids.length; i++) { var el = document.getElementById('card_' + ids[i]); if (el) el.classList.add('card-missing'); }
+    var first = document.getElementById('card_' + ids[0]); if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  document.getElementById('btnContinue').onclick = function() {
+    var miss = missingInVisible();
+    if (miss.length > 0) { flashMissing(miss); return; }
+    if (ROUTER.phase === 1) advanceCore();
+    else if (ROUTER.phase === 15) enterModules();
+    else if (ROUTER.phase === 2) enterTail();
+  };
+
+  /* ===================== RENDER ===================== */
+  function renderQuestions() {
+    var host = document.getElementById('questionList');
+    var html = '';
+    var n = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i]; n++;
+      html += '<div class="question-card" id="card_' + q.id + '">';
+      html += '<div class="q-number">QUESTION ' + n + '</div>';
+      html += '<div class="q-stem">' + q.stem + '</div>';
+      html += '<div class="q-options">';
+      for (var o = 0; o < q.options.length; o++) {
+        var sel = (ANSWERS[q.id] === o) ? ' selected' : '';
+        html += '<button type="button" class="q-option' + sel + '" data-q="' + q.id + '" data-o="' + o + '">' +
+                '<span class="q-option-letter">' + String.fromCharCode(65 + o) + '</span>' +
+                '<span class="q-option-text">' + q.options[o] + '</span></button>';
+      }
+      html += '</div></div>';
+    }
+    host.innerHTML = html;
+    var opts = host.querySelectorAll('.q-option');
+    for (var k = 0; k < opts.length; k++) {
+      (function(el) {
+        el.onclick = function() {
+          var qid = el.getAttribute('data-q'); var oi = parseInt(el.getAttribute('data-o'), 10);
+          ANSWERS[qid] = oi;
+          var card = document.getElementById('card_' + qid);
+          if (card) { card.classList.remove('card-missing'); var sibs = card.querySelectorAll('.q-option'); for (var s = 0; s < sibs.length; s++) sibs[s].classList.remove('selected'); }
+          el.classList.add('selected');
+          updateProgress();
+        };
+      })(opts[k]);
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    var ans = 0, tot = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) { var q = QUESTIONS[i]; if (q.type === 'mcq') { tot++; if (typeof ANSWERS[q.id] !== 'undefined') ans++; } }
+    var pct = tot > 0 ? Math.round(ans / tot * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = ROUTER.tailShown ? 'Almost done' : 'Keep going';
+  }
+
+  function showScreen(id) {
+    var s = document.querySelectorAll('.screen');
+    for (var i = 0; i < s.length; i++) s[i].classList.remove('active');
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  /* ===================== SCORING + REPORT ===================== */
+  var TIER_LABEL = { 10:'Foundational', 11:'On-level', 12:'Advanced' };
+  var TIER_GRADE = { 10:'Grade 9-10 level', 11:'Grade 10-11 level', 12:'Grade 11-12 level' };
+
+  function scoreByDimension() {
+    /* returns per-strand {correct,total,pct} over ALL items the student answered */
+    var dim = {};
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type !== 'mcq' || typeof ANSWERS[q.id] === 'undefined') continue;
+      if (!dim[q.strand]) dim[q.strand] = { correct:0, total:0 };
+      dim[q.strand].total++;
+      if (ANSWERS[q.id] === q.answer) dim[q.strand].correct++;
+    }
+    for (var k in dim) { if (dim.hasOwnProperty(k)) dim[k].pct = dim[k].total > 0 ? dim[k].correct / dim[k].total : 0; }
+    return dim;
+  }
+
+  function readinessFor(tier, practicesPct) {
+    /* translate routed tier + practices strength into an AP/IB readiness indication */
+    if (tier >= 12 && practicesPct >= 0.7) return 'Strong readiness for AP and IB Higher Level study. The student handles multi-step, analytical science and demonstrates the reasoning these courses demand.';
+    if (tier >= 12) return 'Good readiness for AP and IB study, approaching Higher Level. Content reasoning is strong; continued work on data analysis and experimental reasoning will consolidate Higher Level readiness.';
+    if (tier === 11 && practicesPct >= 0.7) return 'Solid readiness for AP and IB Standard Level study, with clear potential to reach Higher Level with targeted preparation.';
+    if (tier === 11) return 'Developing readiness for AP and IB Standard Level. The foundation is in place; strengthening multi-step reasoning and quantitative skills is the next step.';
+    return 'Building the foundation for advanced study. The student is consolidating core science concepts and reasoning; a focused programme will prepare them for AP and IB pathways.';
+  }
+
+  function buildLevelAnalysis() {
+    var dim = scoreByDimension();
+    var tier = ROUTER.coreTier;
+    /* practices = the core strands the student saw */
+    var pc = 0, pt = 0, domc = 0, domt = 0;
+    for (var k in dim) {
+      if (!dim.hasOwnProperty(k)) continue;
+      if (CORE_STRANDS[k]) { pc += dim[k].correct; pt += dim[k].total; }
+      else { domc += dim[k].correct; domt += dim[k].total; }
+    }
+    var practicesPct = pt > 0 ? pc / pt : 0;
+    var overallC = pc + domc, overallT = pt + domt;
+
+    var anchorNote;
+    if (ROUTER.selfSelected === 0) anchorNote = 'The student chose the neutral start; the engine routed to the ' + TIER_LABEL[tier] + ' tier from performance.';
+    else if (tier > ROUTER.selfSelected) anchorNote = 'The student handled material above their starting estimate; the engine routed up to the ' + TIER_LABEL[tier] + ' tier.';
+    else if (tier < ROUTER.selfSelected) anchorNote = 'The student found the starting estimate hard; the engine routed down to the ' + TIER_LABEL[tier] + ' tier.';
+    else anchorNote = 'The student\'s starting estimate was confirmed at the ' + TIER_LABEL[tier] + ' tier.';
+
+    return {
+      spine: 'ngss_science',
+      instrument: 'science_g10_12_adaptive',
+      subject: 'science',
+      subjects_selected: SELECTED_SUBJECTS,
+      self_selected_start: (ROUTER.selfSelected === 0) ? 'not sure (neutral)' : (TIER_LABEL[ROUTER.selfSelected] + ' (' + ROUTER.selfSelected + ')'),
+      routed_tier: TIER_LABEL[tier] + ' (' + TIER_GRADE[tier] + ')',
+      routed_tier_num: tier,
+      anchor_vs_routed: anchorNote,
+      overall_correct: overallC,
+      overall_total: overallT,
+      practices_pct: Math.round(practicesPct * 100),
+      by_dimension: dim,
+      router_path: ROUTER.path,
+      ap_ib_readiness: readinessFor(tier, practicesPct),
+      note: 'Adaptive science diagnostic for grades 10-12, NGSS-anchored and practices-framed. Every student is measured on the universal science-practices core (data analysis, experimental design and scientific reasoning, science literacy), which routes the difficulty tier. The subject modules the student selected (' + SELECTED_SUBJECTS.join(', ') + ') are then measured at that tier. The routed tier is a conservative starting point across the competencies, not a committed placement; the AP/IB readiness indication is a guide for course planning, confirmed by a teacher. This diagnostic measures transferable science competencies and so reads across NGSS, AP, and IB.'
+    };
+  }
+
+  /* ===================== SUBMIT + RESULT ===================== */
+  function collectPayload() {
+    var studentName = document.getElementById('studentName').value.trim();
+    var mcqScores = {}, rawResponses = {}, preferences = {}, selfRatings = {};
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq') {
+        var chosen = ANSWERS[q.id];
+        mcqScores[q.id] = { chosen: chosen, answer: q.answer, correct: (typeof chosen !== 'undefined') ? (chosen === q.answer) : null, strand: q.strand, tier: q.tier };
+        rawResponses[q.id] = chosen;
+      }
+    }
+    preferences.level_analysis = buildLevelAnalysis();
+    return {
+      student_id: STUDENT_ID, student_name: studentName,
+      diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
+      raw_responses: rawResponses, mcq_scores: mcqScores,
+      self_ratings: selfRatings, preferences: preferences
+    };
+  }
+
+  function renderResult(la) {
+    var html = '';
+    html += '<p class="lede">Thank you for completing the Harland Science Diagnostic. Your responses have been recorded and your teacher will review them. Here is a summary of what this diagnostic found.</p>';
+    html += '<div class="readiness-card"><h4>Overall science level</h4><p style="margin:0;">Your work placed you at the <strong>' + la.routed_tier + '</strong> across the science competencies. ' + la.anchor_vs_routed + '</p></div>';
+
+    /* per-dimension profile bars */
+    html += '<h3 class="section-head">Your competency profile</h3>';
+    var order = ['Biology','Chemistry','Physics','Data Analysis and Quantitative Skills','Experimental Design and Scientific Reasoning','Science Literacy'];
+    for (var i = 0; i < order.length; i++) {
+      var s = order[i]; var d = la.by_dimension[s];
+      if (!d) continue;
+      var pct = Math.round(d.pct * 100);
+      html += '<div class="profile-row"><div class="profile-label"><span>' + s + '</span><span>' + d.correct + ' / ' + d.total + '</span></div>' +
+              '<div class="profile-track"><div class="profile-fill" style="width:' + pct + '%;"></div></div></div>';
+    }
+
+    html += '<div class="readiness-card"><h4>AP and IB readiness</h4><p style="margin:0;">' + la.ap_ib_readiness + '</p></div>';
+    html += '<p class="field-hint" style="margin-top:18px;">This is a starting point for a conversation with your teacher, not a final placement. The diagnostic measures the core reasoning skills that every science depends on, alongside your knowledge in the subjects you chose.</p>';
+    document.getElementById('resultBody').innerHTML = html;
+  }
+
+  document.getElementById('btnSubmit').onclick = function() {
+    var miss = missingInVisible();
+    if (miss.length > 0) { flashMissing(miss); return; }
+    var btn = document.getElementById('btnSubmit');
+    btn.disabled = true; btn.textContent = 'Submitting...';
+    var payload = collectPayload();
+    var la = payload.preferences.level_analysis;
+    submitToSupabase(payload, function() {
+      renderResult(la); showScreen('screenResult');
+    }, function(err) {
+      /* even if submission fails, show the student their result; log nothing sensitive */
+      renderResult(la); showScreen('screenResult');
+    });
+  };
+
+  function submitToSupabase(payload, onSuccess, onError) {
+    var headers = { 'Content-Type':'application/json', 'apikey':SB_KEY, 'Authorization':'Bearer ' + SB_KEY, 'Prefer':'return=representation' };
+    fetch(SB_URL + '/rest/v1/diagnostics', { method:'POST', headers:headers, body:JSON.stringify(payload) })
+    .then(function(res) { if (!res.ok) throw new Error('insert failed ' + res.status); return res.json(); })
+    .then(function(data) {
+      var reportPayload = { diagnostic_id: data[0].id, student_id: payload.student_id, student_name: payload.student_name, diagnostic_label: payload.diagnostic_label, ai_report: 'Pending teacher review', status: 'pending' };
+      return fetch(SB_URL + '/rest/v1/reports', { method:'POST', headers:headers, body:JSON.stringify(reportPayload) });
+    })
+    .then(function() { onSuccess(); })
+    .catch(function(e) { onError(e); });
+  }
+
+
+</script>
+</body>
+</html>
