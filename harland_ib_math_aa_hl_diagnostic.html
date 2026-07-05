@@ -1071,7 +1071,19 @@
 
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
-    fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
+    var diagnosticsBody = {
+      student_id: payload.student_id,
+      student_name: payload.student_name,
+      diagnostic_type: payload.diagnostic_type,
+      diagnostic_label: payload.diagnostic_label,
+      raw_responses: payload.raw_responses,
+      mcq_scores: payload.mcq_scores,
+      self_ratings: payload.self_ratings,
+      preferences: payload.preferences,
+      diagnostic_id: DIAGNOSTIC_TYPE,
+      assessment_type: 'diagnostic'
+    };
+    fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(diagnosticsBody) })
     .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
     .then(function(data) {
       SUBMISSION_ID = data[0].id;
