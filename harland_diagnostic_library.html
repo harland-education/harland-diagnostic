@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- build: ARCHIVED-BAND-v1 2026-07-06 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -73,6 +74,11 @@
     .badge{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;flex-shrink:0;margin-top:5px;}
     .b-live{background:var(--success-wash);color:var(--success);}
     .b-planned{background:var(--cream-deep);color:var(--slate);}
+    .b-archived{background:var(--cream-deep);color:var(--mist);}
+    .diag-card.is-archived{opacity:0.72;background:var(--cream-warm);}
+    .diag-card.is-archived:hover{border-color:var(--border-soft);box-shadow:none;opacity:0.9;}
+    .diag-card.is-archived .dc-name{color:var(--slate);}
+    .archived-note{font-size:11px;color:var(--mist);letter-spacing:0.02em;margin-top:2px;font-style:italic;}
     .btn-copy{font-size:12px;font-weight:500;letter-spacing:0.04em;padding:8px 16px;border:1.5px solid var(--gold-dark);background:var(--white);color:var(--gold-dark);cursor:pointer;font-family:var(--font-body);transition:background .15s,border-color .15s,color .15s;}
     .btn-copy:hover{background:var(--gold-pale);}
     .btn-copy.copied{background:var(--gold-pale);border-color:var(--gold-dark);color:var(--gold-dark);}
@@ -273,14 +279,23 @@ function actions(c){
   return '<button class="btn-copy" onclick="copyLink(\''+escAttr(c.url)+'\', this)">Copy link</button>'+
          '<a class="btn-open" href="'+escAttr(c.url)+'" target="_blank">Open</a>';
 }
-function badge(c){ return c.status==='live' ? '<span class="badge b-live">Live</span>' : '<span class="badge b-planned">Planned</span>'; }
+function badge(c){
+  if(c.status==='live') return '<span class="badge b-live">Live</span>';
+  if(c.status==='archived') return '<span class="badge b-archived">Archived</span>';
+  return '<span class="badge b-planned">Planned</span>';
+}
 
 function renderCards(rows){
-  // group by umbrella then category, in UMBRELLAS order then sort_order
+  // group by umbrella then category, in UMBRELLAS order then sort_order.
+  // Archived rows are held out and rendered in a dedicated trailing band so
+  // the canonical (live/planned) instruments read cleanly, while retired ones
+  // stay visible and link-retrievable for staff.
+  var active=rows.filter(function(c){return c.status!=='archived';});
+  var archived=rows.filter(function(c){return c.status==='archived';});
   var html='';
   for(var u=0; u<UMBRELLAS.length; u++){
     var uk=UMBRELLAS[u].key;
-    var inUmb=rows.filter(function(c){return c.umbrella===uk;});
+    var inUmb=active.filter(function(c){return c.umbrella===uk;});
     if(!inUmb.length) continue;
     html += '<div class="umbrella-band"><div class="umbrella-head"><h2>'+esc(UMBRELLAS[u].label)+'</h2><span class="uct">'+inUmb.length+'</span></div>';
     // categories within
@@ -291,28 +306,45 @@ function renderCards(rows){
       var inCat=inUmb.filter(function(c){return c.category===cat;});
       html += '<div class="category-eyebrow">'+esc(cat)+'</div><div class="cards-grid">';
       for(var k=0;k<inCat.length;k++){
-        var c=inCat[k];
-        html += '<div class="diag-card"><div class="dc-top"><div class="dc-name">'+esc(c.name)+'</div>'+badge(c)+'</div>'+
-                '<div class="dc-meta">'+metaLine(c)+'</div>'+
-                '<div class="dc-desc">'+esc(c.description)+'</div>'+
-                '<div class="dc-actions">'+actions(c)+'</div></div>';
+        html += cardHtml(inCat[k]);
       }
       html += '</div>';
     }
     html += '</div>';
   }
+  if(archived.length){
+    html += '<div class="umbrella-band"><div class="umbrella-head"><h2>Archived</h2><span class="uct">'+archived.length+'</span></div>';
+    html += '<div class="category-eyebrow">Retired &middot; superseded by adaptive instruments</div><div class="cards-grid">';
+    for(var a=0;a<archived.length;a++){
+      html += cardHtml(archived[a]);
+    }
+    html += '</div></div>';
+  }
   return html;
 }
 
+function cardHtml(c){
+  var arch = (c.status==='archived');
+  return '<div class="diag-card'+(arch?' is-archived':'')+'"><div class="dc-top"><div class="dc-name">'+esc(c.name)+'</div>'+badge(c)+'</div>'+
+         '<div class="dc-meta">'+metaLine(c)+'</div>'+
+         '<div class="dc-desc">'+esc(c.description)+'</div>'+
+         (arch?'<div class="archived-note">Retired. Link retained for reference.</div>':'')+
+         '<div class="dc-actions">'+actions(c)+'</div></div>';
+}
+
 function renderTable(rows){
+  // active (live/planned) first, archived sorted to the bottom
+  var ordered=rows.filter(function(c){return c.status!=='archived';})
+    .concat(rows.filter(function(c){return c.status==='archived';}));
   var html='<table class="cat-table"><thead><tr><th>Diagnostic</th><th>Category</th><th>Grade</th><th>Time</th><th>Status</th><th></th></tr></thead><tbody>';
-  for(var i=0;i<rows.length;i++){
-    var c=rows[i];
+  for(var i=0;i<ordered.length;i++){
+    var c=ordered[i];
+    var arch=(c.status==='archived');
     var nameCell = (c.status==='planned'||!c.url) ? esc(c.name)
       : '<a href="'+escAttr(c.url)+'" target="_blank">'+esc(c.name)+'</a>';
     var copyCell = (c.status==='planned'||!c.url) ? ''
       : '<button class="ct-copy" onclick="copyLink(\''+escAttr(c.url)+'\', this)">Copy link</button>';
-    html += '<tr><td class="ct-name">'+nameCell+'</td><td>'+esc(c.category)+'</td><td>'+esc(c.grade_band||'')+'</td><td>'+(c.duration_min?esc(c.duration_min)+' min':'')+'</td><td>'+badge(c)+'</td><td>'+copyCell+'</td></tr>';
+    html += '<tr'+(arch?' style="opacity:0.68"':'')+'><td class="ct-name">'+nameCell+'</td><td>'+esc(c.category)+'</td><td>'+esc(c.grade_band||'')+'</td><td>'+(c.duration_min?esc(c.duration_min)+' min':'')+'</td><td>'+badge(c)+'</td><td>'+copyCell+'</td></tr>';
   }
   html += '</tbody></table>';
   return html;
