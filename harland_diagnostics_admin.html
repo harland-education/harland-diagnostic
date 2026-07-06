@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: SUBJECT-DRIVEN-RUBRIC-v1 2026-07-06 -->
+<!-- build: SUBJECT-DRIVEN-RUBRIC-v2-coursefix 2026-07-06 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -600,7 +600,7 @@ function renderPlacement(res,diag){
   var v=res||{};
   h+='<div class="pl-grid">'+
      plFld('Level','pl-level',v.recommended_level||'')+
-     plFld('Course','pl-course',v.recommended_course||(cat.subject||''))+
+     plFld('Course','pl-course',v.recommended_course||(v.subject||(cat.subject||'')))+
      plSel('Tier','pl-tier',['','advanced','expert'],v.recommended_tier||'')+
      plSel('Confidence','pl-conf',['','low','medium','high'],v.confidence||'')+
      plFld('Start unit','pl-unit',(v.starting_unit!=null?v.starting_unit:''))+
