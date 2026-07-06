@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- build: SUBJECT-DRIVEN-RUBRIC-v1 2026-07-06 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -307,7 +308,12 @@ main{max-width:900px;margin:0 auto;padding:32px 20px;flex:1;}
 var U='',K='',AK='',PROXY='',W='',reports=[],students=[],activeId=null,activeDiag=null,activeResult=null,CATALOG={},placements=[],ITEMS={},activeItems=[];
 var STREAM_MODEL='claude-sonnet-4-6';
 // Which criterion spine grounds each diagnostic (extend as diagnostics get bands).
-var RUBRIC_MAP={ ib_math_aa_hl_readiness:{spine:'common_core_math',subject:'ib_math_aa_hl',levels:[12]}, science_g10_12_adaptive:{spine:'ngss_science',subject:'science',levels:[10,11,12]}, english_g3_7_adaptive:{spine:'common_core_ela',subject:'english',levels:[3,4,5,6,7]}, english_g8_12_adaptive:{spine:'common_core_ela',subject:'english',levels:[8,9,10,11,12]}, english_k2_full:{spine:'common_core_ela',subject:'english',levels:[0,1,2]}, english_diagnostic_g8_10:{spine:'common_core_ela',subject:'english',levels:[8,9,10]},
+/* Subject-driven (trunk architecture): slug -> {spine, allowed_subjects}. The report
+   generator resolves the rubric from the SUBMISSION's subject (results.subject, else the
+   subject stamped in preferences.level_analysis), validated against allowed_subjects. One
+   trunk slug can therefore report multiple curricula (e.g. AA HL or AA SL) from one instrument.
+   defaultSubject is the fallback when a submission carries no subject (older rows). */
+var RUBRIC_MAP={ ib_math_aa_hl_readiness:{spine:'common_core_math',allowed_subjects:['ib_math_aa_hl','ib_math_aa_sl'],defaultSubject:'ib_math_aa_hl',levels:[12]}, science_g10_12_adaptive:{spine:'ngss_science',allowed_subjects:['science'],defaultSubject:'science',levels:[10,11,12]}, english_g3_7_adaptive:{spine:'common_core_ela',allowed_subjects:['english'],defaultSubject:'english',levels:[3,4,5,6,7]}, english_g8_12_adaptive:{spine:'common_core_ela',allowed_subjects:['english'],defaultSubject:'english',levels:[8,9,10,11,12]}, english_k2_full:{spine:'common_core_ela',allowed_subjects:['english'],defaultSubject:'english',levels:[0,1,2]}, english_diagnostic_g8_10:{spine:'common_core_ela',allowed_subjects:['english'],defaultSubject:'english',levels:[8,9,10]},
                  english_diagnostic_g2_4:{spine:'common_core_ela',subject:'english',levels:[2,3,4]},
                  english_diagnostic_g4_6:{spine:'common_core_ela',subject:'english',levels:[4,5,6]},
                  english_diagnostic_g6_8:{spine:'common_core_ela',subject:'english',levels:[6,7,8]},
@@ -433,7 +439,7 @@ function openModal(id){
     var diag=d&&d.length?d[0]:null;
     activeDiag=diag;
     loadPlacement(diag);
-    loadItems(diag,function(items,slug){activeItems=items;loadRubric(slug,function(bands){activeRubric=bands;});});
+    loadItems(diag,function(items,slug){activeItems=items;var rs=(activeResult&&activeResult.subject)||null;loadRubric(slug,diag,rs,function(bands){activeRubric=bands;});});
     var el=document.getElementById('m-responses');
     if(!diag){el.innerHTML='<div style="color:#9A9AA8;font-size:12px;">No response data.</div>';return;}
     var html='';
@@ -741,12 +747,25 @@ function resolveItemsByKeys(diag, cb){
   }).catch(function(){ cb([], null); });
 }
 // Fetch the criterion bands (Common Core or other spine) for a diagnostic, cached by spine:subject.
-function loadRubric(slug, cb){
+// Resolve the assessed-for subject for a submission: explicit arg, else the subject
+// stamped by the instrument in preferences.level_analysis, else the slug default.
+function resolveSubject(m, diag, explicitSubject){
+  var subj = explicitSubject
+    || (diag && diag.preferences && diag.preferences.level_analysis && diag.preferences.level_analysis.subject)
+    || m.defaultSubject
+    || (m.allowed_subjects && m.allowed_subjects[0]) || null;
+  // guard: only honour a subject this trunk is configured to report
+  if(subj && m.allowed_subjects && m.allowed_subjects.indexOf(subj) < 0){ subj = m.defaultSubject || m.allowed_subjects[0]; }
+  return subj;
+}
+function loadRubric(slug, diag, explicitSubject, cb){
   var m = slug && RUBRIC_MAP[slug];
   if(!m){ cb(null); return; }
-  var key = m.spine+':'+m.subject;
+  var subject = resolveSubject(m, diag, explicitSubject);
+  if(!subject){ cb(null); return; }
+  var key = m.spine+':'+subject;
   if(RUBRICS[key]){ cb(RUBRICS[key]); return; }
-  api('rubric_bands?spine=eq.'+encodeURIComponent(m.spine)+'&subject=eq.'+encodeURIComponent(m.subject)+'&order=level,strand&select=*').then(function(d){
+  api('rubric_bands?spine=eq.'+encodeURIComponent(m.spine)+'&subject=eq.'+encodeURIComponent(subject)+'&order=level,strand&select=*').then(function(d){
     RUBRICS[key]=d||[]; cb(RUBRICS[key]);
   }).catch(function(){ cb(null); });
 }

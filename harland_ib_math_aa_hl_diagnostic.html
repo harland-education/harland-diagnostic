@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- build: TRUNK-PILOT-v1 (IB Math AA HL+SL intents) 2026-07-06 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -160,26 +161,51 @@
   var SUBMISSION_ID = null;
   var SPEAKING_REC = { audio_path: null, transcript: '', duration_sec: 0, mime: '' };
   var DIAGNOSTIC_TYPE  = 'ib_math_aa_hl_readiness';
-  var DIAGNOSTIC_LABEL = 'IB Math AA HL Readiness';
-  var DIAGNOSTIC_SUBJECT = 'ib_math_aa_hl';
+  var DIAGNOSTIC_LABEL = 'IB Math AA Readiness';
+  var DIAGNOSTIC_SUBJECT = 'ib_math_aa_hl';   /* HL default; overridden per intent at submit */
+
+  /* ===== INTENT AXIS (trunk architecture, option B) =====
+     The student self-selects their target course (ASSESSED_FOR) at intro. This
+     is ORTHOGONAL to the adaptive trunk: the trunk measures shared readiness and
+     resolves the band identically for both intents. Intent governs only (a) which
+     phrasing of the routed written-reasoning tier is shown (corroborating texture,
+     NOT placement), and (b) results.subject, which drives the subject-aware report
+     in the admin. The trunk places; intent colours the tail and the report. */
+  var INTENTS = {
+    hl: {
+      subject: 'ib_math_aa_hl',
+      courseLabel: 'IB Math AA HL',
+      courseLong: 'Mathematics: Analysis and Approaches at Higher Level',
+      readinessFor: 'AA HL'
+    },
+    sl: {
+      subject: 'ib_math_aa_sl',
+      courseLabel: 'IB Math AA SL',
+      courseLong: 'Mathematics: Analysis and Approaches at Standard Level',
+      readinessFor: 'AA SL'
+    }
+  };
+  var ASSESSED_FOR = null;   /* 'hl' | 'sl'  -- set by the intent picker at intro */
+  function intent() { return INTENTS[ASSESSED_FOR] || INTENTS.hl; }
 
   var CONFIG = {
-    diagnosticTitle:    'IB Math AA HL Readiness',
-    diagnosticSubtitle: 'Adaptive Readiness Diagnostic for Analysis and Approaches HL',
-    introHeading:    'Welcome to Your IB Math AA HL Readiness Assessment',
-    introDescription: 'Mathematics: Analysis and Approaches at Higher Level is one of the most demanding courses the IB offers. This diagnostic does not assume you have started HL content. It checks the algebra, functions, trigonometry, and reasoning that most strongly predict success in AA HL. It begins with a short set of questions, then adapts to your answers, giving easier or harder questions to find your level precisely. Some questions are challenging by design, so if you are not sure, choose your best answer and continue.',
+    diagnosticTitle:    'IB Math AA Readiness',
+    diagnosticSubtitle: 'Adaptive Readiness Diagnostic for Analysis and Approaches (HL and SL)',
+    introHeading:    'Welcome to Your IB Math AA Readiness Assessment',
+    introDescription: 'Mathematics: Analysis and Approaches is one of the IB\'s most demanding subjects at both levels. This diagnostic does not assume you have started the course. It checks the algebra, functions, trigonometry, and reasoning that most strongly predict success in AA, then adapts to your answers to find your level precisely. First, tell us which course you are assessing for; then answer a short, adaptive set of questions. Some are challenging by design, so if you are not sure, choose your best answer and continue.',
     infoPoints: [
       'This assessment takes about 30 minutes. There is no time limit, so work at your own pace.',
       'No calculator is required. Use scratch paper for any working.',
       'Please do not use a calculator, search engine, or any outside help. We need to see your own reasoning.',
       'The questions come in short sections and adapt to your answers, so different students see different sections.',
       'For each question, choose the single best answer. Several options may seem plausible; choose the strongest.',
-      'At the end there is a short written-reasoning task. Your teacher assesses it to confirm your level.'
+      'At the end there is a short written-reasoning task. Your teacher assesses it to confirm your level.',
+      'Choose the course you are assessing for at the start. The questions are the same core check for both levels; your choice tailors the written task and your report.'
     ],
     nameLabel:        'Your Full Name',
     nameHint:         'Please enter your name exactly as you want it to appear on your report.',
     thankyouTitle:    'Assessment Complete',
-    thankyouBody:     'Thank you for completing the IB Math AA HL readiness diagnostic. We have an indication of your readiness from your answers, and your teacher will confirm it together with your written response.',
+    thankyouBody:     'Thank you for completing the IB Math AA readiness diagnostic. We have an indication of your readiness from your answers, and your teacher will confirm it together with your written response.',
     thankyouNext:     'You may close this window.',
     submitButtonLabel: 'Submit My Responses'
   };
@@ -316,19 +342,43 @@
      always mathematical argument/communication; the DIFFICULTY of the reasoning scales.
      Keys map from pickWritingTier: narrative<-foundation, opinion<-core, argument<-stretch.
      Teacher-assessed; the prompt tier follows the routed placement and is recorded. */
+  /* Each difficulty tier (routed from the trunk) carries an HL and an SL phrasing
+     of the SAME mathematical scenario. The routed tier fixes the DIFFICULTY; the
+     student's intent fixes the EXPECTATION framing (HL pushes for rigour and
+     generality; SL asks for clear, correct reasoning). Same scenario across intents
+     keeps the written evidence comparable and keeps this a single instrument.
+     This is corroborating texture only and never affects the placement band. */
   var WRITING_TIERS = {
-    narrative: { id: 'w1_aa_hl', tier: 'foundational_reasoning', band: 'Foundation', domain: 'Written Reasoning',
-      topic: 'Foundational reasoning', type: 'text',
-      text: 'Explain, as clearly as you can, why multiplying any two even numbers always gives an even number. You may use an example to illustrate, but try to explain why it is ALWAYS true, not just for your example. Write as if you are teaching another student.',
-      hint: 'Aim to explain why it is always true, not just to show one case. Clear steps matter more than length.', required: true },
-    opinion: { id: 'w1_aa_hl', tier: 'core_reasoning', band: 'Core HL readiness', domain: 'Written Reasoning',
-      topic: 'Core reasoning', type: 'text',
-      text: 'Show that the sum of two consecutive integers is always odd. Explain your reasoning clearly, as if teaching it to another student. There is no single correct wording; we are looking at how you build and communicate a mathematical argument.',
-      hint: 'Represent the integers algebraically, form the sum, and explain why the result must be odd.', required: true },
-    argument: { id: 'w1_aa_hl', tier: 'extended_reasoning', band: 'HL stretch', domain: 'Written Reasoning',
-      topic: 'Extended reasoning and modelling', type: 'text',
-      text: 'A farmer has 40 metres of fencing to enclose a rectangular field against a straight river, so only three sides need fencing. Describe how you would find the dimensions that give the largest possible area. You do not need to finish every calculation; focus on explaining your approach, setting up the mathematics, and why your method finds the maximum.',
-      hint: 'Set up a variable and an expression for the area, use the fencing constraint, and explain how you would find the maximum.', required: true }
+    narrative: {
+      hl: { id: 'w1_aa', tier: 'foundational_reasoning', band: 'Foundation', domain: 'Written Reasoning',
+        topic: 'Foundational reasoning', type: 'text',
+        text: 'Explain, as clearly as you can, why multiplying any two even numbers always gives an even number. Use an example to illustrate if you wish, but explain why it is ALWAYS true, not just for your example. Write as if you are teaching another student, and be as precise as you can about why the rule cannot fail.',
+        hint: 'Aim to explain why it is always true, not just to show one case. For AA HL we are looking for a general, watertight explanation.', required: true },
+      sl: { id: 'w1_aa', tier: 'foundational_reasoning', band: 'Foundation', domain: 'Written Reasoning',
+        topic: 'Foundational reasoning', type: 'text',
+        text: 'Explain, as clearly as you can, why multiplying any two even numbers always gives an even number. You may use an example to illustrate, but try to explain why it is always true, not just for your example. Write as if you are teaching another student.',
+        hint: 'Aim to explain why it is always true, not just to show one case. Clear, correct steps matter more than length.', required: true }
+    },
+    opinion: {
+      hl: { id: 'w1_aa', tier: 'core_reasoning', band: 'Core HL readiness', domain: 'Written Reasoning',
+        topic: 'Core reasoning', type: 'text',
+        text: 'Show that the sum of two consecutive integers is always odd. Build your argument algebraically and explain each step, as if teaching it to another student. For AA HL, aim for a fully general argument, not a few examples; we are looking at how rigorously you construct and communicate the reasoning.',
+        hint: 'Represent the integers algebraically, form the sum, and explain why the result must be odd for every case.', required: true },
+      sl: { id: 'w1_aa', tier: 'core_reasoning', band: 'Core SL readiness', domain: 'Written Reasoning',
+        topic: 'Core reasoning', type: 'text',
+        text: 'Show that the sum of two consecutive integers is always odd. Explain your reasoning clearly, as if teaching it to another student. There is no single correct wording; we are looking at how you build and communicate a mathematical argument.',
+        hint: 'Represent the integers algebraically, form the sum, and explain why the result must be odd.', required: true }
+    },
+    argument: {
+      hl: { id: 'w1_aa', tier: 'extended_reasoning', band: 'HL stretch', domain: 'Written Reasoning',
+        topic: 'Extended reasoning and modelling', type: 'text',
+        text: 'A farmer has 40 metres of fencing to enclose a rectangular field against a straight river, so only three sides need fencing. Set up the mathematics that gives the dimensions of largest possible area, and explain why your method finds the MAXIMUM (not merely a large value). You need not finish every calculation, but for AA HL make the structure of the argument and the justification of the maximum explicit.',
+        hint: 'Set up a variable and an expression for the area, use the fencing constraint, and justify why your method locates the maximum.', required: true },
+      sl: { id: 'w1_aa', tier: 'extended_reasoning', band: 'SL stretch', domain: 'Written Reasoning',
+        topic: 'Extended reasoning and modelling', type: 'text',
+        text: 'A farmer has 40 metres of fencing to enclose a rectangular field against a straight river, so only three sides need fencing. Describe how you would find the dimensions that give the largest possible area. You do not need to finish every calculation; focus on explaining your approach, setting up the mathematics, and why your method finds the maximum.',
+        hint: 'Set up a variable and an expression for the area, use the fencing constraint, and explain how you would find the maximum.', required: true }
+    }
   };
   /* picked at runtime: */
   var CHOSEN_WRITING_TIER = 'opinion';
@@ -336,7 +386,7 @@
   var TAIL_ITEMS = [
     { id: 'scale_math_conf', domain: 'Student Profile', type: 'scale', text: 'How do you feel about mathematics?', min:1, max:5, labelLow:'I find it hard', labelHigh:'I find it easy', required: true },
     { id: 'scale_math_challenge', domain: 'Student Profile', type: 'scale', text: 'How do you feel about tackling hard, unfamiliar problems?', min:1, max:5, labelLow:'I avoid them', labelHigh:'I enjoy them', required: true },
-    { id: 'scale_math_pace', domain: 'Student Profile', type: 'scale', text: 'How ready do you feel for a demanding course like AA HL right now?', min:1, max:5, labelLow:'Not yet', labelHigh:'Very ready', required: true }
+    { id: 'scale_math_pace', domain: 'Student Profile', type: 'scale', text: 'How ready do you feel for AA right now?', min:1, max:5, labelLow:'Not yet', labelHigh:'Very ready', required: true }
   ];
 
 
@@ -365,6 +415,19 @@
       <div class="field-error" id="nameError">Please enter your name before continuing.</div>
       <div style="font-size:13px; color:var(--grey); margin-top:8px;" id="nameHintEl"></div>
     </div>
+      <div style="margin-bottom: 26px;" id="intentPickBlock">
+        <div class="field-label">Which course are you assessing for?</div>
+        <div style="font-size:13px; color:var(--slate); margin:6px 0 14px; line-height:1.5;">Both levels take the same core readiness check. Your choice tailors the final written task and the report your teacher receives.</div>
+        <div class="lvl-pick-group" id="intentPickGroup">
+        <button type="button" class="lvl-pick" data-intent="hl"><span class="lvl-pick-title">IB Math AA HL</span><span class="lvl-pick-sub">Analysis and Approaches at Higher Level.</span></button>
+        <button type="button" class="lvl-pick" data-intent="sl"><span class="lvl-pick-title">IB Math AA SL</span><span class="lvl-pick-sub">Analysis and Approaches at Standard Level.</span></button>
+        </div>
+        <div class="field-error" id="intentPickError">Please choose the course you are assessing for.</div>
+      </div>
+      <div style="margin-bottom: 26px; display:none;" id="intentConfirmBlock">
+        <div class="field-label">Course you are assessing for</div>
+        <div id="intentConfirmText" style="font-size:15px; color:var(--gold-dark); margin-top:6px; font-weight:600;"></div>
+      </div>
       <div style="margin-bottom: 26px;">
         <div class="field-label">Around what grade level do you read at?</div>
         <div style="font-size:13px; color:var(--slate); margin:6px 0 14px; line-height:1.5;">Pick the one that feels closest to you. It is just a starting point - the questions adjust to you as you go, so it is fine if you are not sure. If you really do not know, choose "I am not sure".</div>
@@ -432,14 +495,43 @@
     cardEl.innerHTML = cardHtml;
   }
 
+  (function initIntentPick() {
+    var btns = document.querySelectorAll('#intentPickGroup .lvl-pick');
+    for (var i = 0; i < btns.length; i++) {
+      (function(el) {
+        el.onclick = function() {
+          ASSESSED_FOR = el.getAttribute('data-intent');
+          var all = document.querySelectorAll('#intentPickGroup .lvl-pick');
+          for (var j = 0; j < all.length; j++) all[j].classList.remove('selected');
+          el.classList.add('selected');
+          var pe = document.getElementById('intentPickError'); if (pe) pe.style.display = 'none';
+        };
+      })(btns[i]);
+    }
+    /* Intent can be preselected by URL (?intent=hl|sl), so a per-course catalog link
+       lands the student directly on their course. When present and valid, collapse the
+       picker to a confirmation line; the student can still see which course it is. */
+    var qs = (function(){ var o={}; var q=window.location.search.replace(/^\?/,''); if(!q) return o; var ps=q.split('&'); for(var i=0;i<ps.length;i++){ var kv=ps[i].split('='); o[decodeURIComponent(kv[0])]=decodeURIComponent(kv[1]||''); } return o; })();
+    var urlIntent = (qs.intent || '').toLowerCase();
+    if (INTENTS[urlIntent]) {
+      ASSESSED_FOR = urlIntent;
+      var pickBlock = document.getElementById('intentPickBlock');
+      var confirmBlock = document.getElementById('intentConfirmBlock');
+      var confirmText = document.getElementById('intentConfirmText');
+      if (pickBlock) pickBlock.style.display = 'none';
+      if (confirmText) confirmText.textContent = INTENTS[urlIntent].courseLong;
+      if (confirmBlock) confirmBlock.style.display = 'block';
+    }
+  })();
+
   var SELECTED_START_BLOCK = null;
   (function initLvlPick() {
-    var btns = document.querySelectorAll('.lvl-pick');
+    var btns = document.querySelectorAll('#lvlPickGroup .lvl-pick');
     for (var i = 0; i < btns.length; i++) {
       (function(el) {
         el.onclick = function() {
           SELECTED_START_BLOCK = el.getAttribute('data-block');
-          var all = document.querySelectorAll('.lvl-pick');
+          var all = document.querySelectorAll('#lvlPickGroup .lvl-pick');
           for (var j = 0; j < all.length; j++) all[j].classList.remove('selected');
           el.classList.add('selected');
           var pe = document.getElementById('lvlPickError'); if (pe) pe.style.display = 'none';
@@ -451,6 +543,7 @@
     var name = document.getElementById('studentName').value.trim();
     if (!name) { document.getElementById('nameError').style.display = 'block'; document.getElementById('studentName').focus(); return; }
     document.getElementById('nameError').style.display = 'none';
+    if (ASSESSED_FOR === null) { document.getElementById('intentPickError').style.display = 'block'; document.getElementById('intentPickGroup').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     if (SELECTED_START_BLOCK === null) { document.getElementById('lvlPickError').style.display = 'block'; return; }
     showScreen('screenQuestions');
     document.getElementById('progressWrap').style.display = 'block';
@@ -630,16 +723,28 @@
   }
   function enterTail() {
     if (!ROUTER.finalProductionShown) {
-      CHOSEN_WRITING_TIER = pickWritingTier();
-      QUESTIONS.push(WRITING_TIERS[CHOSEN_WRITING_TIER]);   /* writing first */
-      for (var i = 0; i < TAIL_ITEMS.length; i++) QUESTIONS.push(TAIL_ITEMS[i]);
+      CHOSEN_WRITING_TIER = pickWritingTier();               /* difficulty: routed (trunk) */
+      var tierPhrasings = WRITING_TIERS[CHOSEN_WRITING_TIER];
+      var writingItem = tierPhrasings[ASSESSED_FOR] || tierPhrasings.hl;  /* phrasing: intent */
+      QUESTIONS.push(writingItem);                           /* writing first */
+      /* readiness self-rating references the chosen course by name */
+      for (var i = 0; i < TAIL_ITEMS.length; i++) {
+        var item = TAIL_ITEMS[i];
+        if (item.id === 'scale_math_pace') {
+          item = { id: item.id, domain: item.domain, type: item.type,
+            text: 'How ready do you feel for ' + intent().readinessFor + ' right now?',
+            min: item.min, max: item.max, labelLow: item.labelLow, labelHigh: item.labelHigh, required: item.required };
+        }
+        QUESTIONS.push(item);
+      }
       ROUTER.finalProductionShown = true;
     }
     renderQuestions();
     updateProgress();
     var sr = document.getElementById('submitRow');
     if (sr) sr.style.display = 'flex';
-    var anchor = document.getElementById('card_' + WRITING_TIERS[CHOSEN_WRITING_TIER].id);
+    var chosen = WRITING_TIERS[CHOSEN_WRITING_TIER][ASSESSED_FOR] || WRITING_TIERS[CHOSEN_WRITING_TIER].hl;
+    var anchor = document.getElementById('card_' + chosen.id);
     if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -1035,7 +1140,8 @@
 
     preferences.level_analysis = {
       spine: 'common_core_math',
-      subject: 'ib_math_aa_hl',
+      subject: intent().subject,
+      assessed_for: intent().courseLabel,
       instrument: 'adaptive_router',
       recommended_band: band,
       readiness_signal: gradeSignal,
@@ -1054,9 +1160,9 @@
       strand_breakdown: strandBreakdown,
       by_topic: byTopic,
       thresholds: ROUTER.thresholds,
-      writing_prompt_tier: CHOSEN_WRITING_TIER + ' (' + WRITING_TIERS[CHOSEN_WRITING_TIER].band + ', ' + WRITING_TIERS[CHOSEN_WRITING_TIER].topic + ')',
-      writing_sample: 'Not auto-scored. The written-reasoning prompt was set to the ' + WRITING_TIERS[CHOSEN_WRITING_TIER].tier + ' tier based on the routed placement (foundational reasoning for the foundation band, core reasoning for core HL readiness, extended reasoning and modelling for the HL stretch band). Assess the response in raw_responses (w1_aa_hl) for mathematical reasoning and communication against the AA HL readiness expectations near the recommended level. Note: if the written reasoning seems much stronger or weaker than the multiple-choice placement, that gap is itself useful signal worth recording.',
-      note: 'This is an adaptive readiness diagnostic for entering IB Math AA HL (algebra and proof, functions, trigonometry, and reasoning). It does not test HL content; it measures the foundation that predicts HL success. The student saw only the sections their answers routed them to, so item coverage varies by path. The recommended readiness band is the firm output; the specific level is a conservative estimate (rounded down) and a starting point, not a committed placement. The grade-range signal is guidance for the teacher conversation, never a predicted IB grade. An edge flag (below foundation, or secure above the readiness bar) is the cue to consider AA SL, a bridging pathway, or a direct HL-placement conversation. The multiple-choice items drive the result; the written-reasoning sample is teacher-confirmed.'
+      writing_prompt_tier: (function(){ var t = WRITING_TIERS[CHOSEN_WRITING_TIER][ASSESSED_FOR] || WRITING_TIERS[CHOSEN_WRITING_TIER].hl; return CHOSEN_WRITING_TIER + ' (' + t.band + ', ' + t.topic + ', ' + intent().courseLabel + ' phrasing)'; })(),
+      writing_sample: 'Not auto-scored. The written-reasoning prompt was set to the ' + CHOSEN_WRITING_TIER + ' difficulty tier from the routed placement, in the ' + intent().courseLabel + ' phrasing. Assess the response in raw_responses (w1_aa) for mathematical reasoning and communication against the ' + intent().readinessFor + ' readiness expectations near the recommended level. The difficulty tier follows the trunk placement; the phrasing follows the course the student is assessing for. If the written reasoning seems much stronger or weaker than the multiple-choice placement, that gap is itself useful signal worth recording.',
+      note: 'This is an adaptive readiness diagnostic for entering ' + intent().courseLong + ' (algebra and proof, functions, trigonometry, and reasoning). It does not test course content; it measures the foundation that predicts success. The shared adaptive trunk resolves the readiness band identically regardless of the course chosen; the course selection tailors the written task phrasing and this report, not the placement. The student saw only the sections their answers routed them to, so item coverage varies by path. The recommended readiness band is the firm output; the specific level is a conservative estimate (rounded down) and a starting point, not a committed placement. The grade-range signal is guidance for the teacher conversation, never a predicted IB grade. An edge flag (below foundation, or secure above the readiness bar) is the cue to consider a level change (HL/SL), a bridging pathway, or a direct placement conversation. The multiple-choice items drive the result; the written-reasoning sample is teacher-confirmed.'
     };
 
 
@@ -1093,7 +1199,7 @@
         student_id: payload.student_id,
         diagnostic_id: DIAGNOSTIC_TYPE,
         assessment_type: 'diagnostic',
-        subject: DIAGNOSTIC_SUBJECT,
+        subject: intent().subject,
         recommended_level: (a.estimated_readiness_level || null),
         recommended_tier: (a.recommended_band || null),
         confidence: (a.confidence || 'moderate'),
