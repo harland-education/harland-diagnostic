@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harland Education - Early Math Diagnostic (K-2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --obsidian:#0D0D0F; --ink:#1A1A1F; --cream:#F8F5EF; --cream-2:#FAF7F0;
+    --white:#FFFFFF; --gold:#C9A84C; --gold-dark:#A07820; --gold-pale:#F1E9D2;
+    --grey:#6B6B70; --line:#E4DECF; --error:#B0413E; --success:#3F7A4E;
+    --hl-logo:url("data:image/png;base64,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"); /* SOCKET 4: real Harland horizontal gold lockup, embedded from logo skill assets/tinted/horizontal_gold.png */
+    --serif:'Cormorant Garamond','Noto Serif TC',Georgia,serif;
+    --sans:'DM Sans','Noto Sans TC',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-family:var(--sans);background:var(--cream);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;line-height:1.6}
+
+  /* ---- masthead (bounded obsidian band) ---- */
+  header.masthead{background:var(--obsidian);padding:20px 32px;display:flex;align-items:center;gap:16px}
+  .logo-slot{width:124px;height:46px;background:var(--hl-logo) left center/contain no-repeat;flex-shrink:0}
+  .logo-fallback{font-family:var(--serif);font-weight:500;font-size:22px;color:var(--gold);letter-spacing:.02em;line-height:1}
+  .logo-fallback small{display:block;font-family:var(--sans);font-weight:500;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--cream-2);margin-top:3px}
+
+  .progress-wrap{background:var(--obsidian);padding:0 32px 16px}
+  .progress-track{height:3px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;width:0;background:var(--gold);transition:width .4s ease}
+  .progress-label{font-size:10px;color:rgba(255,255,255,.5);margin-top:7px;letter-spacing:.14em;text-transform:uppercase}
+
+  main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:44px 28px 72px}
+  .eyebrow{font-family:var(--sans);font-weight:500;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:14px}
+  h1{font-family:var(--serif);font-weight:400;font-size:40px;letter-spacing:-.02em;line-height:1.1;margin-bottom:8px}
+  h2{font-family:var(--serif);font-weight:400;font-size:27px;letter-spacing:-.01em;margin-bottom:14px}
+  p{margin-bottom:14px;color:#2b2b30}
+  .rule{height:1px;background:var(--line);border:0;margin:26px 0}
+  .rule-gold{height:2px;width:64px;background:var(--gold-dark);border:0;margin:18px 0 26px}
+
+  /* ---- proctor intro ---- */
+  .proctor-card{background:var(--white);border:1px solid var(--line);padding:30px 30px 26px;margin-top:8px}
+  .proctor-card ul{list-style:none;margin:8px 0 4px}
+  .proctor-card li{position:relative;padding-left:26px;margin-bottom:12px;color:#2b2b30}
+  .proctor-card li:before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;background:var(--gold-dark);border-radius:50%}
+  .note{background:var(--gold-pale);border-left:3px solid var(--gold-dark);padding:14px 16px;font-size:14px;color:#3a3320;margin:18px 0}
+
+  .field{margin:22px 0}
+  label.fl{display:block;font-size:13px;font-weight:500;letter-spacing:.02em;color:var(--grey);margin-bottom:7px}
+  input[type=text]{width:100%;font-family:var(--sans);font-size:16px;padding:13px 14px;border:1px solid var(--line);background:var(--cream-2);color:var(--ink)}
+  input[type=text]:focus{outline:none;border-color:var(--gold-dark)}
+
+  /* ---- buttons ---- */
+  .btn{font-family:var(--sans);font-weight:500;font-size:15px;letter-spacing:.02em;padding:14px 30px;border:0;cursor:pointer;transition:background .2s,opacity .2s}
+  .btn-primary{background:var(--gold);color:var(--obsidian)}
+  .btn-primary:hover{background:#d8b856}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+  .btn-ghost{background:var(--white);border:1px solid var(--gold-dark);color:var(--gold-dark)}
+  .btn-ghost:hover{background:var(--gold-pale)}
+  .btn-row{display:flex;gap:12px;align-items:center;margin-top:24px}
+
+  /* ---- questions ---- */
+  .qcard{background:var(--white);border:1px solid var(--line);padding:26px 26px 22px;margin-bottom:18px}
+  .qtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .qnum{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey)}
+  .qstem{font-family:var(--serif);font-weight:500;font-size:22px;line-height:1.3;color:var(--ink);margin:6px 0 16px}
+  .stem-img{background:var(--cream-2);border:1px solid var(--line);padding:16px;margin-bottom:16px;text-align:center}
+  .stem-img svg{max-width:100%;height:auto;max-height:180px}
+  .audio-btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--gold-dark);background:var(--white);border:1px solid var(--gold-dark);padding:8px 14px;cursor:pointer;margin-bottom:16px}
+  .audio-btn:hover{background:var(--gold-pale)}
+  .audio-btn.pending{color:var(--grey);border-color:var(--line);cursor:default}
+  .audio-btn.pending:hover{background:var(--white)}
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);background:var(--cream-2);cursor:pointer;font-size:16px;transition:border-color .15s,background .15s}
+  .opt:hover{border-color:var(--gold-dark)}
+  .opt.sel{border-color:var(--gold-dark);background:var(--gold-pale)}
+  .opt .mark{width:20px;height:20px;border:2px solid var(--grey);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .opt.sel .mark{border-color:var(--gold-dark)}
+  .opt.sel .mark:after{content:"";width:10px;height:10px;background:var(--gold-dark);border-radius:50%}
+
+  .hidden{display:none}
+  .center{text-align:center}
+
+  /* ---- completion ---- */
+  .complete-badge{width:74px;height:74px;border:2px solid var(--gold-dark);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px}
+  .complete-badge:after{content:"";width:26px;height:14px;border-left:3px solid var(--gold-dark);border-bottom:3px solid var(--gold-dark);transform:rotate(-45deg);margin-top:-6px}
+
+  footer{background:var(--obsidian);color:var(--cream-2);text-align:center;padding:22px 20px;font-size:12px;letter-spacing:.04em}
+  footer .gold{color:var(--gold)}
+
+  @media(max-width:600px){
+    main{padding:32px 18px 60px} h1{font-size:32px} .qstem{font-size:20px}
+    header.masthead{padding:16px 20px} .progress-wrap{padding:0 20px 14px}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="logo-slot" id="logoSlot"></div>
+  <div class="logo-fallback" id="logoFallback">Harland Education<small>1-on-1 Tutoring Academy</small></div>
+</header>
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+  <div class="progress-label" id="progLabel">Getting started</div>
+</div>
+
+<main>
+  <!-- ============ SCREEN 1: PARENT-PROCTOR INTRO ============ -->
+  <section id="scrIntro">
+    <div class="eyebrow">Early Math Check &middot; Kindergarten to Grade 2</div>
+    <h1>A short math check for your child</h1>
+    <hr class="rule-gold">
+    <p>This is a gentle placement check that helps us understand what your child already knows in early math, so we can start them in the right place. It is not a test to pass or fail, and there is no time limit. Most children finish in about twenty minutes.</p>
+
+    <div class="proctor-card">
+      <div class="eyebrow" style="margin-bottom:10px">For the grown-up helping</div>
+      <h2>How to sit with your child</h2>
+      <ul>
+        <li>Sit together. You may <strong>read each question and the answer choices aloud</strong> to your child. Some questions have a picture; let your child look at it as long as they like.</li>
+        <li>Let your child choose the answer themselves. It is fine to re-read a question, but please do not point to an answer or hint which one is right.</li>
+        <li>If your child does not know, that is useful information. Let them pick their best guess or the choice that feels right, and move on.</li>
+        <li>The questions gently get harder. It is completely normal for a young child to reach questions they have not learned yet. Simply keep going as far as your child is comfortable.</li>
+      </ul>
+      <div class="note">The tap targets on each answer are large and clear. Your child can tap their own answer, or tell you and you tap it for them.</div>
+    </div>
+
+    <div class="field">
+      <label class="fl" for="childName">Child's first name</label>
+      <input type="text" id="childName" placeholder="e.g. Mia" autocomplete="off">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnBegin" disabled>Begin the check</button>
+      <span class="qnum" id="beginHint">Enter your child's name to begin</span>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2: QUESTIONS ============ -->
+  <section id="scrQuiz" class="hidden">
+    <div class="eyebrow" id="sectionEyebrow">Section 1</div>
+    <h2 id="sectionTitle" style="margin-bottom:4px">Let's begin</h2>
+    <hr class="rule">
+    <div id="qHost"></div>
+    <div class="btn-row" style="justify-content:space-between">
+      <span class="qnum" id="quizProgress"></span>
+      <button class="btn btn-primary" id="btnNextSection" disabled>Next</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 3: SUBMITTING / COMPLETE ============ -->
+  <section id="scrDone" class="hidden center">
+    <div class="complete-badge"></div>
+    <div class="eyebrow center">Assessment Complete</div>
+    <h1 id="doneHead">All done. Thank you.</h1>
+    <hr class="rule-gold" style="margin-left:auto;margin-right:auto">
+    <p id="doneBody">We have received your child's answers. Our teaching team will review them and prepare a short summary with the right starting level for your child.</p>
+    <p id="doneStatus" class="qnum"></p>
+  </section>
+</main>
+
+<footer>
+  &copy; Harland Education <span class="gold">&middot;</span> Da'an District, Taipei <span class="gold">&middot;</span> Confidential Assessment Material
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     SINGLE SOURCE OF TRUTH: this QUESTIONS array is generated from
+     math_k2_items.json (shuffled, seed 20260710). Do not hand-edit;
+     regenerate from the JSON so the DB item bank cannot diverge.
+     item.id === the mcq_scores key. strand === a rubric_bands.strand.
+     ============================================================ */
+  var QUESTIONS = [
+    { id: 'k2_num_k1', strand: 'Counting & Number Sense', level: 0, topic: 'Count objects to 10', audio: 'k2_num_k1.mp3', img: true, svg: 'k2_num_k1', stem: 'How many apples are there?', options: ['4', '5', '3', '6'], answer: 1 },
+    { id: 'k2_num_k2', strand: 'Counting & Number Sense', level: 0, topic: 'Compare two numbers 1-10', audio: 'k2_num_k2.mp3', img: false, svg: null, stem: 'Which number is greater: 7 or 4?', options: ['You cannot tell', 'They are equal', '4', '7'], answer: 3 },
+    { id: 'k2_num_k3', strand: 'Counting & Number Sense', level: 0, topic: 'Write the numeral / count forward', audio: 'k2_num_k3.mp3', img: false, svg: null, stem: 'Count on. What number comes right after 8?', options: ['7', '18', '9', '10'], answer: 2 },
+    { id: 'k2_ops_k1', strand: 'Operations & Algebraic Thinking', level: 0, topic: 'Add within 10', audio: 'k2_ops_k1.mp3', img: true, svg: 'k2_ops_k1', stem: '3 and 2 more. How many in all?', options: ['1', '5', '6', '4'], answer: 1 },
+    { id: 'k2_ops_k2', strand: 'Operations & Algebraic Thinking', level: 0, topic: 'Subtract within 10 (take from)', audio: 'k2_ops_k2.mp3', img: false, svg: null, stem: 'You have 6 grapes and eat 2. How many are left?', options: ['8', '3', '2', '4'], answer: 3 },
+    { id: 'k2_ops_k3', strand: 'Operations & Algebraic Thinking', level: 0, topic: 'Decompose a number to 10', audio: 'k2_ops_k3.mp3', img: false, svg: null, stem: '5 is the same as 4 and what other number?', options: ['2', '1', '5', '9'], answer: 1 },
+    { id: 'k2_mea_k1', strand: 'Measurement & Data', level: 0, topic: 'Compare length directly', audio: 'k2_mea_k1.mp3', img: true, svg: 'k2_mea_k1', stem: 'Which pencil is longer?', options: ['The short pencil', 'The long pencil', 'They are the same', 'You cannot tell'], answer: 1 },
+    { id: 'k2_mea_k2', strand: 'Measurement & Data', level: 0, topic: 'Compare weight / attribute', audio: 'k2_mea_k2.mp3', img: false, svg: null, stem: 'Which is usually heavier: an elephant or a mouse?', options: ['You cannot tell', 'A mouse', 'An elephant', 'They weigh the same'], answer: 2 },
+    { id: 'k2_mea_k3', strand: 'Measurement & Data', level: 0, topic: 'Sort and count categories', audio: 'k2_mea_k3.mp3', img: true, svg: 'k2_mea_k3', stem: 'How many circles are in the group?', options: ['1', '5', '3', '2'], answer: 2 },
+    { id: 'k2_geo_k1', strand: 'Geometry', level: 0, topic: 'Name a 2D shape', audio: 'k2_geo_k1.mp3', img: true, svg: 'k2_geo_k1', stem: 'What shape is this?', options: ['Triangle', 'Circle', 'Rectangle', 'Square'], answer: 0 },
+    { id: 'k2_geo_k2', strand: 'Geometry', level: 0, topic: 'Position words', audio: 'k2_geo_k2.mp3', img: true, svg: 'k2_geo_k2', stem: 'Where is the ball?', options: ['Beside the box', 'Above the box', 'Inside the box', 'Below the box'], answer: 1 },
+    { id: 'k2_geo_k3', strand: 'Geometry', level: 0, topic: 'Count sides / describe shape', audio: 'k2_geo_k3.mp3', img: false, svg: null, stem: 'How many sides does a square have?', options: ['5', '3', '4', '1'], answer: 2 },
+    { id: 'k2_num_g1_1', strand: 'Counting & Number Sense', level: 1, topic: 'Two-digit place value (tens and ones)', audio: 'k2_num_g1_1.mp3', img: false, svg: null, stem: 'In the number 34, what does the 3 mean?', options: ['3 ones', '3 tens', 'the number 3 by itself', '3 hundreds'], answer: 1 },
+    { id: 'k2_num_g1_2', strand: 'Counting & Number Sense', level: 1, topic: 'Compare two-digit numbers', audio: 'k2_num_g1_2.mp3', img: false, svg: null, stem: 'Which symbol makes this true: 45 __ 54?', options: ['+', '<', '=', '>'], answer: 1 },
+    { id: 'k2_num_g1_3', strand: 'Counting & Number Sense', level: 1, topic: 'Count to 120 from any number', audio: 'k2_num_g1_3.mp3', img: false, svg: null, stem: 'Count on from 108. What number comes next?', options: ['110', '180', '109', '100'], answer: 2 },
+    { id: 'k2_ops_g1_1', strand: 'Operations & Algebraic Thinking', level: 1, topic: 'Add within 20 (make ten)', audio: 'k2_ops_g1_1.mp3', img: false, svg: null, stem: 'What is 8 + 5?', options: ['13', '3', '14', '12'], answer: 0 },
+    { id: 'k2_ops_g1_2', strand: 'Operations & Algebraic Thinking', level: 1, topic: 'Meaning of the equal sign / unknown', audio: 'k2_ops_g1_2.mp3', img: false, svg: null, stem: 'What number makes this true: 8 + __ = 11?', options: ['2', '4', '19', '3'], answer: 3 },
+    { id: 'k2_ops_g1_3', strand: 'Operations & Algebraic Thinking', level: 1, topic: 'Word problem within 20', audio: 'k2_ops_g1_3.mp3', img: false, svg: null, stem: 'Maya had 12 stickers and gave away 5. How many does she have now?', options: ['7', '17', '6', '8'], answer: 0 },
+    { id: 'k2_mea_g1_1', strand: 'Measurement & Data', level: 1, topic: 'Order three objects by length', audio: 'k2_mea_g1_1.mp3', img: false, svg: null, stem: 'A red ribbon is longer than a blue ribbon. The blue ribbon is longer than a green ribbon. Which ribbon is the longest?', options: ['Green', 'Blue', 'They are equal', 'Red'], answer: 3 },
+    { id: 'k2_mea_g1_2', strand: 'Measurement & Data', level: 1, topic: 'Tell time to the half-hour', audio: 'k2_mea_g1_2.mp3', img: true, svg: 'k2_mea_g1_2', stem: 'What time does the clock show?', options: ['6:15', '4:30', '3:00', '3:30'], answer: 3 },
+    { id: 'k2_mea_g1_3', strand: 'Measurement & Data', level: 1, topic: 'Read simple data (up to 3 categories)', audio: 'k2_mea_g1_3.mp3', img: false, svg: null, stem: 'A tally shows: cats 5, dogs 3, birds 2. How many more cats than dogs?', options: ['2', '8', '5', '3'], answer: 0 },
+    { id: 'k2_geo_g1_1', strand: 'Geometry', level: 1, topic: 'Defining vs non-defining attributes', audio: 'k2_geo_g1_1.mp3', img: false, svg: null, stem: 'What makes a shape a triangle?', options: ['It has 3 straight sides', 'It is small', 'It is pointing up', 'It is red'], answer: 0 },
+    { id: 'k2_geo_g1_2', strand: 'Geometry', level: 1, topic: 'Partition into halves', audio: 'k2_geo_g1_2.mp3', img: true, svg: 'k2_geo_g1_2', stem: 'The circle is split into two equal parts. One part is shaded. How much is shaded?', options: ['The whole', 'One fourth', 'One half', 'One third'], answer: 2 },
+    { id: 'k2_geo_g1_3', strand: 'Geometry', level: 1, topic: 'Compose shapes', audio: 'k2_geo_g1_3.mp3', img: false, svg: null, stem: 'Two identical triangles are put together along their long sides. What new shape can they make?', options: ['A triangle', 'A straight line', 'A square', 'A circle'], answer: 2 },
+    { id: 'k2_num_g2_1', strand: 'Counting & Number Sense', level: 2, topic: 'Three-digit place value', audio: 'k2_num_g2_1.mp3', img: false, svg: null, stem: 'In the number 472, which digit is in the hundreds place?', options: ['472', '2', '7', '4'], answer: 3 },
+    { id: 'k2_num_g2_2', strand: 'Counting & Number Sense', level: 2, topic: 'Compare three-digit numbers', audio: 'k2_num_g2_2.mp3', img: false, svg: null, stem: 'Which number is the greatest: 318, 381, or 283?', options: ['381', '318', '283', 'They are equal'], answer: 0 },
+    { id: 'k2_num_g2_3', strand: 'Counting & Number Sense', level: 2, topic: 'Skip count within 1000', audio: 'k2_num_g2_3.mp3', img: false, svg: null, stem: 'Skip count by hundreds: 200, 300, 400, __?', options: ['450', '401', '410', '500'], answer: 3 },
+    { id: 'k2_ops_g2_1', strand: 'Operations & Algebraic Thinking', level: 2, topic: 'Add within 100 (place-value strategy)', audio: 'k2_ops_g2_1.mp3', img: false, svg: null, stem: 'What is 27 + 45?', options: ['72', '612', '82', '62'], answer: 0 },
+    { id: 'k2_ops_g2_2', strand: 'Operations & Algebraic Thinking', level: 2, topic: 'Two-step word problem', audio: 'k2_ops_g2_2.mp3', img: false, svg: null, stem: 'Sam had 20 marbles. He lost 6, then found 4. How many does he have now?', options: ['10', '22', '30', '18'], answer: 3 },
+    { id: 'k2_ops_g2_3', strand: 'Operations & Algebraic Thinking', level: 2, topic: 'Even / odd and arrays', audio: 'k2_ops_g2_3.mp3', img: false, svg: null, stem: 'Which number is even?', options: ['5', '3', '8', '7'], answer: 2 },
+    { id: 'k2_mea_g2_1', strand: 'Measurement & Data', level: 2, topic: 'Measure length in units', audio: 'k2_mea_g2_1.mp3', img: false, svg: null, stem: 'A crayon is lined up against a ruler. It starts at 0 and ends at 9 centimeters. How long is the crayon?', options: ['10 centimeters', '9 centimeters', '8 centimeters', '0 centimeters'], answer: 1 },
+    { id: 'k2_mea_g2_2', strand: 'Measurement & Data', level: 2, topic: 'Money / word problem', audio: 'k2_mea_g2_2.mp3', img: false, svg: null, stem: 'You have 3 dimes. Each dime is worth 10 cents. How many cents do you have?', options: ['13 cents', '3 cents', '100 cents', '30 cents'], answer: 3 },
+    { id: 'k2_mea_g2_3', strand: 'Measurement & Data', level: 2, topic: 'Interpret a bar/picture graph', audio: 'k2_mea_g2_3.mp3', img: false, svg: null, stem: 'A bar graph shows: apples 6, oranges 4, pears 7. How many pieces of fruit are there in all?', options: ['7', '13', '17', '10'], answer: 2 },
+    { id: 'k2_geo_g2_1', strand: 'Geometry', level: 2, topic: 'Identify a shape by attribute', audio: 'k2_geo_g2_1.mp3', img: false, svg: null, stem: 'Which shape has 4 sides that are all the same length and 4 square corners?', options: ['A pentagon', 'A circle', 'A triangle', 'A square'], answer: 3 },
+    { id: 'k2_geo_g2_2', strand: 'Geometry', level: 2, topic: 'Partition a rectangle into rows and columns', audio: 'k2_geo_g2_2.mp3', img: true, svg: 'k2_geo_g2_2', stem: 'The rectangle is split into 2 rows and 3 columns of equal squares. How many squares in all?', options: ['3', '6', '2', '5'], answer: 1 },
+    { id: 'k2_geo_g2_3', strand: 'Geometry', level: 2, topic: 'Partition into thirds/fourths', audio: 'k2_geo_g2_3.mp3', img: true, svg: 'k2_geo_g2_3', stem: 'The rectangle is split into four equal parts. One part is shaded. How much is shaded?', options: ['One half', 'One third', 'The whole', 'One fourth'], answer: 3 }
+  ];
+
+  var SVG_ASSETS = {
+    k2_num_k1: '<svg viewBox="0 0 420 120" role="img" aria-label="Five apples in a row"><g transform="translate(10,20)"><circle cx="30" cy="55" r="26" fill="#B0413E"/><path d="M30 30 q4 -12 14 -14" stroke="#5a3d22" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="46" cy="18" rx="8" ry="4" fill="#4a7c3a"/></g><g transform="translate(90,20)"><circle cx="30" cy="55" r="26" fill="#B0413E"/><path d="M30 30 q4 -12 14 -14" stroke="#5a3d22" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="46" cy="18" rx="8" ry="4" fill="#4a7c3a"/></g><g transform="translate(170,20)"><circle cx="30" cy="55" r="26" fill="#B0413E"/><path d="M30 30 q4 -12 14 -14" stroke="#5a3d22" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="46" cy="18" rx="8" ry="4" fill="#4a7c3a"/></g><g transform="translate(250,20)"><circle cx="30" cy="55" r="26" fill="#B0413E"/><path d="M30 30 q4 -12 14 -14" stroke="#5a3d22" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="46" cy="18" rx="8" ry="4" fill="#4a7c3a"/></g><g transform="translate(330,20)"><circle cx="30" cy="55" r="26" fill="#B0413E"/><path d="M30 30 q4 -12 14 -14" stroke="#5a3d22" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="46" cy="18" rx="8" ry="4" fill="#4a7c3a"/></g></svg>',
+    k2_ops_k1: '<svg viewBox="0 0 420 110" role="img" aria-label="Three counters and two more counters"><circle cx="35" cy="55" r="22" fill="#3E5F8A"/><circle cx="90" cy="55" r="22" fill="#3E5F8A"/><circle cx="145" cy="55" r="22" fill="#3E5F8A"/><line x1="215" y1="30" x2="215" y2="80" stroke="#A07820" stroke-width="3" stroke-dasharray="5 5"/><circle cx="255" cy="55" r="22" fill="#3E5F8A"/><circle cx="310" cy="55" r="22" fill="#3E5F8A"/></svg>',
+    k2_mea_k1: '<svg viewBox="0 0 420 130" role="img" aria-label="A long pencil above a short pencil"><g transform="translate(40,30)"><rect x="0" y="0" width="300" height="18" fill="#e8c14a" stroke="#1A1A1F" stroke-width="2"/><polygon points="300,0 316,9 300,18" fill="#d8a34a" stroke="#1A1A1F" stroke-width="2"/><polygon points="303,3 313,9 303,15" fill="#1A1A1F"/><rect x="-10" y="0" width="10" height="18" fill="#d98a8a" stroke="#1A1A1F" stroke-width="2"/></g><g transform="translate(40,85)"><rect x="0" y="0" width="140" height="18" fill="#e8c14a" stroke="#1A1A1F" stroke-width="2"/><polygon points="140,0 156,9 140,18" fill="#d8a34a" stroke="#1A1A1F" stroke-width="2"/><polygon points="143,3 153,9 143,15" fill="#1A1A1F"/><rect x="-10" y="0" width="10" height="18" fill="#d98a8a" stroke="#1A1A1F" stroke-width="2"/></g></svg>',
+    k2_mea_k3: '<svg viewBox="0 0 420 120" role="img" aria-label="A group of three circles and two squares"><circle cx="60" cy="40" r="24" fill="none" stroke="#A07820" stroke-width="4"/><rect x="140" y="18" width="46" height="46" fill="none" stroke="#1A1A1F" stroke-width="4"/><circle cx="260" cy="45" r="24" fill="none" stroke="#A07820" stroke-width="4"/><rect x="320" y="60" width="46" height="46" fill="none" stroke="#1A1A1F" stroke-width="4"/><circle cx="130" cy="90" r="24" fill="none" stroke="#A07820" stroke-width="4"/></svg>',
+    k2_geo_k1: '<svg viewBox="0 0 260 160" role="img" aria-label="A triangle"><polygon points="130,20 30,140 230,140" fill="none" stroke="#A07820" stroke-width="5" stroke-linejoin="round"/></svg>',
+    k2_geo_k2: '<svg viewBox="0 0 220 200" role="img" aria-label="A ball resting on top of a box"><rect x="55" y="110" width="110" height="80" fill="none" stroke="#1A1A1F" stroke-width="4"/><circle cx="110" cy="75" r="34" fill="#B0413E"/></svg>',
+    k2_mea_g1_2: '<svg viewBox="0 0 200 200" role="img" aria-label="An analog clock"><circle cx="100" cy="100" r="88" fill="#FAF7F0" stroke="#1A1A1F" stroke-width="4"/><circle cx="100.0" cy="28.0" r="3" fill="#1A1A1F"/><circle cx="136.0" cy="37.6" r="3" fill="#1A1A1F"/><circle cx="162.4" cy="64.0" r="3" fill="#1A1A1F"/><circle cx="172.0" cy="100.0" r="3" fill="#1A1A1F"/><circle cx="162.4" cy="136.0" r="3" fill="#1A1A1F"/><circle cx="136.0" cy="162.4" r="3" fill="#1A1A1F"/><circle cx="100.0" cy="172.0" r="3" fill="#1A1A1F"/><circle cx="64.0" cy="162.4" r="3" fill="#1A1A1F"/><circle cx="37.6" cy="136.0" r="3" fill="#1A1A1F"/><circle cx="28.0" cy="100.0" r="3" fill="#1A1A1F"/><circle cx="37.6" cy="64.0" r="3" fill="#1A1A1F"/><circle cx="64.0" cy="37.6" r="3" fill="#1A1A1F"/><line x1="100" y1="100" x2="140.6" y2="110.9" stroke="#1A1A1F" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="100" x2="100.0" y2="168.0" stroke="#A07820" stroke-width="4" stroke-linecap="round"/><circle cx="100" cy="100" r="5" fill="#1A1A1F"/></svg>',
+    k2_geo_g1_2: '<svg viewBox="0 0 180 180" role="img" aria-label="A circle split into two equal parts, one shaded"><path d="M90 10 A80 80 0 0 1 90 170 Z" fill="#A07820"/><circle cx="90" cy="90" r="80" fill="none" stroke="#1A1A1F" stroke-width="4"/><line x1="90" y1="10" x2="90" y2="170" stroke="#1A1A1F" stroke-width="4"/></svg>',
+    k2_geo_g2_2: '<svg viewBox="0 0 340 160" role="img" aria-label="A rectangle split into equal squares"><rect x="20" y="20" width="100" height="60" fill="none" stroke="#1A1A1F" stroke-width="3"/><rect x="120" y="20" width="100" height="60" fill="none" stroke="#1A1A1F" stroke-width="3"/><rect x="220" y="20" width="100" height="60" fill="none" stroke="#1A1A1F" stroke-width="3"/><rect x="20" y="80" width="100" height="60" fill="none" stroke="#1A1A1F" stroke-width="3"/><rect x="120" y="80" width="100" height="60" fill="none" stroke="#1A1A1F" stroke-width="3"/><rect x="220" y="80" width="100" height="60" fill="none" stroke="#1A1A1F" stroke-width="3"/></svg>',
+    k2_geo_g2_3: '<svg viewBox="0 0 340 160" role="img" aria-label="A rectangle split into equal squares"><rect x="20" y="20" width="75" height="120" fill="#A07820" stroke="#1A1A1F" stroke-width="3"/><rect x="95" y="20" width="75" height="120" fill="none" stroke="#1A1A1F" stroke-width="3"/><rect x="170" y="20" width="75" height="120" fill="none" stroke="#1A1A1F" stroke-width="3"/><rect x="245" y="20" width="75" height="120" fill="none" stroke="#1A1A1F" stroke-width="3"/></svg>'
+  };
+
+  var CONFIG = {
+    DIAGNOSTIC_TYPE: "math_k2",
+    SUBJECT: "math_k2",
+    SPINE: "common_core_math",
+    SUPABASE_URL: "https://takuuqvpyqvomcfmcjoz.supabase.co",
+    SUPABASE_ANON: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M",
+    LEVELS: { 0:"Kindergarten", 1:"Grade 1", 2:"Grade 2" },
+    STRANDS: ["Counting & Number Sense","Operations & Algebraic Thinking","Measurement & Data","Geometry"],
+    ITEMS_PER_SECTION: 12  /* one level per section: K, then G1, then G2 */
+  };
+
+  /* runtime state */
+  var STATE = { answers:{}, section:0, childName:"", startedAt:null };
+
+  /* ---------- SOCKET 4: logo. If Cowork injected --hl-logo, hide the text fallback. ---------- */
+  (function logoSocket(){
+    var v = getComputedStyle(document.documentElement).getPropertyValue('--hl-logo').trim();
+    if(v && v !== 'none'){ document.getElementById('logoFallback').style.display='none'; }
+    else { document.getElementById('logoSlot').style.display='none'; }
+  })();
+
+  /* ---------- SOCKET 1: stem image renderer ----------
+     Real curated CC0 art drops in by replacing SVG_ASSETS[id] (Cowork task).
+     Until then, inline SVG stand-ins render so the flow is fully pilotable. */
+  function renderStemImage(id){
+    var svg = SVG_ASSETS[id];
+    if(!svg){ return '<div class="stem-img"><span class="qnum">[picture pending]</span></div>'; }
+    return '<div class="stem-img">'+svg+'</div>';
+  }
+
+  /* ---------- SOCKET 2: per-item audio button ----------
+     ElevenLabs clips deploy alongside the HTML (Cowork). If the file is not present
+     the button renders in a pending state and never blocks the child. */
+  var AUDIO_AVAILABLE = false; /* Cowork flips to true once audio/ ships with the file */
+  function audioButton(item){
+    if(AUDIO_AVAILABLE && item.audio){
+      return '<button type="button" class="audio-btn" data-audio="'+item.audio+'">'
+        + speaker() + 'Read this aloud</button>';
+    }
+    return '<button type="button" class="audio-btn pending" disabled>'
+      + speaker() + 'Grown-up: please read aloud</button>';
+  }
+  function speaker(){
+    return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+      + '<path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>'
+      + '<path d="M16 8c1.5 1 1.5 7 0 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  }
+  function playAudio(file){
+    try{ var a=new Audio('audio/'+file); a.play(); }catch(e){}
+  }
+
+  /* ---------- section slicing: fixed ascending, no adaptive routing ---------- */
+  function sectionItems(sec){
+    var lvl = sec; /* section 0 -> level 0 (K), 1 -> G1, 2 -> G2 */
+    var out=[]; for(var i=0;i<QUESTIONS.length;i++){ if(QUESTIONS[i].level===lvl) out.push(QUESTIONS[i]); }
+    return out;
+  }
+  function totalSections(){ return 3; }
+
+  /* ---------- rendering ---------- */
+  function el(id){ return document.getElementById(id); }
+  function show(id){ el(id).classList.remove('hidden'); }
+  function hide(id){ el(id).classList.add('hidden'); }
+
+  function setProgress(){
+    var totalAnswered = 0; for(var k in STATE.answers){ if(STATE.answers.hasOwnProperty(k)) totalAnswered++; }
+    var pct = Math.round( (totalAnswered/QUESTIONS.length)*100 );
+    el('progFill').style.width = pct+'%';
+    if(STATE.startedAt===null){ el('progLabel').textContent='Getting started'; }
+    else if(pct>=100){ el('progLabel').textContent='Complete'; }
+    else{ el('progLabel').textContent='Section '+(STATE.section+1)+' of '+totalSections(); }
+  }
+
+  function renderSection(){
+    var items = sectionItems(STATE.section);
+    var host = el('qHost'); host.innerHTML='';
+    el('sectionEyebrow').textContent = 'Section '+(STATE.section+1)+' of '+totalSections();
+    el('sectionTitle').textContent = sectionTitleFor(STATE.section);
+
+    for(var i=0;i<items.length;i++){
+      host.appendChild(renderQ(items[i], i+1, items.length));
+    }
+    updateNextButton();
+    el('quizProgress').textContent = countAnsweredInSection()+' of '+items.length+' answered';
+    setProgress();
+    window.scrollTo(0,0);
+  }
+  function sectionTitleFor(sec){
+    /* neutral, non-level-revealing to the child; the developmental band is never named to them */
+    return ['First questions','More questions','Last questions'][sec] || 'Questions';
+  }
+
+  function renderQ(item, idx, total){
+    var card = document.createElement('div'); card.className='qcard';
+    var html = '<div class="qtop"><span class="qnum">Question '+idx+' of '+total+'</span></div>';
+    html += audioButton(item);
+    if(item.img && item.svg){ html += renderStemImage(item.svg); }
+    html += '<div class="qstem">'+item.stem+'</div>';
+    html += '<div class="opts" data-qid="'+item.id+'">';
+    for(var o=0;o<item.options.length;o++){
+      var sel = (STATE.answers[item.id]===o) ? ' sel' : '';
+      html += '<div class="opt'+sel+'" data-qid="'+item.id+'" data-idx="'+o+'">'
+        + '<span class="mark"></span><span>'+item.options[o]+'</span></div>';
+    }
+    html += '</div>';
+    card.innerHTML = html;
+
+    /* wire audio */
+    var ab = card.querySelector('.audio-btn:not(.pending)');
+    if(ab){ ab.addEventListener('click', function(){ playAudio(this.getAttribute('data-audio')); }); }
+
+    /* wire options */
+    var opts = card.querySelectorAll('.opt');
+    for(var j=0;j<opts.length;j++){
+      opts[j].addEventListener('click', function(){
+        var qid=this.getAttribute('data-qid'); var oi=parseInt(this.getAttribute('data-idx'),10);
+        STATE.answers[qid]=oi;
+        var group=document.querySelectorAll('.opt[data-qid="'+qid+'"]');
+        for(var g=0;g<group.length;g++){ group[g].classList.remove('sel'); }
+        this.classList.add('sel');
+        updateNextButton();
+        el('quizProgress').textContent = countAnsweredInSection()+' of '+sectionItems(STATE.section).length+' answered';
+        setProgress();
+      });
+    }
+    return card;
+  }
+
+  function countAnsweredInSection(){
+    var items=sectionItems(STATE.section), n=0;
+    for(var i=0;i<items.length;i++){ if(STATE.answers.hasOwnProperty(items[i].id)) n++; }
+    return n;
+  }
+  function updateNextButton(){
+    var items=sectionItems(STATE.section);
+    var done = countAnsweredInSection()===items.length;
+    var btn=el('btnNextSection');
+    btn.disabled=!done;
+    btn.textContent = (STATE.section >= totalSections()-1) ? 'Finish' : 'Next';
+  }
+
+  /* ============================================================
+     PLACEMENT ENGINE (report side, computed at submit).
+     Linear instrument -> resolve the Harland level from per-strand
+     and cumulative accuracy. Conservative: the resolved level is the
+     highest level L where cumulative accuracy at <=L is >=70%.
+     The report recommends this Harland level; that recommendation IS
+     the course suggestion. No item re-scores outside this rule.
+     ============================================================ */
+  function collectPayload(){
+    var byLevel={0:{c:0,t:0},1:{c:0,t:0},2:{c:0,t:0}};
+    var byStrand={};
+    for(var s=0;s<CONFIG.STRANDS.length;s++){ byStrand[CONFIG.STRANDS[s]]={c:0,t:0}; }
+    var mcq={};
+    for(var i=0;i<QUESTIONS.length;i++){
+      var q=QUESTIONS[i]; var a=STATE.answers[q.id];
+      var correct = (a===q.answer);
+      mcq[q.id] = (a===undefined? null : a);
+      byLevel[q.level].t++; byStrand[q.strand].t++;
+      if(correct){ byLevel[q.level].c++; byStrand[q.strand].c++; }
+    }
+    /* cumulative accuracy at <= L */
+    function cumAcc(L){ var c=0,t=0; for(var l=0;l<=L;l++){ c+=byLevel[l].c; t+=byLevel[l].t; } return t? c/t : 0; }
+    function lvlAcc(L){ return byLevel[L].t? byLevel[L].c/byLevel[L].t : 0; }
+
+    var resolved=0; /* default Kindergarten entry */
+    for(var L=0; L<=2; L++){
+      if(cumAcc(L) >= 0.70 && lvlAcc(L) >= 0.50){ resolved=L; }
+    }
+    /* edge flags */
+    var floorFlag = (lvlAcc(0) < 0.40);      /* struggled even at K */
+    var ceilingFlag = (lvlAcc(2) >= 0.75);   /* aced Grade 2 -> ready to move up a band */
+
+    var strandBreak={};
+    for(var st in byStrand){ if(byStrand.hasOwnProperty(st)){
+      strandBreak[st] = byStrand[st].t ? Math.round(byStrand[st].c/byStrand[st].t*100) : null;
+    }}
+
+    var harlandLevelName = CONFIG.LEVELS[resolved];
+    var recommendation = recommendCourse(resolved, ceilingFlag, floorFlag);
+
+    return {
+      mcq: mcq,
+      analysis: {
+        spine: CONFIG.SPINE,
+        subject: CONFIG.SUBJECT,
+        resolved_level: resolved,
+        resolved_level_name: harlandLevelName,
+        recommended_course: recommendation,
+        per_level: byLevel,
+        per_strand_pct: strandBreak,
+        floor_flag: floorFlag,
+        ceiling_flag: ceilingFlag,
+        note: buildNote(resolved, strandBreak, floorFlag, ceilingFlag)
+      }
+    };
+  }
+
+  function recommendCourse(resolved, ceiling, floor){
+    /* Harland Math ladder: report recommends the level; the level IS the course. */
+    var map = {
+      0: "Harland Math - Early Foundations (Kindergarten level)",
+      1: "Harland Math - Level 1 (Grade 1 level)",
+      2: "Harland Math - Level 2 (Grade 2 level)"
+    };
+    if(ceiling){ return "Harland Math - Level 2 secure; ready to assess into the Grade 3-5 instrument"; }
+    return map[resolved];
+  }
+
+  function buildNote(resolved, strand, floor, ceiling){
+    var strong=[], weak=[];
+    for(var s in strand){ if(strand.hasOwnProperty(s) && strand[s]!==null){
+      if(strand[s]>=80) strong.push(s); else if(strand[s]<50) weak.push(s);
+    }}
+    var n = "Placed at the "+CONFIG.LEVELS[resolved]+" band on a linear K-2 numeracy check (report resolves the band; the instrument does not adapt). ";
+    if(strong.length) n += "Secure in: "+strong.join(", ")+". ";
+    if(weak.length) n += "Developing in: "+weak.join(", ")+". ";
+    if(floor) n += "Signals below the Kindergarten band; recommend a supported start and a conversation with the family. ";
+    if(ceiling) n += "Reached the ceiling of this instrument; the Grade 3-5 instrument will place more precisely. ";
+    n += "A readiness signal for placement, not a predicted grade.";
+    return n;
+  }
+
+  /* ============================================================
+     SUBMIT CHAIN (3-step, column-whitelisted). Every body is an
+     explicit list of real columns. Helper/analysis data travels in
+     preferences.level_analysis, never as a top-level body key.
+     ============================================================ */
+  function postJSON(path, body, cb){
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST', CONFIG.SUPABASE_URL+'/rest/v1/'+path, true);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.setRequestHeader('apikey', CONFIG.SUPABASE_ANON);
+    xhr.setRequestHeader('Authorization','Bearer '+CONFIG.SUPABASE_ANON);
+    xhr.setRequestHeader('Prefer','return=representation');
+    xhr.onreadystatechange=function(){
+      if(xhr.readyState===4){ cb(xhr.status, xhr.responseText); }
+    };
+    xhr.send(JSON.stringify(body));
+  }
+
+  function submitAll(){
+    var payload=collectPayload();
+    el('doneStatus').textContent='Saving your child\u0027s answers...';
+
+    /* STEP 1: diagnostics (whitelist) */
+    var diagBody={
+      student_name: STATE.childName,
+      diagnostic_type: CONFIG.DIAGNOSTIC_TYPE,
+      diagnostic_id: null,
+      student_id: null,
+      mcq_scores: payload.mcq,
+      preferences: { level_analysis: payload.analysis }
+    };
+    postJSON('diagnostics', diagBody, function(st, txt){
+      if(st>=200 && st<300){
+        var row=null; try{ row=JSON.parse(txt)[0]; }catch(e){}
+        var submissionId = row ? row.id : null;
+
+        /* STEP 2: results (whitelist; subject REQUIRED; best-effort) */
+        var resBody={
+          submission_id: submissionId,
+          subject: CONFIG.SUBJECT,
+          recommended_level: payload.analysis.resolved_level_name,
+          scores: payload.analysis.per_strand_pct
+        };
+        postJSON('results', resBody, function(st2, txt2){
+          var resultId=null; if(st2>=200&&st2<300){ try{ resultId=JSON.parse(txt2)[0].id; }catch(e){} }
+
+          /* STEP 3: reports (whitelist; diagnostic_id = SUBMISSION uuid) */
+          var repBody={
+            diagnostic_id: submissionId,
+            result_id: resultId,
+            student_name: STATE.childName,
+            ai_report: 'Pending HT review',
+            status: 'pending'
+          };
+          postJSON('reports', repBody, function(st3){
+            finishDone(st>=200&&st<300, st2, st3);
+          });
+        });
+      } else {
+        finishDone(false, 0, 0);
+      }
+    });
+  }
+
+  function finishDone(diagOk, st2, st3){
+    if(diagOk){
+      el('doneStatus').textContent='Saved. You may close this window.';
+    } else {
+      el('doneHead').textContent='Answers recorded on this device';
+      el('doneBody').textContent='We could not reach the server just now, but your child\u0027s answers are safe. Please let your Harland contact know, and we will follow up.';
+      el('doneStatus').textContent='';
+    }
+  }
+
+  /* ---------- navigation ---------- */
+  el('childName').addEventListener('input', function(){
+    var v=this.value.replace(/^\s+|\s+$/g,'');
+    el('btnBegin').disabled = (v.length===0);
+    el('beginHint').textContent = v.length? '' : 'Enter your child\u0027s name to begin';
+  });
+
+  el('btnBegin').addEventListener('click', function(){
+    STATE.childName=el('childName').value.replace(/^\s+|\s+$/g,'');
+    STATE.startedAt=new Date().toISOString();
+    STATE.section=0;
+    hide('scrIntro'); show('scrQuiz');
+    renderSection();
+  });
+
+  el('btnNextSection').addEventListener('click', function(){
+    if(STATE.section >= totalSections()-1){
+      hide('scrQuiz'); show('scrDone'); setProgress();
+      submitAll();
+    } else {
+      STATE.section++;
+      renderSection();
+    }
+  });
+
+  /* init */
+  setProgress();
+})();
+</script>
+</body>
+</html>
