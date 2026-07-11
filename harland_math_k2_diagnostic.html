@@ -491,7 +491,7 @@
           submission_id: submissionId,
           subject: CONFIG.SUBJECT,
           recommended_level: payload.analysis.resolved_level_name,
-          scores: payload.analysis.per_strand_pct
+          breakdown: payload.analysis.per_strand_pct
         };
         postJSON('results', resBody, function(st2, txt2){
           var resultId=null; if(st2>=200&&st2<300){ try{ resultId=JSON.parse(txt2)[0].id; }catch(e){} }
@@ -499,6 +499,7 @@
           /* STEP 3: reports (whitelist; diagnostic_id = SUBMISSION uuid) */
           var repBody={
             diagnostic_id: submissionId,
+            diagnostic_label: "Early Math (Kindergarten to Grade 2)",
             result_id: resultId,
             student_name: STATE.childName,
             ai_report: 'Pending HT review',
