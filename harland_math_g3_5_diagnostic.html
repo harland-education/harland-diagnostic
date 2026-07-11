@@ -491,6 +491,7 @@ window.MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' 
     /* STEP 1: diagnostics (whitelist; _analysis is NOT sent) */
     var diagBody={
       student_name:payload.student_name, diagnostic_type:payload.diagnostic_type,
+      diagnostic_label:payload.diagnostic_label,
       diagnostic_id:null, student_id:payload.student_id,
       mcq_scores:payload.mcq_scores, raw_responses:payload.raw_responses,
       preferences:payload.preferences
