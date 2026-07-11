@@ -502,13 +502,13 @@ window.MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' 
       var submissionId=data[0].id;
       /* STEP 2: results (whitelist; subject required) */
       var resBody={ submission_id:submissionId, subject:CONFIG.SUBJECT,
-        recommended_level:analysis.recommended_band, scores:analysis.per_strand_pct };
+        recommended_level:analysis.recommended_band, breakdown:analysis.per_strand_pct };
       return fetch(SB_URL+'/rest/v1/results',{method:'POST',headers:headers,body:JSON.stringify(resBody)})
         .then(function(r2){ return r2.ok?r2.json():[{}]; })
         .then(function(rd){
           var resultId=(rd&&rd[0])?rd[0].id:null;
           /* STEP 3: reports (whitelist; diagnostic_id = submission uuid) */
-          var repBody={ diagnostic_id:submissionId, result_id:resultId,
+          var repBody={ diagnostic_id:submissionId, result_id:resultId, diagnostic_label:payload.diagnostic_label,
             student_name:payload.student_name, ai_report:'Pending HT review', status:'pending' };
           return fetch(SB_URL+'/rest/v1/reports',{method:'POST',headers:headers,body:JSON.stringify(repBody)});
         });
