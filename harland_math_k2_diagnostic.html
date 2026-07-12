@@ -482,11 +482,12 @@
       preferences: { level_analysis: payload.analysis }
     };
     postJSON('diagnostics', diagBody, function(st, txt){
-      if(st>=200 && st<300){
+      var diagOk = (st>=200 && st<300);
+      if(diagOk){
         var row=null; try{ row=JSON.parse(txt)[0]; }catch(e){}
         var submissionId = row ? row.id : null;
 
-        /* STEP 2: results (whitelist; subject REQUIRED; best-effort) */
+        /* STEP 2: results (whitelist; subject REQUIRED) */
         var resBody={
           submission_id: submissionId,
           subject: CONFIG.SUBJECT,
@@ -506,7 +507,8 @@
             status: 'pending'
           };
           postJSON('reports', repBody, function(st3){
-            finishDone(st>=200&&st<300, st2, st3);
+            /* Success requires ALL THREE inserts to have returned 2xx, not just diagnostics. */
+            finishDone(diagOk, st2, st3);
           });
         });
       } else {
@@ -516,11 +518,14 @@
   }
 
   function finishDone(diagOk, st2, st3){
-    if(diagOk){
+    var resultsOk = (st2>=200 && st2<300);
+    var reportsOk = (st3>=200 && st3<300);
+    var allOk = diagOk && resultsOk && reportsOk;
+    if(allOk){
       el('doneStatus').textContent='Saved. You may close this window.';
     } else {
       el('doneHead').textContent='Answers recorded on this device';
-      el('doneBody').textContent='We could not reach the server just now, but your child\u0027s answers are safe. Please let your Harland contact know, and we will follow up.';
+      el('doneBody').textContent='Your answers are saved on this device. Our team will follow up to complete the submission.';
       el('doneStatus').textContent='';
     }
   }
