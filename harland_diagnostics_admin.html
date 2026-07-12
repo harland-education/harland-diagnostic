@@ -761,7 +761,24 @@ function resolveSubject(m, diag, explicitSubject){
 }
 function loadRubric(slug, diag, explicitSubject, cb){
   var m = slug && RUBRIC_MAP[slug];
-  if(!m){ cb(null); return; }
+  if(!m){
+    // FALLBACK (platform, 2026-07-12): slug not in RUBRIC_MAP -> resolve rubric from the
+    // submission's own subject. Safe: this branch previously returned null (ungrounded report).
+    // spine is functionally determined by subject in rubric_bands (verified 1:1 across all subjects),
+    // so a subject-only lookup grounds any single-subject instrument with no manual map entry.
+    // Trunks that report multiple curricula should still declare a map entry for the allowed_subjects guard.
+    var fbSubject = explicitSubject
+      || (diag && diag.preferences && diag.preferences.level_analysis && diag.preferences.level_analysis.subject)
+      || (diag && diag.subject)
+      || null;
+    if(!fbSubject){ cb(null); return; }
+    var fbKey = 'fallback:'+fbSubject;
+    if(RUBRICS[fbKey]){ cb(RUBRICS[fbKey]); return; }
+    api('rubric_bands?subject=eq.'+encodeURIComponent(fbSubject)+'&order=level,strand&select=*').then(function(d){
+      RUBRICS[fbKey]=(d&&d.length)?d:[]; cb(RUBRICS[fbKey].length?RUBRICS[fbKey]:null);
+    }).catch(function(){ cb(null); });
+    return;
+  }
   var subject = resolveSubject(m, diag, explicitSubject);
   if(!subject){ cb(null); return; }
   var key = m.spine+':'+subject;
