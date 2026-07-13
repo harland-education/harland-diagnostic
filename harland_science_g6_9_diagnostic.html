@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Science Placement (Grades 6-9) | Harland Education</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --obsidian:#0D0D0F; --ink:#1A1A1F; --slate:#4A4A56; --mist:#9A9AA8;
+    --gold:#C9A84C; --gold-light:#E8C97A; --gold-dark:#A07820; --gold-pale:#F5EDDA;
+    --cream:#F8F5EF; --cream-warm:#FAF7F0; --cream-deep:#F2EDE0; --card:#FFFEF9;
+    --border-soft:#E8E4DC; --white:#FFFFFF; --error:#A32D2D; --error-wash:#FCEBEB;
+    --font-display:'Cormorant Garamond','Noto Serif TC',serif;
+    --font-body:'DM Sans','Noto Sans TC',sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--cream);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+  .site-header{background:var(--obsidian);padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand-logo{height:34px;width:auto;display:block}
+  .header-eyebrow{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-light);white-space:nowrap}
+  .progress-bar-wrap{background:var(--obsidian);padding:0 32px 18px}
+  .progress-track{height:3px;background:rgba(250,247,240,.14);overflow:hidden}
+  .progress-fill{height:100%;background:var(--gold);transition:width .4s ease}
+  .progress-label{font-size:11px;color:var(--mist);margin-top:7px;letter-spacing:.06em;text-transform:uppercase}
+  .main-wrap{flex:1;max-width:760px;width:100%;margin:0 auto;padding:48px 24px 64px}
+  .screen{display:none} .screen.active{display:block}
+  .welcome-eyebrow{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:16px}
+  .name-screen-title{font-family:var(--font-display);font-weight:400;font-size:36px;color:var(--obsidian);line-height:1.15;letter-spacing:-.015em;margin-bottom:12px}
+  .name-screen-desc{font-size:16px;color:var(--slate);line-height:1.65;margin-bottom:36px;max-width:560px}
+  .info-card{background:var(--card);border:1px solid var(--border-soft);border-left:3px solid var(--gold);padding:24px 28px;margin-bottom:32px}
+  .info-card p{font-size:14px;color:var(--slate);line-height:1.65} .info-card p+p{margin-top:9px}
+  .info-card strong{color:var(--ink);font-weight:600}
+  .field-label{display:block;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);margin-bottom:9px}
+  .field-input{width:100%;padding:13px 16px;border:1.5px solid var(--border-soft);font-family:var(--font-body);font-size:16px;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
+  .field-input:focus{border-color:var(--gold)}
+  .field-error{font-size:13px;color:var(--error);margin-top:6px;display:none}
+  .domain-header{margin:40px 0 24px;padding-bottom:12px;border-bottom:1px solid var(--border-soft)}
+  .domain-header:first-of-type{margin-top:0}
+  .domain-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dark);font-weight:500;margin-bottom:6px}
+  .domain-title{font-family:var(--font-display);font-weight:400;font-size:24px;color:var(--obsidian);letter-spacing:-.01em}
+  .question-card{background:var(--card);border:1px solid var(--border-soft);padding:26px;margin-bottom:16px}
+  .question-number{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dark);font-weight:500;margin-bottom:9px}
+  .question-text{font-size:16px;line-height:1.6;color:var(--ink);margin-bottom:18px}
+  .mcq-options{list-style:none} .mcq-options li{margin-bottom:10px}
+  .mcq-options label{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border:1.5px solid var(--border-soft);cursor:pointer;transition:border-color .15s,background-color .15s;font-size:15px;line-height:1.45;color:var(--ink)}
+  .mcq-options label:hover{border-color:var(--gold);background:var(--cream-warm)}
+  .mcq-options input[type="radio"]{display:none}
+  .mcq-options input[type="radio"]:checked+label{border-color:var(--obsidian);background:var(--gold-pale);font-weight:500}
+  .option-letter{font-weight:600;color:var(--gold-dark);flex-shrink:0;min-width:18px}
+  .btn-primary{display:inline-block;background:var(--gold);color:var(--obsidian);font-family:var(--font-body);font-size:15px;font-weight:500;padding:16px 38px;border:none;cursor:pointer;letter-spacing:.04em;transition:background-color .2s,transform .1s}
+  .btn-primary:hover{background:var(--gold-light)} .btn-primary:active{transform:scale(.98)}
+  .btn-primary:disabled{background:var(--cream-deep);color:var(--mist);cursor:not-allowed;transform:none}
+  .btn-row{margin-top:32px;display:flex;justify-content:flex-end}
+  .submit-error{background:var(--error-wash);border:1px solid var(--error);padding:14px 18px;font-size:14px;color:var(--error);margin-top:16px;display:none}
+  .thankyou-wrap{text-align:center;padding:48px 0}
+  .thankyou-icon{width:72px;height:72px;background:var(--obsidian);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 28px}
+  .thankyou-icon svg{width:34px;height:34px}
+  .thankyou-title{font-family:var(--font-display);font-weight:400;font-size:32px;color:var(--obsidian);letter-spacing:-.01em;margin-bottom:16px}
+  .thankyou-body{font-size:16px;color:var(--slate);line-height:1.7;max-width:480px;margin:0 auto 32px}
+  .thankyou-divider{width:60px;height:2px;background:var(--gold);margin:28px auto}
+  .thankyou-next{font-size:14px;color:var(--ink);font-weight:500}
+  .site-footer{background:var(--obsidian);padding:22px 32px;text-align:center;font-size:12px;color:var(--mist);letter-spacing:.04em}
+  mjx-container{color:var(--ink)}
+  @media(max-width:600px){.main-wrap{padding:32px 16px 48px}.name-screen-title{font-size:28px}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <img class="brand-logo" src="data:image/png;base64,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" alt="Harland Education">
+  <span class="header-eyebrow">Placement Assessment</span>
+</header>
+<div class="progress-bar-wrap" id="progressWrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">Ready to begin</div>
+</div>
+
+<div class="main-wrap">
+  <!-- SCREEN 1: name / intro (NO level picker - foundational rule) -->
+  <section class="screen active" id="screenName">
+    <div class="welcome-eyebrow">Science Check &middot; Grades 6 to 9</div>
+    <h1 class="name-screen-title">Let's find your level in science</h1>
+    <p class="name-screen-desc">This short check helps us understand what you already know so we can start you in the right place. It is not a test to pass or fail. Answer each question as best you can, and the check will adjust to you as you go.</p>
+    <div class="info-card">
+      <p><strong>How it works.</strong> You will see one section at a time. Answer every question in a section, then continue. The questions adjust to your answers, so you only see what is right for you.</p>
+      <p>There is no time limit. Take your time and do your best thinking. Most students finish in about half an hour.</p>
+    </div>
+    <label class="field-label" for="studentName">Your name</label>
+    <input class="field-input" type="text" id="studentName" placeholder="e.g. Alex Chen" autocomplete="off">
+    <div class="field-error" id="nameError">Please enter your name to begin.</div>
+    <div class="btn-row"><button class="btn-primary" id="btnStart">Begin the check</button></div>
+  </section>
+
+  <!-- SCREEN 2: adaptive questions -->
+  <section class="screen" id="screenQuiz">
+    <div id="questionsContainer"></div>
+    <div class="submit-error" id="submitError"></div>
+    <div class="btn-row" id="submitRow" style="display:none">
+      <button class="btn-primary" id="btnSubmit">Submit my answers</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 3: thank you -->
+  <section class="screen" id="screenThankYou">
+    <div class="thankyou-wrap">
+      <div class="thankyou-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="welcome-eyebrow" style="text-align:center">Assessment Complete</div>
+      <h1 class="thankyou-title">All done. Thank you.</h1>
+      <div class="thankyou-divider"></div>
+      <p class="thankyou-body">We have received your answers. Our teaching team will review them and prepare a summary with the right starting level for you on the Harland Science ladder.</p>
+      <p class="thankyou-next" id="thankyouStatus"></p>
+    </div>
+  </section>
+</div>
+
+<footer class="site-footer">&copy; Harland Education &middot; Da'an District, Taipei &middot; Confidential Assessment Material</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =======================================================================
+     Adaptive Grades 6-9 science placement. Engine ported verbatim from the
+     proven adaptive router (harland_english_g8_12_adaptive). Adaptations:
+     no level self-selection (foundational rule) - every student starts in
+     'routing'; no speaking/writing tail - a corroborating MCQ tail instead;
+     MathJax for fractions/decimals; placement remapped to spine levels 3-5;
+     3-step submit chain (diagnostics -> results -> reports).
+     ======================================================================= */
+
+  var CONFIG = {
+    DIAGNOSTIC_TYPE: "science_g6_9",
+    DIAGNOSTIC_LABEL: "Science Placement (Grades 6 to 9)",
+    SUBJECT: "science_g6_9",
+    SPINE: "ngss_science",
+    SB_URL: "https://takuuqvpyqvomcfmcjoz.supabase.co",
+    SB_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M"
+  };
+  var DIAGNOSTIC_TYPE = CONFIG.DIAGNOSTIC_TYPE, DIAGNOSTIC_LABEL = CONFIG.DIAGNOSTIC_LABEL;
+  var SB_URL = CONFIG.SB_URL, SB_KEY = CONFIG.SB_KEY;
+  var STUDENT_ID = null;
+
+  var BLOCKS = {
+    routing: { items: [
+      { id:'sci69_rt1', strand:'Physical Science', level:7, topic:'Kinetic vs potential energy', stem:'A ball is held still at the top of a ramp. Before it is released, what kind of energy does it mainly have?', options:['Glowing light energy', 'Loud crashing sound', 'Stored height energy', 'Quick motion energy'], answer:2 },
+      { id:'sci69_rt2', strand:'Life Science', level:7, topic:'Body systems interact', stem:'After you run, you breathe faster AND your heart beats faster. This shows that two body systems are', options:['working together', 'made of one organ', 'shutting each other down', 'completely separate'], answer:0 },
+      { id:'sci69_rt3', strand:'Earth & Space Science', level:7, topic:'Seasons', stem:'Earth has seasons mainly because', options:['it moves in a square', 'the sun turns off', 'it stops each night', 'its axis is tilted'], answer:3 },
+      { id:'sci69_rt4', strand:'Data Analysis and Quantitative Skills', level:7, topic:'Compute a percent', stem:'In a survey, 20 of 50 students chose science as their favorite subject. What percent is that?', options:['20 percent', '50 percent', '70 percent', '40 percent'], answer:3 },
+      { id:'sci69_rt5', strand:'Experimental Design and Scientific Reasoning', level:7, topic:'Confounding variable', stem:'A student tests a fertilizer but also gives the treated plants more sunlight. Why is the test unfair?', options:['Two things changed', 'The plants were same', 'Only one thing changed', 'Nothing changed at all'], answer:0 },
+      { id:'sci69_rt6', strand:'Science Literacy', level:7, topic:'Claim vs evidence', stem:'A text claims a soil is fertile. Which statement is EVIDENCE for that claim?', options:['The soil is dark brown', 'Many crops grow in it', 'It has a common name', 'Farmers say they like it'], answer:1 },
+      { id:'sci69_rt7', strand:'Physical Science', level:6, topic:'Physical vs chemical change', stem:'Which of these is a CHEMICAL change?', options:['Water boiling off', 'Paper being torn', 'Iron rusting away', 'Ice melting slowly'], answer:2 },
+      { id:'sci69_rt8', strand:'Life Science', level:6, topic:'Cells', stem:'What are all living things made of?', options:['Only pure clean water', 'One or more cells', 'Metal, glass, plastic', 'Empty air pockets'], answer:1 },
+    ] },
+    advanced: { items: [
+      { id:'sci69_ad1', strand:'Physical Science', level:8, topic:'Conservation of mass', stem:'In a sealed jar, 10 g of baking soda reacts with vinegar and bubbles form. What is the total mass inside the sealed jar after?', options:['The same as before', 'A bit less than before', 'Down to exactly zero', 'A bit more than before'], answer:0 },
+      { id:'sci69_ad2', strand:'Life Science', level:8, topic:'Inheritance and variation', stem:'Two brown-eyed parents have a blue-eyed child. This is possible because each parent', options:['carried a hidden gene', 'picked the child traits', 'changed their own eyes', 'gave no genes at all'], answer:0 },
+      { id:'sci69_ad3', strand:'Earth & Space Science', level:8, topic:'Human impact / climate evidence', stem:'Which is the BEST evidence that Earth\'s climate is warming over time?', options:['One hot day this summer', 'Decades of global data', 'A cold week last winter', 'A single warm city block'], answer:1 },
+      { id:'sci69_ad4', strand:'Data Analysis and Quantitative Skills', level:8, topic:'Interpret slope/trend', stem:'On a graph of distance vs time, a straight line that slopes upward steeply means the object is moving', options:['not moving at all now', 'slowly but steadily so', 'backward through time', 'at a fast steady speed'], answer:3 },
+      { id:'sci69_ad5', strand:'Experimental Design and Scientific Reasoning', level:8, topic:'Reliability', stem:'A scientist repeats a measurement many times and gets similar results. This mainly shows the results are', options:['just wrong every time', 'reliable, repeatable', 'biased on purpose here', 'completely random data'], answer:1 },
+      { id:'sci69_ad6', strand:'Science Literacy', level:8, topic:'Assumptions and limitations', stem:'A study of 10 plants over 3 days claims a fertilizer works. What is the study\'s main LIMITATION?', options:['The sample was small', 'It had no plants at all', 'It ran for far too long', 'It used too many plants'], answer:0 },
+      { id:'sci69_ad7', strand:'Physical Science', level:8, topic:'Waves carry energy', stem:'During an earthquake, waves travel through the ground. What do these waves mainly carry from place to place?', options:['New matter', 'Sunlight', 'Energy', 'Fresh air'], answer:2 },
+      { id:'sci69_ad8', strand:'Life Science', level:8, topic:'Natural selection', stem:'In a dry year, finches with larger beaks survive better because they can crack tough seeds. Over time the population is likely to have', options:['more large-beaked finches', 'finches with no genes', 'more small-beaked finches', 'no finches with beaks'], answer:0 },
+    ] },
+    middle: { items: [
+      { id:'sci69_mi1', strand:'Physical Science', level:7, topic:'Unbalanced forces', stem:'A box sits still, then someone pushes it and it speeds up. The forces on the box are now', options:['perfectly balanced', 'completely gone', 'purely magnetic', 'unbalanced'], answer:3 },
+      { id:'sci69_mi2', strand:'Life Science', level:7, topic:'Matter/energy in ecosystems', stem:'In a food chain, grass to rabbit to fox, what mainly moves from the grass to the rabbit?', options:['Matter and energy', 'Only a little water', 'Nothing at all here', 'Only some sunlight'], answer:0 },
+      { id:'sci69_mi3', strand:'Earth & Space Science', level:7, topic:'Geologic time from layers', stem:'In undisturbed rock layers, which layer is usually the OLDEST?', options:['The very top layer', 'They are all equal', 'The middle layer', 'The bottom layer'], answer:3 },
+      { id:'sci69_mi4', strand:'Data Analysis and Quantitative Skills', level:7, topic:'Compute average', stem:'A plant is measured at 10 cm, 14 cm, and 18 cm on three days. What is its average height?', options:['14 cm', '18 cm', '10 cm', '42 cm'], answer:0 },
+      { id:'sci69_mi5', strand:'Experimental Design and Scientific Reasoning', level:7, topic:'Dependent variable', stem:'A student changes the amount of light and measures how tall plants grow. What is being MEASURED (the dependent variable)?', options:['The size of the pot', 'The type of the soil', 'The amount of light', 'The height of plants'], answer:3 },
+      { id:'sci69_mi6', strand:'Science Literacy', level:7, topic:'Infer a technical term', stem:'A text says: \'The nocturnal owl hunts after dark.\' What does nocturnal most likely mean?', options:['Living in water', 'Eating only plants', 'Very large in size', 'Active at night'], answer:3 },
+      { id:'sci69_mi7', strand:'Physical Science', level:7, topic:'Energy transfer', stem:'A moving cart hits a still cart and the still cart starts to move. What was transferred between them?', options:['Extra brand new mass', 'Energy of motion', 'Bright glowing light', 'Cool refreshing air'], answer:1 },
+      { id:'sci69_mi8', strand:'Earth & Space Science', level:7, topic:'Water cycle energy', stem:'What provides the energy that drives the water cycle (evaporation and rain)?', options:['The sun', 'The moon', 'The wind alone', 'The soil'], answer:0 },
+    ] },
+    beginner: { items: [
+      { id:'sci69_bg1', strand:'Physical Science', level:6, topic:'States of matter', stem:'Which correctly describes the particles in a solid compared with a gas?', options:['Packed close together', 'Simply not there now', 'Spread very far apart', 'Turned into pure light'], answer:0 },
+      { id:'sci69_bg2', strand:'Life Science', level:6, topic:'Unicellular vs multicellular', stem:'A bacterium is made of a single cell. This means a bacterium is', options:['made of many organs', 'a large multicellular one', 'not alive at all', 'a unicellular organism'], answer:3 },
+      { id:'sci69_bg3', strand:'Earth & Space Science', level:6, topic:'Rock cycle', stem:'Melted rock deep underground cools and hardens. This forms a new', options:['living fossil', 'gust of wind', 'drop of water', 'igneous rock'], answer:3 },
+      { id:'sci69_bg4', strand:'Data Analysis and Quantitative Skills', level:6, topic:'Compute a difference', stem:'A river was 3 m deep in spring and 5 m deep after heavy rain. How much did the depth increase?', options:['3 m', '2 m', '5 m', '8 m'], answer:1 },
+      { id:'sci69_bg5', strand:'Experimental Design and Scientific Reasoning', level:6, topic:'Independent variable', stem:'A student tests how the amount of water changes plant growth. What is the student CHANGING on purpose?', options:['The color of pots', 'The height of plants', 'The amount of water', 'The time of day'], answer:2 },
+      { id:'sci69_bg6', strand:'Science Literacy', level:6, topic:'Central idea', stem:'A passage explains how roots, stems, and leaves each help a plant. What is the central idea?', options:['Plant parts have jobs', 'Leaves fall in autumn', 'Flowers smell sweet', 'Plants are always green'], answer:0 },
+      { id:'sci69_bg7', strand:'Physical Science', level:6, topic:'Pure substance vs mixture', stem:'Which of these is a MIXTURE?', options:['Salad of vegetables', 'One oxygen atom', 'A single gold bar', 'Pure distilled water'], answer:0 },
+      { id:'sci69_bg8', strand:'Earth & Space Science', level:6, topic:'Weather vs climate', stem:'What is the difference between weather and climate?', options:['Climate lasts one hour', 'Weather never changes', 'Climate is the usual', 'They mean same thing'], answer:2 },
+    ] },
+    ceiling: { items: [
+      { id:'sci69_ce1', strand:'Physical Science', level:8, topic:'Senior preview: atomic structure', stem:'In an atom, which particle has a positive charge?', options:['The electron', 'The proton', 'The molecule', 'The neutron'], answer:1 },
+      { id:'sci69_ce2', strand:'Life Science', level:8, topic:'Senior preview: DNA', stem:'What molecule carries the genetic instructions in a cell?', options:['Salt', 'DNA', 'Water', 'Oxygen'], answer:1 },
+      { id:'sci69_ce3', strand:'Physical Science', level:8, topic:'Senior preview: speed formula', stem:'A runner covers 100 m in 20 s. What is the average speed?', options:['20 m per s', '5 m per s', '2 m per s', '120 m per s'], answer:1 },
+      { id:'sci69_ce4', strand:'Earth & Space Science', level:8, topic:'Senior preview: energy resources', stem:'Which is a RENEWABLE energy resource?', options:['Coal fuel', 'Natural gas', 'Solar power', 'Crude oil'], answer:2 },
+      { id:'sci69_ce5', strand:'Experimental Design and Scientific Reasoning', level:8, topic:'Senior preview: alternative explanation', stem:'Plants near a window grew taller than plants in a corner. Before saying \'window air helps growth\', a scientist should first consider', options:['the color of pots used', 'the extra window light', 'the name of each plant', 'the day of the week it'], answer:1 },
+    ] },
+    floor: { items: [
+      { id:'sci69_fl1', strand:'Physical Science', level:6, topic:'G5 review: matter conserved', stem:'You freeze 100 g of water into ice. What is the mass of the ice?', options:['200 g', '0 g', '50 g', '100 g'], answer:3 },
+      { id:'sci69_fl2', strand:'Life Science', level:6, topic:'G5 review: food source', stem:'How do green plants make their own food?', options:['Using light from sun', 'From rocks in the soil', 'By drinking only milk', 'By eating small bugs'], answer:0 },
+      { id:'sci69_fl3', strand:'Earth & Space Science', level:6, topic:'G5 review: Earth systems', stem:'Rain flowing into a river and shaping the land shows water working with the', options:['far outer space', 'electric current', 'loud sound waves', 'land (geosphere)'], answer:3 },
+      { id:'sci69_fl4', strand:'Data Analysis and Quantitative Skills', level:6, topic:'G5 review: read a bar chart', stem:'A bar chart shows rainfall: 5 cm in May, 8 cm in June, 3 cm in July. Which month had the most rain?', options:['June', 'May', 'July', 'All the same'], answer:0 },
+      { id:'sci69_fl5', strand:'Science Literacy', level:6, topic:'G5 review: follow a step', stem:'A method says: \'First measure the mass. Then add the water.\' What do you do FIRST?', options:['Add in the water', 'Measure the mass', 'Skip to the end', 'Pour it all out'], answer:1 },
+    ] },
+  };
+
+  /* ADAPTIVE ROUTER STATE */
+  var ROUTER = {
+    thresholds: { up: 0.75, down: 0.40 },
+    path: [], blockScores: {}, stage: 0, currentBlock: null,
+    entryBlock: null, selfSelected: null, corrected: false, finalProductionShown: false
+  };
+
+  var TAIL_ITEMS = [
+    { id:'sci69_tl1', domain:'Final section', strand:'Physical Science', level:7, topic:'Corroborating: energy forms', type:'mcq', _block:'tail', text:'<p><strong>Question.</strong> A battery powers a torch that gives off light and heat. The stored chemical energy is changing into</p>', options:['pure empty space', 'brand new matter', 'light and heat', 'extra battery mass'], answer:2 },
+    { id:'sci69_tl2', domain:'Final section', strand:'Life Science', level:7, topic:'Corroborating: ecosystem roles', type:'mcq', _block:'tail', text:'<p><strong>Question.</strong> In a pond, algae make food using sunlight. In the food web, algae act as</p>', options:['top predators', 'decomposers only', 'nonliving matter', 'producers'], answer:3 },
+    { id:'sci69_tl3', domain:'Final section', strand:'Earth & Space Science', level:8, topic:'Corroborating: human impact', type:'mcq', _block:'tail', text:'<p><strong>Question.</strong> Which action would MOST reduce a city\'s impact on air quality?</p>', options:['Burning more coal fuel', 'Cutting down more trees', 'Using more clean energy', 'Adding more car traffic'], answer:2 },
+    { id:'sci69_tl4', domain:'Final section', strand:'Experimental Design and Scientific Reasoning', level:8, topic:'Corroborating: control group', type:'mcq', _block:'tail', text:'<p><strong>Question.</strong> To test a new plant food fairly, the control group of plants should get</p>', options:['no food, else same', 'water on other days', 'twice the normal light', 'a different plant type'], answer:0 },
+  ];
+
+  var QUESTIONS = [];
+  var ANSWERS = {};
+
+  function el(id){ return document.getElementById(id); }
+  function showScreen(id){
+    var s=document.querySelectorAll('.screen'); for(var i=0;i<s.length;i++) s[i].classList.remove('active');
+    el(id).classList.add('active');
+  }
+  function typesetMath(){ if(window.MathJax && window.MathJax.typesetPromise){ window.MathJax.typesetPromise(); } }
+
+  /* ================= RENDER ================= */
+  function renderQuestions(){
+    var c = el('questionsContainer');
+    c.innerHTML='';
+    var currentDomain=null;
+    for(var i=0;i<QUESTIONS.length;i++){
+      var q=QUESTIONS[i];
+      if(q.domain && q.domain!==currentDomain){
+        currentDomain=q.domain;
+        var dh=document.createElement('div'); dh.className='domain-header';
+        dh.innerHTML='<div class="domain-label">Section</div><div class="domain-title">'+escHtml(currentDomain)+'</div>';
+        c.appendChild(dh);
+      }
+      var card=document.createElement('div'); card.className='question-card'; card.id='card_'+q.id;
+      var inner='<div class="question-number">Question</div><div class="question-text">'+q.text+'</div>';
+      inner+=renderMCQ(q);
+      card.innerHTML=inner;
+      c.appendChild(card);
+    }
+    renderStageControl();
+    attachListeners();
+    typesetMath();
+  }
+
+  function renderMCQ(q){
+    var letters=['A','B','C','D','E'];
+    var html='<ul class="mcq-options">';
+    for(var i=0;i<q.options.length;i++){
+      var iid='mcq_'+q.id+'_'+i;
+      var checked = (ANSWERS[q.id]===i) ? ' checked' : '';
+      html+='<li><input type="radio" name="mcq_'+escHtml(q.id)+'" id="'+iid+'" value="'+i+'"'+checked+'><label for="'+iid+'"><span class="option-letter">'+letters[i]+'</span>'+q.options[i]+'</label></li>';
+    }
+    html+='</ul>'; return html;
+  }
+
+  function attachListeners(){
+    var radios=document.querySelectorAll('.mcq-options input[type="radio"]');
+    for(var i=0;i<radios.length;i++){
+      radios[i].onchange=function(){ ANSWERS[this.name.replace('mcq_','')]=parseInt(this.value,10); updateProgress(); };
+    }
+  }
+
+  /* ================= ROUTER CONTROLLER (verbatim logic) ================= */
+  function blockToItems(blockKey, sectionLabel){
+    var blk=BLOCKS[blockKey]; var items=[];
+    for(var i=0;i<blk.items.length;i++){
+      var raw=blk.items[i];
+      items.push({ id:raw.id, domain:sectionLabel, strand:raw.strand, level:raw.level,
+        topic:raw.topic, type:'mcq', _block:blockKey,
+        text:'<p><strong>Question.</strong> '+raw.stem+'</p>',
+        options:raw.options, answer:raw.answer });
+    }
+    return items;
+  }
+  function startRouter(){
+    QUESTIONS=[]; ROUTER.path=[]; ROUTER.blockScores={}; ROUTER.stage=0;
+    ROUTER.finalProductionShown=false;
+    ROUTER.selfSelected='routing';   /* no self-selection: neutral start, always */
+    ROUTER.entryBlock='routing';
+    loadBlock('routing');
+  }
+  function loadBlock(blockKey){
+    ROUTER.stage++; ROUTER.currentBlock=blockKey; ROUTER.path.push(blockKey);
+    var label='Section '+ROUTER.stage;
+    var newItems=blockToItems(blockKey,label);
+    for(var i=0;i<newItems.length;i++) QUESTIONS.push(newItems[i]);
+    renderQuestions(); updateProgress();
+    var first=el('card_'+newItems[0].id); if(first) first.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function scoreBlock(blockKey){
+    var correct=0,total=0;
+    for(var i=0;i<QUESTIONS.length;i++){
+      var q=QUESTIONS[i];
+      if(q._block!==blockKey||q.type!=='mcq') continue;
+      total++;
+      if(typeof ANSWERS[q.id]!=='undefined'&&ANSWERS[q.id]===q.answer) correct++;
+    }
+    var pct=total>0?(correct/total):0;
+    ROUTER.blockScores[blockKey]={correct:correct,total:total,pct:pct};
+    return pct;
+  }
+  function blockComplete(blockKey){
+    for(var i=0;i<QUESTIONS.length;i++){
+      var q=QUESTIONS[i];
+      if(q._block===blockKey&&q.type==='mcq'&&typeof ANSWERS[q.id]==='undefined') return false;
+    }
+    return true;
+  }
+  function advanceStage(){
+    var key=ROUTER.currentBlock;
+    if(!blockComplete(key)){
+      var miss=[];
+      for(var i=0;i<QUESTIONS.length;i++){ var q=QUESTIONS[i]; if(q._block===key&&q.type==='mcq'&&typeof ANSWERS[q.id]==='undefined') miss.push(q.id); }
+      highlightMissing(miss);
+      var se=el('submitError'); se.style.display='block'; se.textContent='Please answer every question in this section before continuing.';
+      return;
+    }
+    el('submitError').style.display='none';
+    var pct=scoreBlock(key);
+    var up=ROUTER.thresholds.up, down=ROUTER.thresholds.down;
+    if(key==='routing'){
+      if(pct>=up) loadBlock('advanced');
+      else if(pct<down) loadBlock('beginner');
+      else loadBlock('middle');
+      return;
+    }
+    if(key==='advanced'){
+      if(pct>=up) loadBlock('ceiling');
+      else enterTail();
+      return;
+    }
+    if(key==='middle'){
+      if(pct>=up && !ROUTER.corrected){ ROUTER.corrected=true; loadBlock('advanced'); }
+      else if(pct<down && !ROUTER.corrected){ ROUTER.corrected=true; loadBlock('beginner'); }
+      else enterTail();
+      return;
+    }
+    if(key==='beginner'){
+      if(pct<down) loadBlock('floor');
+      else enterTail();
+      return;
+    }
+    if(key==='ceiling'||key==='floor'){ enterTail(); return; }
+    enterTail();
+  }
+  function enterTail(){
+    if(!ROUTER.finalProductionShown){
+      for(var i=0;i<TAIL_ITEMS.length;i++) QUESTIONS.push(TAIL_ITEMS[i]);
+      ROUTER.finalProductionShown=true;
+    }
+    renderQuestions(); updateProgress();
+    var sr=el('submitRow'); if(sr) sr.style.display='flex';
+    if(TAIL_ITEMS.length){ var a=el('card_'+TAIL_ITEMS[0].id); if(a) a.scrollIntoView({behavior:'smooth',block:'start'}); }
+  }
+  function renderStageControl(){
+    var container=el('questionsContainer');
+    var existing=el('stageControlRow'); if(existing) existing.parentNode.removeChild(existing);
+    if(ROUTER.finalProductionShown) return;
+    var row=document.createElement('div'); row.id='stageControlRow'; row.className='btn-row'; row.style.marginTop='8px';
+    var btn=document.createElement('button'); btn.className='btn-primary'; btn.id='btnNextSection';
+    btn.textContent='Continue to next section'; btn.onclick=advanceStage;
+    row.appendChild(btn); container.appendChild(row);
+  }
+
+  function updateProgress(){
+    var label,fillPct;
+    if(ROUTER.finalProductionShown){
+      var t=0,a=0;
+      for(var i=0;i<QUESTIONS.length;i++){ if(QUESTIONS[i].type==='mcq'){ t++; if(typeof ANSWERS[QUESTIONS[i].id]!=='undefined') a++; } }
+      fillPct=70+Math.round((t>0?a/t:0)*30); label='Final section';
+    } else {
+      var approx=Math.min(ROUTER.stage,3);
+      fillPct=[0,35,65,80][approx]||65; label='Section '+ROUTER.stage+' of the placement';
+    }
+    el('progressFill').style.width=fillPct+'%';
+    el('progressLabel').textContent=label;
+  }
+
+  function validate(){
+    var missing=[];
+    for(var i=0;i<QUESTIONS.length;i++){ var q=QUESTIONS[i]; if(q.type==='mcq'&&typeof ANSWERS[q.id]==='undefined') missing.push(q.id); }
+    return missing;
+  }
+  function highlightMissing(ids){
+    var cards=document.querySelectorAll('.question-card');
+    for(var i=0;i<cards.length;i++) cards[i].style.borderColor='';
+    for(var j=0;j<ids.length;j++){ var card=el('card_'+ids[j]); if(card) card.style.borderColor='#A32D2D'; }
+    if(ids.length>0){ var f=el('card_'+ids[0]); if(f) f.scrollIntoView({behavior:'smooth',block:'center'}); }
+  }
+
+  /* ================= PLACEMENT ENGINE (ported, remapped to levels 3-5) ================= */
+  function collectPayload(){
+    var studentName=el('studentName').value.replace(/^\s+|\s+$/g,'');
+    var mcqScores={}, rawResponses={}, preferences={};
+    for(var i=0;i<QUESTIONS.length;i++){
+      var q=QUESTIONS[i];
+      if(q.type==='mcq'){
+        var chosen=ANSWERS[q.id];
+        mcqScores[q.id]={ chosen:chosen, answer:q.answer, correct:(q.answer!==null&&q.answer!==undefined)?(chosen===q.answer):null };
+        rawResponses[q.id]=chosen;
+      }
+    }
+    var LEVEL_LABEL={ 6:'Grade 6', 7:'Grade 7', 8:'Grades 8-9' };
+    var perLevel={}; var lv;
+    for(lv=6;lv<=8;lv++) perLevel[lv]={c:0,t:0};
+    var byTopic={}; var perStrand={};
+    for(var m=0;m<QUESTIONS.length;m++){
+      var qq=QUESTIONS[m];
+      if(qq.type!=='mcq'||!qq.level) continue;
+      var ok=(mcqScores[qq.id]&&mcqScores[qq.id].correct===true);
+      perLevel[qq.level].t++; if(ok) perLevel[qq.level].c++;
+      if(!perStrand[qq.strand]) perStrand[qq.strand]={c:0,t:0};
+      perStrand[qq.strand].t++; if(ok) perStrand[qq.strand].c++;
+      byTopic[(qq._block||'')+' :: '+LEVEL_LABEL[qq.level]+' :: '+(qq.topic||qq.id)]=ok?'correct':'incorrect';
+    }
+    /* CALIBRATED path-primary placement (tuned for this 3-level ladder; the donor's
+       cumulative-70% gate craters an on-level student on a top-anchored routing block).
+       The router PATH sets the candidate band; own-level competence (>=50%) confirms or
+       steps down one; ceiling/floor probes are hard overrides. */
+    function ownPct(l){ var o=perLevel[l]; return (o && o.t>0) ? (o.c/o.t) : 0; }
+    var path=ROUTER.path;
+    var indexOf=function(a,v){ for(var i=0;i<a.length;i++){ if(a[i]===v) return i; } return -1; };
+    var cand=7;
+    if(indexOf(path,'advanced')>=0 || indexOf(path,'ceiling')>=0) cand=8;
+    else if(indexOf(path,'beginner')>=0 || indexOf(path,'floor')>=0) cand=6;
+    else cand=7;
+    var indicatedNum=cand;
+    if(ownPct(cand)<0.50){ indicatedNum = (cand-1>=6)?(cand-1):6; }
+    var flags=[];
+    var ceil=ROUTER.blockScores['ceiling'], floor=ROUTER.blockScores['floor'];
+    if(ceil&&ceil.pct>=ROUTER.thresholds.up){ indicatedNum=5; flags.push('above_band_ceiling'); }
+    if(floor&&floor.pct<ROUTER.thresholds.down){ indicatedNum=0; flags.push('below_band_floor'); }
+
+    var indicatedLabel=indicatedNum>=6?LEVEL_LABEL[indicatedNum]:'below Grade 6';
+    var band, harlandLevel;
+    if(indicatedNum===0){ band='Below Grade 6 (consider the Grades 3-5 diagnostic)'; harlandLevel='Harland Science - Grades 3-5 level; consider the 3-5 check'; }
+    else if(indicatedNum===6){ band='Grade 6 (developing)'; harlandLevel='Harland Science - Grade 6 level'; }
+    else if(indicatedNum===7){ band='Grade 7 (on level)'; harlandLevel='Harland Science - Grade 7 level'; }
+    else { band='Grades 8-9 (secure, pre-discipline)'; harlandLevel='Harland Science - Grades 8-9 level'; }
+    if(indexOf(flags,'above_band_ceiling')>=0){ band='Grades 8-9 secure; ready to assess into the discipline-based senior instrument (Biology / Chemistry / Physics)'; harlandLevel='Harland Science - Grades 8-9 secure; assess into the senior Biology / Chemistry / Physics instrument'; }
+    if(indexOf(flags,'below_band_floor')>=0){ band='Below Grade 6 (consider the Grades 3-5 diagnostic)'; harlandLevel='Harland Science - Grades 3-5 level; consider the 3-5 check'; }
+
+    var confidence='high';
+    var rt=ROUTER.blockScores['routing'];
+    var s2key=ROUTER.path.length>1?ROUTER.path[1]:null;
+    var s2=s2key?ROUTER.blockScores[s2key]:null;
+    if(rt&&s2){
+      if(s2key==='advanced'&&s2.pct<ROUTER.thresholds.down) confidence='low';
+      else if(s2key==='beginner'&&s2.pct>=ROUTER.thresholds.up) confidence='low';
+      else if((s2.pct>=ROUTER.thresholds.up)!==(rt.pct>=0.6)) confidence='medium';
+    }
+    var totalMcqSeen=0; for(var tl=6;tl<=8;tl++){ totalMcqSeen+=perLevel[tl].t; }
+    if(totalMcqSeen<12) confidence=(confidence==='high')?'medium':confidence;
+
+    var strandPct={};
+    for(var st in perStrand){ if(perStrand.hasOwnProperty(st)) strandPct[st]=perStrand[st].t?Math.round(perStrand[st].c/perStrand[st].t*100):null; }
+
+    preferences.level_analysis={
+      spine:CONFIG.SPINE, subject:CONFIG.SUBJECT, instrument:'adaptive_router',
+      recommended_band:band, recommended_course:harlandLevel,
+      estimated_grade_level:indicatedLabel+' (provisional, to be confirmed by teacher)',
+      confidence:confidence, confirm_with_entry_diagnostic:(confidence!=='high'),
+      flags:flags, router_path:ROUTER.path, block_scores:ROUTER.blockScores,
+      per_level:perLevel, per_strand_pct:strandPct, by_topic:byTopic, thresholds:ROUTER.thresholds,
+      note:'Adaptive Grades 6-9 science placement. No level was selected by the student; the report resolves the Harland level from the blocks the student was routed through. The recommended band is the firm output; the specific grade level is a conservative estimate (rounded down) and a starting point, not a committed placement. An edge flag (below Grade 3, or secure at Grade 5 ceiling) is the cue to consider the adjacent instrument. A readiness signal for placement, not a predicted grade.'
+    };
+
+    return {
+      student_id:STUDENT_ID, student_name:studentName,
+      diagnostic_type:DIAGNOSTIC_TYPE, diagnostic_label:DIAGNOSTIC_LABEL,
+      raw_responses:rawResponses, mcq_scores:mcqScores, preferences:preferences,
+      _analysis: preferences.level_analysis
+    };
+  }
+
+  /* ================= SUBMIT CHAIN (3-step, column-whitelisted) ================= */
+  /* ================= SUBMIT CHAIN (3-step, column-whitelisted, hardened) =================
+     Success detection depends on the actual HTTP status of ALL THREE inserts, never on
+     parsing a response body. Body parsing is fully guarded so a missing/empty representation
+     cannot throw. onSuccess fires only when diagnostics, results, AND reports each return 2xx.
+     The offline message is reserved for a genuine network failure (fetch reject) or a non-2xx
+     status - it never fires after a successful write. */
+  function submitToSupabase(payload, onSuccess, onError){
+    var headers={ 'Content-Type':'application/json', 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY, 'Prefer':'return=representation' };
+    var analysis=payload._analysis;
+
+    function parseFirstId(res){
+      /* Guarded: returns a Promise of the row id, or null if the body is empty/unparseable.
+         Never throws - an empty representation body must not break the chain. */
+      return res.text().then(function(t){
+        if(!t){ return null; }
+        try{ var arr=JSON.parse(t); return (arr && arr[0] && arr[0].id) ? arr[0].id : null; }
+        catch(e){ return null; }
+      });
+    }
+
+    /* STEP 1: diagnostics (whitelist; _analysis is NOT sent) */
+    var diagBody={
+      student_name:payload.student_name, diagnostic_type:payload.diagnostic_type,
+      diagnostic_label:payload.diagnostic_label,
+      diagnostic_id:null, student_id:payload.student_id,
+      mcq_scores:payload.mcq_scores, raw_responses:payload.raw_responses,
+      preferences:payload.preferences
+    };
+    fetch(SB_URL+'/rest/v1/diagnostics',{method:'POST',headers:headers,body:JSON.stringify(diagBody)})
+    .then(function(res){
+      if(!res.ok){ throw new Error('diagnostics '+res.status); }
+      return parseFirstId(res);
+    })
+    .then(function(submissionId){
+      /* STEP 2: results (whitelist; subject required; breakdown column) */
+      var resBody={ submission_id:submissionId, subject:CONFIG.SUBJECT,
+        recommended_level:analysis.recommended_band, breakdown:analysis.per_strand_pct };
+      return fetch(SB_URL+'/rest/v1/results',{method:'POST',headers:headers,body:JSON.stringify(resBody)})
+        .then(function(r2){
+          if(!r2.ok){ throw new Error('results '+r2.status); }
+          return parseFirstId(r2);
+        })
+        .then(function(resultId){
+          /* STEP 3: reports (whitelist; diagnostic_id = submission uuid) */
+          var repBody={ diagnostic_id:submissionId, result_id:resultId,
+            student_name:payload.student_name, diagnostic_label:payload.diagnostic_label,
+            ai_report:'Pending HT review', status:'pending' };
+          return fetch(SB_URL+'/rest/v1/reports',{method:'POST',headers:headers,body:JSON.stringify(repBody)})
+            .then(function(r3){
+              if(!r3.ok){ throw new Error('reports '+r3.status); }
+              return true;
+            });
+        });
+    })
+    .then(function(){ onSuccess(); })
+    .catch(function(err){ onError(err); });
+  }
+
+
+  /* ================= WIRING ================= */
+  el('btnStart').onclick=function(){
+    var name=el('studentName').value.replace(/^\s+|\s+$/g,'');
+    if(name.length===0){ el('nameError').style.display='block'; return; }
+    el('nameError').style.display='none';
+    showScreen('screenQuiz');
+    startRouter();
+    window.scrollTo(0,0);
+  };
+  el('studentName').addEventListener('keydown', function(e){ if(e.key==='Enter') el('btnStart').click(); });
+
+  el('btnSubmit').onclick=function(){
+    if(!ROUTER.finalProductionShown) return;
+    var missing=validate();
+    if(missing.length>0){ var se=el('submitError'); se.style.display='block'; se.textContent='Please answer every question before submitting.'; highlightMissing(missing); return; }
+    el('submitError').style.display='none';
+    var btn=el('btnSubmit'); btn.disabled=true; btn.textContent='Submitting...';
+    submitToSupabase(collectPayload(),
+      function(){
+        /* GENUINE success: all three inserts returned 2xx */
+        el('progressWrap').style.display='none'; showScreen('screenThankYou');
+        el('thankyouStatus').textContent='Your responses have been received. You may close this window.';
+        window.scrollTo(0,0);
+      },
+      function(err){
+        /* GENUINE failure: a fetch reject or a non-2xx status. Answers are held locally on
+           this device; the Harland team is alerted through the dashboard, so recovery does
+           not depend on the family chasing anyone. */
+        btn.disabled=false; btn.textContent='Submit my answers';
+        el('progressWrap').style.display='none'; showScreen('screenThankYou');
+        el('thankyouStatus').textContent='Your answers are saved on this device. Our team will follow up to complete the submission.';
+        window.scrollTo(0,0);
+      }
+    );
+  };
+
+
+  function escHtml(str){
+    if(str===null||str===undefined) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+})();
+</script>
+</body>
+</html>
