@@ -5,118 +5,131 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diagnostic Library | Harland Education</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;700&family=Noto+Serif+TC:wght@300;400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
+    /* Harland design system — tokens per harland-aesthetic skill (live-site ground truth).
+       Cream ground; obsidian only as bounded masthead/footer bands; gold-dark for text on light. */
     :root {
-      --navy:       #1B2A4A;
-      --navy-light: #263D6A;
-      --gold:       #C9A84C;
-      --gold-light: #EDD98A;
-      --cream:      #F7F5F0;
-      --white:      #FFFFFF;
-      --grey:       #6B7280;
-      --light-grey: #E5E3DF;
-      --error:      #C0392B;
-      --success:    #27AE60;
-      --font-serif: 'Libre Baskerville', Georgia, serif;
-      --font-sans:  'DM Sans', sans-serif;
+      --obsidian:    #0D0D0F;
+      --ink:         #1A1A1F;
+      --slate:       #4A4A56;
+      --mist:        #9A9AA8;
+      --gold:        #C9A84C;
+      --gold-light:  #E8C97A;
+      --gold-dark:   #A07820;
+      --gold-pale:   #F5EDDA;
+      --cream:       #F8F5EF;
+      --cream-warm:  #FAF7F0;
+      --cream-deep:  #F2EDE0;
+      --card:        #FFFEF9;
+      --border-soft: #E8E4DC;
+      --white:       #FFFFFF;
+      --success:     #3B6D11; --success-wash: #EAF3DE;
+      --error:       #A32D2D; --error-wash:   #FCEBEB;
+      --warning:     #854F0B; --warning-wash: #FAEEDA;
+      --font-serif: 'Cormorant Garamond', 'Noto Serif TC', serif;
+      --font-sans:  'DM Sans', 'Noto Sans TC', sans-serif;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-sans); background: var(--cream); color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+    body { font-family: var(--font-sans); background: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* ===== HEADER ===== */
-    .site-header { background: var(--navy); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
-    .logo-mark { width: 38px; height: 38px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; font-size: 18px; color: var(--navy); flex-shrink: 0; }
-    .brand-name { font-family: var(--font-serif); font-size: 18px; color: var(--white); letter-spacing: 0.02em; }
-    .brand-sub { font-size: 11px; color: var(--gold); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+    /* ===== HEADER (obsidian band — sanctioned bounded highlight) ===== */
+    .site-header { background: var(--obsidian); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+    .logo-mark { width: 38px; height: 38px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 500; font-size: 19px; color: var(--obsidian); flex-shrink: 0; }
+    .brand-name { font-family: var(--font-serif); font-size: 19px; font-weight: 400; color: var(--cream); letter-spacing: 0.02em; }
+    .brand-sub { font-size: 11px; color: var(--gold-light); font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px; }
     .header-right { margin-left: auto; }
-    .header-admin-link { font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 14px; transition: color 0.15s, border-color 0.15s; }
-    .header-admin-link:hover { color: var(--gold); border-color: rgba(201,168,76,0.4); }
+    .header-admin-link { font-size: 12px; color: var(--mist); text-decoration: none; border: 1px solid rgba(232,228,220,0.2); padding: 6px 14px; letter-spacing: 0.04em; transition: color 0.15s, border-color 0.15s; }
+    .header-admin-link:hover { color: var(--gold-light); border-color: var(--gold); }
 
-    /* ===== HERO ===== */
-    .hero { background: var(--navy); padding: 40px 32px 48px; border-bottom: 3px solid var(--gold); }
+    /* ===== HERO (obsidian masthead, gold hairline foot) ===== */
+    .hero { background: var(--obsidian); padding: 48px 32px 52px; border-bottom: 1px solid var(--gold); }
     .hero-inner { max-width: 900px; margin: 0 auto; }
-    .hero h1 { font-family: var(--font-serif); font-size: 30px; color: var(--white); margin-bottom: 10px; }
-    .hero p { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.6; max-width: 560px; }
-    .hero-stats { display: flex; gap: 32px; margin-top: 28px; }
-    .hero-stat-v { font-family: var(--font-serif); font-size: 28px; color: var(--gold); }
-    .hero-stat-l { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+    .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 16px; }
+    .hero h1 { font-family: var(--font-serif); font-size: 38px; font-weight: 400; letter-spacing: -0.015em; line-height: 1.1; color: var(--cream); margin-bottom: 12px; }
+    .hero p { font-size: 15px; font-weight: 300; letter-spacing: 0.02em; color: var(--mist); line-height: 1.6; max-width: 560px; }
+    .hero-stats { display: flex; gap: 32px; margin-top: 30px; }
+    .hero-stat-v { font-family: var(--font-serif); font-size: 30px; font-weight: 400; color: var(--gold); }
+    .hero-stat-l { font-size: 11px; color: var(--mist); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 2px; }
 
     /* ===== MAIN ===== */
-    .main-wrap { max-width: 900px; width: 100%; margin: 0 auto; padding: 36px 24px 60px; flex: 1; }
+    .main-wrap { max-width: 900px; width: 100%; margin: 0 auto; padding: 40px 24px 72px; flex: 1; }
 
     /* ===== FILTER BAR ===== */
-    .filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
-    .search-input { font-family: var(--font-sans); font-size: 14px; color: var(--navy); background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 8px; padding: 9px 14px; outline: none; width: 240px; transition: border-color 0.15s; }
+    .filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 28px; flex-wrap: wrap; }
+    .search-input { font-family: var(--font-sans); font-size: 14px; color: var(--ink); background: var(--card); border: 1px solid var(--border-soft); padding: 9px 14px; outline: none; width: 240px; transition: border-color 0.15s; }
     .search-input:focus { border-color: var(--gold); }
-    .filter-btn { font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--light-grey); background: var(--white); color: var(--grey); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
-    .filter-btn:hover { border-color: var(--navy); color: var(--navy); }
-    .filter-btn.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
-    .filter-count { font-size: 12px; color: var(--grey); margin-left: auto; }
+    .filter-btn { font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.04em; padding: 8px 16px; border: 1px solid var(--border-soft); background: var(--card); color: var(--slate); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+    .filter-btn:hover { border-color: var(--gold); color: var(--ink); }
+    .filter-btn.active { background: var(--gold-pale); border-color: var(--gold); color: var(--ink); font-weight: 500; }
+    .filter-count { font-size: 12px; color: var(--slate); margin-left: auto; }
+
+    /* ===== UMBRELLA PILLS + GRADE FILTER (forward-port 2026-07-12) ===== */
+    .umbrella-row { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+    .umb-pill { font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.04em; padding: 7px 14px; border: 1px solid var(--border-soft); background: var(--card); color: var(--slate); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+    .umb-pill:hover { border-color: var(--gold); color: var(--ink); }
+    .umb-pill.active { background: var(--gold-pale); border-color: var(--gold); color: var(--ink); font-weight: 500; }
+    .umb-pill .umb-ct { color: var(--gold-dark); font-weight: 400; margin-left: 5px; }
+    .grade-select { font-family: var(--font-sans); font-size: 12px; color: var(--ink); background: var(--card); border: 1px solid var(--border-soft); padding: 8px 10px; outline: none; cursor: pointer; transition: border-color 0.15s; }
+    .grade-select:focus, .grade-select:hover { border-color: var(--gold); }
 
     /* ===== DIAGNOSTIC CARDS ===== */
     .cards-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .diag-card { background: var(--card); border: 1px solid var(--border-soft); padding: 26px 28px; display: flex; align-items: flex-start; gap: 18px; transition: border-color 0.15s, box-shadow 0.15s; margin-bottom: 14px; }
+    .diag-card:hover { border-color: var(--gold-light); box-shadow: 0 1px 2px rgba(13,13,15,0.04); }
 
-    .diag-card { background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 12px; padding: 22px 24px; display: flex; align-items: flex-start; gap: 18px; transition: border-color 0.15s, box-shadow 0.15s; }
-    .diag-card:hover { border-color: #C9C5BE; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-
-    .diag-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; margin-top: 2px; }
-    .icon-science  { background: rgba(46,107,158,0.1); }
-    .icon-econ     { background: rgba(46,125,92,0.1); }
-    .icon-cs       { background: rgba(107,46,158,0.1); }
-    .icon-english  { background: rgba(176,112,32,0.1); }
-    .icon-maths    { background: rgba(158,46,46,0.1); }
-    .icon-default  { background: rgba(27,42,74,0.08); }
+    .diag-icon { width: 44px; height: 44px; background: var(--gold-pale); display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 500; font-size: 20px; color: var(--gold-dark); flex-shrink: 0; margin-top: 2px; }
+    .icon-tile, .icon-science, .icon-econ, .icon-cs, .icon-english, .icon-maths, .icon-default { background: var(--gold-pale); }
 
     .diag-body { flex: 1; min-width: 0; }
     .diag-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
-    .diag-name { font-family: var(--font-serif); font-size: 16px; color: var(--navy); line-height: 1.3; }
-    .status-badge { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 10px; flex-shrink: 0; margin-top: 3px; }
-    .status-live     { background: rgba(46,125,92,0.1); color: #2E7D5C; }
-    .status-draft    { background: rgba(176,112,32,0.1); color: #B07020; }
-    .status-planned  { background: rgba(107,107,125,0.1); color: #6B6B7A; }
+    .diag-name { font-family: var(--font-serif); font-size: 18px; font-weight: 400; color: var(--ink); line-height: 1.25; }
+    .status-badge { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 9px; flex-shrink: 0; margin-top: 3px; }
+    .status-live     { background: var(--success-wash); color: var(--success); }
+    .status-draft    { background: var(--warning-wash); color: var(--warning); }
+    .status-planned  { background: var(--cream-deep); color: var(--slate); }
 
     .diag-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
-    .meta-item { font-size: 12px; color: var(--grey); display: flex; align-items: center; gap: 5px; }
+    .meta-item { font-size: 12px; color: var(--slate); display: flex; align-items: center; gap: 5px; }
     .meta-item svg { opacity: 0.5; }
 
-    .diag-desc { font-size: 13px; color: var(--grey); line-height: 1.55; margin-bottom: 14px; }
+    .diag-desc { font-size: 13px; color: var(--slate); line-height: 1.6; margin-bottom: 14px; }
 
     .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-    .tag { font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 4px; background: var(--cream); color: var(--grey); border: 1px solid var(--light-grey); }
+    .tag { font-size: 11px; font-weight: 400; padding: 2px 9px; background: var(--cream-deep); color: var(--slate); border: 1px solid var(--border-soft); }
 
     .routes-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-    .routes-label { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #B8912E; display: inline-flex; align-items: center; gap: 4px; margin-right: 2px; }
-    .route-pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; background: rgba(201,168,76,0.14); color: #8A6D1F; border: 1px solid rgba(201,168,76,0.35); }
-    .route-pill .route-intent { font-weight: 500; opacity: 0.75; }
-    .loading-state { text-align: center; padding: 60px 0; color: var(--grey); font-size: 14px; }
+    .routes-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dark); display: inline-flex; align-items: center; gap: 4px; margin-right: 2px; }
+    .route-pill { font-size: 11px; font-weight: 500; padding: 3px 10px; background: var(--gold-pale); color: var(--gold-dark); border: 1px solid var(--gold); }
+    .route-pill .route-intent { font-weight: 400; opacity: 0.85; }
+    .loading-state { text-align: center; padding: 60px 0; color: var(--slate); font-size: 14px; }
 
     .diag-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .btn-open { font-family: var(--font-sans); font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 6px; border: none; background: var(--navy); color: var(--white); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s; }
-    .btn-open:hover { background: var(--navy-light); }
-    .btn-copy { font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 6px; border: 1.5px solid var(--light-grey); background: var(--white); color: var(--grey); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: border-color 0.15s, color 0.15s; }
-    .btn-copy:hover { border-color: var(--navy); color: var(--navy); }
+    .btn-open { font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.04em; padding: 7px 16px; border: 1px solid var(--gold); background: transparent; color: var(--gold-dark); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s; }
+    .btn-open:hover { background: var(--gold-pale); }
+    .btn-copy { font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 7px 14px; border: 1px solid var(--border-soft); background: var(--card); color: var(--slate); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: border-color 0.15s, color 0.15s; }
+    .btn-copy:hover { border-color: var(--gold); color: var(--gold-dark); }
     .btn-copy.copied { border-color: var(--success); color: var(--success); }
-    .updated-label { font-size: 11px; color: var(--light-grey); margin-left: auto; }
+    .updated-label { font-size: 11px; color: var(--mist); margin-left: auto; }
 
     /* ===== EMPTY STATE ===== */
-    .empty-state { text-align: center; padding: 60px 0; color: var(--grey); }
+    .empty-state { text-align: center; padding: 60px 0; color: var(--slate); }
     .empty-state p { font-size: 15px; margin-top: 10px; }
 
-    /* ===== DIVIDER ===== */
-    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; margin-top: 32px; }
+    /* ===== SECTION LABEL (eyebrow pattern) ===== */
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 12px; margin-top: 36px; }
     .section-label:first-child { margin-top: 0; }
 
-    /* ===== FOOTER ===== */
-    .site-footer { background: var(--navy); padding: 20px 32px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.04em; }
+    /* ===== FOOTER (obsidian band) ===== */
+    .site-footer { background: var(--obsidian); padding: 20px 32px; text-align: center; font-size: 12px; color: var(--mist); letter-spacing: 0.04em; }
 
-    /* ===== TOAST ===== */
-    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--navy); color: var(--white); font-size: 14px; font-weight: 500; padding: 12px 24px; border-radius: 8px; z-index: 100; transition: transform 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2); white-space: nowrap; }
+    /* ===== TOAST (small dark toast — sanctioned) ===== */
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--obsidian); color: var(--cream); font-size: 14px; font-weight: 400; padding: 12px 24px; z-index: 100; transition: transform 0.3s ease; box-shadow: 0 1px 2px rgba(13,13,15,0.1); white-space: nowrap; }
     .toast.show { transform: translateX(-50%) translateY(0); }
 
     @media (max-width: 600px) {
-      .hero { padding: 28px 20px 36px; }
-      .hero h1 { font-size: 22px; }
+      .hero { padding: 32px 20px 40px; }
+      .hero h1 { font-size: 28px; }
       .hero-stats { gap: 20px; }
       .diag-card { flex-direction: column; gap: 12px; }
       .diag-top { flex-direction: column; gap: 6px; }
@@ -141,6 +154,7 @@
 <!-- ===== HERO ===== -->
 <div class="hero">
   <div class="hero-inner">
+    <p class="hero-eyebrow">Harland Education</p>
     <h1>Diagnostic Library</h1>
     <p>All Harland Education student diagnostics in one place. Copy a link and send it directly to a student -- no login required on their end.</p>
     <div class="hero-stats">
@@ -162,8 +176,17 @@
 
 <!-- ===== MAIN ===== -->
 <main class="main-wrap">
+  <div class="umbrella-row" id="umbrellaRow"><!-- built from catalog data --></div>
   <div class="filter-bar">
     <input class="search-input" type="text" id="searchInput" placeholder="Search diagnostics..." oninput="filterCards()">
+    <select class="grade-select" id="gradeSel" onchange="filterCards()">
+      <option value="">All grades</option>
+      <option value="0">K</option>
+      <option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option>
+      <option value="4">Grade 4</option><option value="5">Grade 5</option><option value="6">Grade 6</option>
+      <option value="7">Grade 7</option><option value="8">Grade 8</option><option value="9">Grade 9</option>
+      <option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option>
+    </select>
     <button class="filter-btn active" data-filter="all"    onclick="setFilter('all',this)">All</button>
     <button class="filter-btn"        data-filter="live"   onclick="setFilter('live',this)">Live</button>
     <button class="filter-btn"        data-filter="draft"  onclick="setFilter('draft',this)">Draft</button>
@@ -177,7 +200,7 @@
 
 <!-- ===== FOOTER ===== -->
 <footer class="site-footer">
-  &copy; Harland Education &mdash; Xinyi District, Taipei &mdash; Internal Use Only
+  &copy; Harland Education &mdash; Da'an District, Taipei &mdash; Internal Use Only
 </footer>
 
 <!-- ===== TOAST ===== -->
@@ -193,23 +216,21 @@
      every student diagnostic on this Pages site.
      To add / edit a diagnostic, update the catalog row -- NOT
      this file. routes_to drives the gold routing strip.
+     2026-07-12 forward-port: umbrella pills + grade filter
+     (built from catalog data; no hardcoded lists, no SEED).
   ========================================================== */
   var SUPABASE_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
   var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
 
   var DIAGNOSTICS = [];
   var activeFilter = 'all';
+  var activeUmbrella = 'all';
 
   /* ---- category -> icon (catalog has no icon field; derive it) ---- */
   function iconFor(d) {
-    var cat = (d.category || '').toLowerCase();
-    var sub = (d.subject_slug || '').toLowerCase();
-    if (cat.indexOf('math') !== -1 || sub.indexOf('math') !== -1 || sub.indexOf('amc') !== -1) return { cls: 'icon-maths', ch: '&#128208;' };
-    if (cat.indexOf('science') !== -1 || sub.indexOf('physics') !== -1 || sub.indexOf('chem') !== -1 || sub.indexOf('bio') !== -1) return { cls: 'icon-science', ch: '&#128300;' };
-    if (sub.indexOf('econ') !== -1) return { cls: 'icon-econ', ch: '&#128200;' };
-    if (sub.indexOf('cs') !== -1 || cat.indexOf('computer') !== -1) return { cls: 'icon-cs', ch: '&#128187;' };
-    if (cat.indexOf('english') !== -1 || cat.indexOf('ielts') !== -1 || sub.indexOf('english') !== -1 || sub.indexOf('writing') !== -1) return { cls: 'icon-english', ch: '&#128218;' };
-    return { cls: 'icon-default', ch: '&#128221;' };
+    /* Monogram tile: first letter of the category, serif on gold-pale (no emoji per brand). */
+    var cat = (d.category || 'D').trim();
+    return { cls: 'icon-tile', ch: escHtml(cat.charAt(0).toUpperCase()) };
   }
 
   function getStatusBadge(status) {
@@ -244,9 +265,9 @@
     var actionsHtml = '';
     if (d.url) {
       actionsHtml += '<a class="btn-open" href="' + escAttr(d.url) + '" target="_blank">Open &#8599;</a>';
-      actionsHtml += '<button class="btn-copy" onclick="copyLink(\'' + escAttr(d.url) + '\', this)">&#128279; Copy link</button>';
+      actionsHtml += '<button class="btn-copy" onclick="copyLink(\'' + escAttr(d.url) + '\', this)">Copy link</button>';
     } else {
-      actionsHtml += '<span style="font-size:12px;color:var(--grey);font-style:italic;">Not yet available</span>';
+      actionsHtml += '<span style="font-size:12px;color:var(--slate);font-style:italic;">Not yet available</span>';
     }
     if (d.updated) actionsHtml += '<span class="updated-label">Updated ' + escHtml(d.updated) + '</span>';
 
@@ -283,6 +304,7 @@
   function renderCards() {
     var container = document.getElementById('cardContainer');
     var query = document.getElementById('searchInput').value.toLowerCase().trim();
+    var gradeVal = document.getElementById('gradeSel').value;
 
     /* categories discovered from the data, stable order */
     var seen = {}, categories = [];
@@ -299,6 +321,12 @@
       var cardsInCat = DIAGNOSTICS.filter(function(d) {
         if ((d.category || 'Other') !== cat) return false;
         if (activeFilter !== 'all' && d.status !== activeFilter) return false;
+        if (activeUmbrella !== 'all' && (d.umbrella || 'other') !== activeUmbrella) return false;
+        if (gradeVal !== '') {
+          var gi = (d.grade_min == null ? 0 : d.grade_min);
+          var ga = (d.grade_max == null ? 99 : d.grade_max);
+          if (+gradeVal < gi || +gradeVal > ga) return false;
+        }
         if (query) {
           var hay = (d.name + ' ' + (d.subject_display || '') + ' ' + (d.tags || []).join(' ') + ' ' + routeSearchText(d)).toLowerCase();
           if (hay.indexOf(query) === -1) return false;
@@ -311,7 +339,7 @@
     });
 
     if (visibleCount === 0) {
-      html = '<div class="empty-state"><div style="font-size:36px;opacity:0.2;">&#128270;</div><p>No diagnostics match your search.</p></div>';
+      html = '<div class="empty-state"><p>No diagnostics match your search.</p></div>';
     }
 
     container.innerHTML = html;
@@ -324,6 +352,41 @@
     document.getElementById('statLive').textContent    = n('live');
     document.getElementById('statDraft').textContent   = n('draft');
     document.getElementById('statPlanned').textContent = n('planned');
+  }
+
+  /* ===== UMBRELLA PILLS + GRADE FILTER (forward-port 2026-07-12) =====
+     Pills are built dynamically from the fetched catalog rows so new
+     umbrellas appear without editing this file. */
+  var UMB_LABELS = {
+    core_academics:       'Core Academics',
+    curriculum_programs:  'Curriculum Programs',
+    test_prep_competition:'Test Prep & Competition'
+  };
+  function umbLabel(k) {
+    if (UMB_LABELS[k]) return UMB_LABELS[k];
+    return String(k).replace(/_/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+  }
+  function buildUmbrellaPills() {
+    var counts = { all: DIAGNOSTICS.length }, order = [];
+    DIAGNOSTICS.forEach(function(d) {
+      var u = d.umbrella || 'other';
+      if (!counts[u]) { counts[u] = 0; order.push(u); }
+      counts[u]++;
+    });
+    order.sort();
+    var html = umbPill('all', 'All families', counts.all);
+    order.forEach(function(u) { html += umbPill(u, umbLabel(u), counts[u]); });
+    document.getElementById('umbrellaRow').innerHTML = html;
+  }
+  function umbPill(key, label, ct) {
+    var cls = 'umb-pill' + (activeUmbrella === key ? ' active' : '');
+    return '<button class="' + cls + '" onclick="setUmbrella(\'' + escAttr(key) + '\')">' + escHtml(label)
+         + '<span class="umb-ct">' + ct + '</span></button>';
+  }
+  function setUmbrella(k) {
+    activeUmbrella = k;
+    buildUmbrellaPills();
+    renderCards();
   }
 
   function setFilter(filter, btn) {
@@ -340,7 +403,7 @@
   function fmtMinutes(m) { return (m || m === 0) ? (m + ' min') : ''; }
 
   function loadCatalog() {
-    var cols = 'id,name,subject,category,grade_band,duration_min,description,url,sort_order,tags,routes_to,status';
+    var cols = 'id,name,subject,category,grade_band,grade_min,grade_max,umbrella,duration_min,description,url,sort_order,tags,routes_to,status';
     var url = SUPABASE_URL + '/rest/v1/diagnostics_catalog'
             + '?status=in.(live,draft,planned)'
             + '&select=' + cols
@@ -364,16 +427,20 @@
             routes_to:      r.routes_to || [],
             url:            r.url || null,
             status:         r.status,
+            grade_min:      r.grade_min,
+            grade_max:      r.grade_max,
+            umbrella:       r.umbrella || 'other',
             updated:        ''
           };
         });
+        buildUmbrellaPills();
         renderCards();
       })
       .catch(function(e) {
         document.getElementById('cardContainer').innerHTML =
-          '<div class="empty-state"><div style="font-size:36px;opacity:0.2;">&#9888;</div>'
+          '<div class="empty-state">'
           + '<p>Could not load the diagnostic catalog.</p>'
-          + '<p style="font-size:12px;color:var(--grey);">' + escHtml(e.message) + '</p></div>';
+          + '<p style="font-size:12px;color:var(--error);">' + escHtml(e.message) + '</p></div>';
       });
   }
 
@@ -385,7 +452,7 @@
       btn.innerHTML = '&#10003; Copied!';
       btn.classList.add('copied');
       showToast('Link copied to clipboard');
-      setTimeout(function() { btn.innerHTML = '&#128279; Copy link'; btn.classList.remove('copied'); }, 2000);
+      setTimeout(function() { btn.innerHTML = 'Copy link'; btn.classList.remove('copied'); }, 2000);
     }).catch(function() {
       prompt('Copy this link:', url);
     });
