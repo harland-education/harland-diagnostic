@@ -998,20 +998,44 @@
 
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
+    var la = payload.preferences.level_analysis;
+    function parseFirstId(res) {
+      /* Guarded: Promise of row id, or null on empty/unparseable body. Never throws. */
+      return res.text().then(function(t) {
+        if (!t) { return null; }
+        try { var arr = JSON.parse(t); return (arr && arr[0] && arr[0].id) ? arr[0].id : null; }
+        catch (e) { return null; }
+      });
+    }
+
+    /* STEP 1: diagnostics */
     fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(payload) })
-    .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
-    .then(function(data) {
-      var reportPayload = {
-        diagnostic_id: data[0].id,
-        student_id: payload.student_id,
-        student_name: payload.student_name,
-        diagnostic_label: payload.diagnostic_label,
-        ai_report: 'Pending HT review',
-        status: 'pending'
-      };
-      return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
+    .then(function(res) {
+      if (!res.ok) { throw new Error('diagnostics ' + res.status); }
+      return parseFirstId(res);
     })
-    .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
+    .then(function(submissionId) {
+      /* STEP 2: results - subject required for grounded reports */
+      var resBody = { submission_id: submissionId, subject: 'english',
+        recommended_level: la.recommended_band, breakdown: { per_level: la.per_level, by_topic: la.by_topic, confidence: la.confidence } };
+      return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resBody) })
+        .then(function(r2) {
+          if (!r2.ok) { throw new Error('results ' + r2.status); }
+          return parseFirstId(r2);
+        })
+        .then(function(resultId) {
+          /* STEP 3: reports - diagnostic_id is the SUBMISSION uuid */
+          var repBody = { diagnostic_id: submissionId, result_id: resultId,
+            student_id: payload.student_id, student_name: payload.student_name,
+            diagnostic_label: payload.diagnostic_label,
+            ai_report: 'Pending HT review', status: 'pending' };
+          return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(repBody) })
+            .then(function(r3) {
+              if (!r3.ok) { throw new Error('reports ' + r3.status); }
+              onSuccess();
+            });
+        });
+    })
     .catch(function(err) { onError(err); });
   }
 

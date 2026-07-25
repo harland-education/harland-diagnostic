@@ -1052,7 +1052,15 @@
 
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
-    /* Three-step chain (Dialect B): diagnostics -> results (best-effort, subject fork) -> reports.
+    function parseFirstId(res) {
+      /* Guarded: Promise of row id, or null on empty/unparseable body. Never throws. */
+      return res.text().then(function(t) {
+        if (!t) { return null; }
+        try { var arr = JSON.parse(t); return (arr && arr[0] && arr[0].id) ? arr[0].id : null; }
+        catch (e) { return null; }
+      });
+    }
+    /* Three-step chain (Dialect B): diagnostics -> results (hard-required, subject fork) -> reports.
        Each request body is an EXPLICIT whitelist of real columns; helper keys on the payload
        object (_results, preferences.level_analysis) are read locally and never spread into a body. */
     var submissionId = null;
@@ -1067,11 +1075,12 @@
         self_ratings: payload.self_ratings,
         preferences: payload.preferences
       }) })
-    .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
+    .then(function(res) { if (!res.ok) throw new Error('diagnostics ' + res.status); return parseFirstId(res).then(function(id){ return [{id:id}]; }); })
     .then(function(data) {
       submissionId = data[0].id;
-      /* results insert is BEST-EFFORT: a failure here must not block the report shell.
-         Body is a column whitelist; subject writes the dedicated 'writing' fork. */
+      /* results insert is HARD-REQUIRED (Dialect B): a failure here fails the whole
+         submission and the student is told to retry. Body is a column whitelist;
+         subject writes the dedicated 'writing' fork. */
       var r = payload._results || {};
       var resultsBody = {
         submission_id: submissionId,
@@ -1090,10 +1099,9 @@
       };
       return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resultsBody) })
         .then(function(rres) {
-          if (rres.ok) { return rres.json().then(function(rd) { if (rd && rd[0]) resultId = rd[0].id; }); }
-          return null; /* swallow a results failure; report shell still lands */
-        })
-        .catch(function() { return null; });
+          if (!rres.ok) { throw new Error('results ' + rres.status); }
+          return parseFirstId(rres).then(function(rid) { resultId = rid; });
+        });
     })
     .then(function() {
       var reportPayload = {
