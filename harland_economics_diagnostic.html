@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- HARLAND-BUILD slug=economics_readiness date=2026-08-04 sha256=f71db5829e4d -->
 <!-- build: TRUNK-PILOT-v1 (IB Math AA HL+SL intents) 2026-07-06 -->
 <html lang="en">
 <head>
@@ -103,6 +104,9 @@
     .required-note { font-size: 13px; color: var(--slate); margin-bottom: 28px; }
     .req { color: var(--error); }
     .submit-error { background-color: var(--error-wash); border: 1px solid var(--error); padding: 14px 18px; font-size: 14px; color: var(--error); margin-top: 16px; display: none; }
+    .integrity-notice { border: 1px solid var(--gold-pale, #E8DCC0); border-left: 3px solid var(--gold-dark); background-color: rgba(201, 168, 76, 0.06); border-radius: 4px; padding: 18px 20px; margin: 0 0 26px; }
+    .integrity-title { font-family: var(--font-display); font-weight: 400; font-size: 17px; color: var(--gold-dark); margin: 0 0 8px; }
+    .integrity-body { font-size: 14px; color: var(--slate); line-height: 1.65; margin: 0; }
     .thankyou-wrap { text-align: center; padding: 48px 0; }
     .thankyou-icon { width: 72px; height: 72px; background-color: var(--obsidian); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; }
     .thankyou-icon svg { width: 34px; height: 34px; }
@@ -205,71 +209,71 @@
     routing: {
       label: 'Routing block',
       items: [
-        { id: 'ec_rt_1', strand: 'Foundations & the Economic Problem', level: 3, topic: 'Opportunity cost', stem: 'A country uses all its resources fully. To produce more hospitals it must produce fewer schools. The cost of the extra hospitals is best described as the ______.', options: ['opportunity cost, measured as the schools given up', 'total value of all hospitals and schools', 'money price of building the hospitals', 'loss from producing too little of both'], answer: 0 },
+        { id: 'ec_rt_1', strand: 'Foundations & the Economic Problem', level: 3, topic: 'Opportunity cost', stem: 'A country uses all its resources fully. To produce more hospitals it must produce fewer schools. The cost of the extra hospitals is best described as the ______.', options: ['opportunity cost: the schools given up', 'total value of all hospitals and schools', 'money price of building the hospitals', 'loss from producing too little of both'], answer: 0 },
         { id: 'ec_rt_2', strand: 'Microeconomics: Markets', level: 3, topic: 'Demand and supply shift', stem: 'In the market for coffee, a frost destroys much of the crop. Other things equal, the equilibrium price will ______ and the equilibrium quantity will ______.', options: ['fall; rise', 'fall; fall', 'rise; rise', 'rise; fall'], answer: 3 },
-        { id: 'ec_rt_3', strand: 'Microeconomics: Firms, Structure & Failure', level: 3, topic: 'Market failure', stem: 'A factory pollutes a river used by others downstream, and does not pay for the harm. This is an example of ______.', options: ['a public good', 'a progressive tax', 'perfect competition', 'a negative externality'], answer: 3 },
-        { id: 'ec_rt_4', strand: 'Macroeconomics', level: 3, topic: 'Inflation', stem: 'Inflation is best defined as ______.', options: ['a sustained rise in the general price level', 'a fall in the value of exports', 'a rise in the price of one good', 'an increase in the money supply'], answer: 0 },
-        { id: 'ec_rt_5', strand: 'The Global Economy', level: 3, topic: 'Gains from trade', stem: 'Two countries specialise in what they produce relatively most efficiently and then trade. The main predicted result is ______.', options: ['identical wages in both countries', 'the end of all imports and exports', 'higher total output and consumption for both', 'one country always losing from the exchange'], answer: 2 },
+        { id: 'ec_rt_3', strand: 'Microeconomics: Firms, Structure & Failure', level: 3, topic: 'Market failure', stem: 'A factory pollutes a river used by others downstream, and does not pay for the harm. This is an example of ______.', options: ['the free rider problem', 'a public good being overused', 'a perfectly competitive market', 'a negative externality'], answer: 3 },
+        { id: 'ec_rt_4', strand: 'Macroeconomics', level: 3, topic: 'Inflation', stem: 'Inflation is best defined as ______.', options: ['a sustained rise in prices overall', 'a rise in the cost of imported goods', 'a rise in the price of one good', 'an increase in the money supply'], answer: 0 },
+        { id: 'ec_rt_5', strand: 'The Global Economy', level: 3, topic: 'Gains from trade', stem: 'Two countries specialise in what they produce relatively most efficiently and then trade. The main predicted result is ______.', options: ['identical wages in both countries', 'the end of all imports and exports', 'higher output and consumption for both', 'one country always losing from the exchange'], answer: 2 },
         { id: 'ec_rt_6', strand: 'Microeconomics: Markets', level: 4, topic: 'Elasticity (quant)', stem: 'When the price of a good rises by 10 percent, the quantity demanded falls by 5 percent. The price elasticity of demand is ______, so demand is ______.', options: ['2.0; elastic', '0.5; inelastic', '5.0; inelastic', '0.5; elastic'], answer: 1, quant: true }
       ]
     },
     advanced: {
       label: 'Advanced block',
       items: [
-        { id: 'ec_ad_1', strand: 'Foundations & the Economic Problem', level: 4, topic: 'PPC and efficiency', stem: 'On a production possibility curve, a point lying INSIDE the curve represents production that is ______.', options: ['attainable but not productively efficient', 'efficient and on the frontier', 'unattainable with current resources', 'impossible under any conditions'], answer: 0 },
+        { id: 'ec_ad_1', strand: 'Foundations & the Economic Problem', level: 4, topic: 'PPC and efficiency', stem: 'On a production possibility curve, a point lying INSIDE the curve represents production that is ______.', options: ['attainable but not efficient', 'efficient and on the frontier', 'unattainable with current resources', 'impossible under any conditions'], answer: 0 },
         { id: 'ec_ad_2', strand: 'Microeconomics: Markets', level: 4, topic: 'Tax incidence (quant)', stem: 'A specific tax is placed on a good whose demand is highly inelastic and whose supply is elastic. The larger share of the tax burden will fall on ______.', options: ['the government', 'consumers', 'importers', 'producers'], answer: 1, quant: true },
         { id: 'ec_ad_3', strand: 'Microeconomics: Firms, Structure & Failure', level: 4, topic: 'Market structure', stem: 'Compared with a competitive market, a single unregulated monopoly is generally expected to set a ______ price and a ______ quantity.', options: ['higher; lower', 'lower; higher', 'lower; lower', 'higher; higher'], answer: 0 },
-        { id: 'ec_ad_4', strand: 'Macroeconomics', level: 4, topic: 'Fiscal vs monetary policy', stem: 'A government wants to reduce demand-pull inflation using FISCAL policy. The appropriate action is to ______.', options: ['lower the central bank interest rate', 'raise taxes or cut government spending', 'devalue the currency', 'increase the money supply'], answer: 1 },
+        { id: 'ec_ad_4', strand: 'Macroeconomics', level: 4, topic: 'Fiscal vs monetary policy', stem: 'A government wants to reduce demand-pull inflation using FISCAL policy. The appropriate action is to ______.', options: ['cut the central bank interest rate', 'raise taxes or cut spending', 'devalue the domestic currency', 'expand the money supply'], answer: 1 },
         { id: 'ec_ad_5', strand: 'The Global Economy', level: 4, topic: 'Protectionism', stem: 'A country imposes a tariff on imported steel. The most direct effect on the domestic market is that domestic steel producers ______ and domestic steel buyers ______.', options: ['gain; pay more', 'lose; pay less', 'gain; pay less', 'lose; pay more'], answer: 0 },
         { id: 'ec_ad_6', strand: 'Macroeconomics', level: 5, topic: 'AD/AS analysis', stem: 'In an aggregate demand and aggregate supply model, a large rise in business and consumer confidence would, in the short run, shift ______ and tend to ______ the price level.', options: ['AS leftward; raise', 'AD leftward; lower', 'AD rightward; raise', 'AS rightward; lower'], answer: 2, diagram_pending: true },
-        { id: 'ec_ad_7', strand: 'Microeconomics: Firms, Structure & Failure', level: 5, topic: 'Government vs market failure', stem: 'A government subsidises a good that generates positive externalities. A well-designed subsidy aims to make output move ______.', options: ['below the private market level', 'to zero', 'to the monopoly level', 'toward the socially optimal level'], answer: 3 },
+        { id: 'ec_ad_7', strand: 'Microeconomics: Firms, Structure & Failure', level: 5, topic: 'Government vs market failure', stem: 'A government subsidises a good that generates positive externalities. A well-designed subsidy aims to make output move ______.', options: ['below the private market level', 'to exactly the free market level', 'to the monopoly output level', 'to the socially optimal level'], answer: 3 },
         { id: 'ec_ad_8', strand: 'The Global Economy', level: 5, topic: 'Exchange rates (quant)', stem: 'A currency appreciates. Other things equal, the most likely effect is that the country\'s exports become ______ and its imports become ______.', options: ['more expensive abroad; more expensive at home', 'cheaper abroad; more expensive at home', 'more expensive abroad; cheaper at home', 'cheaper abroad; cheaper at home'], answer: 2, quant: true }
       ]
     },
     middle: {
       label: 'Middle block',
       items: [
-        { id: 'ec_mid_1', strand: 'Foundations & the Economic Problem', level: 3, topic: 'Economic systems', stem: 'In a pure market economy, the main mechanism that decides what is produced is ______.', options: ['international organisations', 'central government planning', 'the price mechanism and consumer demand', 'the largest firms acting together'], answer: 2 },
+        { id: 'ec_mid_1', strand: 'Foundations & the Economic Problem', level: 3, topic: 'Economic systems', stem: 'In a pure market economy, the main mechanism that decides what is produced is ______.', options: ['international organisations', 'central government planning', 'prices and consumer demand', 'the largest firms acting together'], answer: 2 },
         { id: 'ec_mid_2', strand: 'Microeconomics: Markets', level: 3, topic: 'Determinants of demand', stem: 'The price of tea (a substitute for coffee) rises sharply. In the market for coffee, this will most likely cause ______.', options: ['supply of coffee to increase', 'demand for coffee to increase', 'the coffee supply curve to shift left', 'demand for coffee to decrease'], answer: 1 },
         { id: 'ec_mid_3', strand: 'Microeconomics: Firms, Structure & Failure', level: 3, topic: 'Costs and revenue', stem: 'A firm sells 100 units at 8 dollars each. Its total costs are 600 dollars. Its profit is ______.', options: ['100 dollars', '800 dollars', '200 dollars', '600 dollars'], answer: 2, quant: true },
-        { id: 'ec_mid_4', strand: 'Macroeconomics', level: 3, topic: 'Unemployment', stem: 'Which of the following would be counted as unemployed in most standard measures?', options: ['a full-time student not looking for work', 'a person without work who is actively seeking a job', 'a person working part-time who wants part-time work', 'a retired person'], answer: 1 },
+        { id: 'ec_mid_4', strand: 'Macroeconomics', level: 3, topic: 'Unemployment', stem: 'Which of the following would be counted as unemployed in most standard measures?', options: ['a full-time student not looking for work', 'someone without work who is actively seeking', 'someone in part-time work who wants part-time hours', 'a retired person living on a pension'], answer: 1 },
         { id: 'ec_mid_5', strand: 'The Global Economy', level: 3, topic: 'Development indicators', stem: 'Which single indicator is most commonly used as a broad measure of a country\'s average material living standards?', options: ['the size of the army', 'the number of exports', 'total population', 'GDP per capita'], answer: 3 },
-        { id: 'ec_mid_6', strand: 'Foundations & the Economic Problem', level: 3, topic: 'Positive vs normative', stem: 'Which of the following is a NORMATIVE statement?', options: ['The government ought to spend more on healthcare', 'Unemployment rose to 6 percent last year', 'GDP grew by 2 percent', 'A rise in price reduced quantity demanded'], answer: 0 },
-        { id: 'ec_mid_7', strand: 'Microeconomics: Markets', level: 3, topic: 'Equilibrium', stem: 'In a supply and demand diagram, the equilibrium price is found where ______.', options: ['supply is at its maximum', 'the two curves are farthest apart', 'the supply and demand curves intersect', 'the demand curve meets the price axis'], answer: 2, diagram_pending: true },
+        { id: 'ec_mid_6', strand: 'Foundations & the Economic Problem', level: 3, topic: 'Positive vs normative', stem: 'Which of the following is a NORMATIVE statement?', options: ['The government ought to spend more', 'Unemployment rose to 6 percent', 'GDP grew by 2 percent last year', 'A price rise reduced quantity demanded'], answer: 0 },
+        { id: 'ec_mid_7', strand: 'Microeconomics: Markets', level: 3, topic: 'Equilibrium', stem: 'In a supply and demand diagram, the equilibrium price is found where ______.', options: ['supply is at its maximum level', 'the two curves are farthest apart', 'the two curves intersect', 'the demand curve meets the axis'], answer: 2, diagram_pending: true },
         { id: 'ec_mid_8', strand: 'Macroeconomics', level: 3, topic: 'Growth (quant)', stem: 'A country\'s real GDP rises from 200 billion to 210 billion in one year. The rate of economic growth is ______.', options: ['21 percent', '10 percent', '2 percent', '5 percent'], answer: 3, quant: true }
       ]
     },
     beginner: {
       label: 'Beginner block',
       items: [
-        { id: 'ec_bg_1', strand: 'Foundations & the Economic Problem', level: 2, topic: 'Scarcity', stem: 'In economics, scarcity means that ______.', options: ['prices are always rising', 'there is not enough money in the economy', 'wants are unlimited but resources are limited', 'some goods are illegal to sell'], answer: 2 },
-        { id: 'ec_bg_2', strand: 'Foundations & the Economic Problem', level: 2, topic: 'Factors of production', stem: 'Which of the following is a factor of production called \'land\'?', options: ['the money a firm borrows', 'a factory building', 'the skills of workers', 'natural resources such as minerals and forests'], answer: 3 },
-        { id: 'ec_bg_3', strand: 'Microeconomics: Markets', level: 2, topic: 'Law of demand', stem: 'The law of demand states that, other things equal, when the price of a good rises, the quantity demanded usually ______.', options: ['falls', 'rises', 'becomes zero', 'stays exactly the same'], answer: 0 },
+        { id: 'ec_bg_1', strand: 'Foundations & the Economic Problem', level: 2, topic: 'Scarcity', stem: 'In economics, scarcity means that ______.', options: ['the price of everything keeps rising', 'there is not enough money in the economy', 'wants exceed the resources available', 'only poor countries face hard choices'], answer: 2 },
+        { id: 'ec_bg_2', strand: 'Foundations & the Economic Problem', level: 2, topic: 'Factors of production', stem: 'Which of the following is a factor of production called \'land\'?', options: ['money a firm borrows to invest', 'a factory building or machine', 'the skills workers bring to a job', 'natural resources like minerals'], answer: 3 },
+        { id: 'ec_bg_3', strand: 'Microeconomics: Markets', level: 2, topic: 'Law of demand', stem: 'The law of demand states that, other things equal, when the price of a good rises, the quantity demanded usually ______.', options: ['tends to fall', 'tends to rise', 'falls to zero', 'stays the same'], answer: 0 },
         { id: 'ec_bg_4', strand: 'Microeconomics: Firms, Structure & Failure', level: 2, topic: 'Costs', stem: 'A cost that does NOT change with the level of output in the short run is called a ______.', options: ['marginal cost', 'opportunity cost', 'variable cost', 'fixed cost'], answer: 3 },
-        { id: 'ec_bg_5', strand: 'Macroeconomics', level: 2, topic: 'GDP', stem: 'Gross Domestic Product (GDP) is best described as ______.', options: ['the total money held in a country\'s banks', 'the value of a country\'s exports only', 'the number of people employed', 'the total value of goods and services produced in a country in a period'], answer: 3 },
-        { id: 'ec_bg_6', strand: 'The Global Economy', level: 2, topic: 'Trade barriers', stem: 'A tax placed specifically on imported goods is called a ______.', options: ['dividend', 'tariff', 'wage', 'subsidy'], answer: 1 },
-        { id: 'ec_bg_7', strand: 'The Global Economy', level: 2, topic: 'Exchange rate basics', stem: 'An exchange rate tells you ______.', options: ['the total value of trade between countries', 'the rate of inflation between two countries', 'how much of one currency is needed to buy another', 'the tax on imported goods'], answer: 2 },
-        { id: 'ec_bg_8', strand: 'Microeconomics: Markets', level: 3, topic: 'Elasticity concept', stem: 'Demand for a good is described as \'price inelastic\'. This means that when price changes, quantity demanded changes ______.', options: ['by a larger percentage than price', 'by exactly the same percentage', 'by a smaller percentage than price', 'not at all, ever'], answer: 2 }
+        { id: 'ec_bg_5', strand: 'Macroeconomics', level: 2, topic: 'GDP', stem: 'Gross Domestic Product (GDP) is best described as ______.', options: ['the total money held in the country\'s banks', 'the value of a country\'s exports only', 'the number of people in employment', 'the value of all output produced in a year'], answer: 3 },
+        { id: 'ec_bg_6', strand: 'The Global Economy', level: 2, topic: 'Trade barriers', stem: 'A tax placed specifically on imported goods is called a ______.', options: ['quota', 'tariff', 'subsidy', 'excise'], answer: 1 },
+        { id: 'ec_bg_7', strand: 'The Global Economy', level: 2, topic: 'Exchange rate basics', stem: 'An exchange rate tells you ______.', options: ['the total value of trade between countries', 'the rate of inflation between two countries', 'how much of one currency buys another', 'the tax charged on imported goods'], answer: 2 },
+        { id: 'ec_bg_8', strand: 'Microeconomics: Markets', level: 3, topic: 'Elasticity concept', stem: 'Demand for a good is described as \'price inelastic\'. This means that when price changes, quantity demanded changes ______.', options: ['by a larger percentage than price does', 'by exactly the same percentage as price', 'by a smaller percentage than price', 'not at all when the price changes'], answer: 2 }
       ]
     },
     ceiling: {
       label: 'Ceiling probe',
       items: [
-        { id: 'ec_ce_1', strand: 'Microeconomics: Firms, Structure & Failure', level: 6, topic: 'Theory of the firm', stem: 'A profit-maximising firm produces at the output where ______.', options: ['price equals average cost', 'average cost is at its lowest', 'marginal cost equals marginal revenue', 'total revenue is at its highest'], answer: 2 },
+        { id: 'ec_ce_1', strand: 'Microeconomics: Firms, Structure & Failure', level: 6, topic: 'Theory of the firm', stem: 'A profit-maximising firm produces at the output where ______.', options: ['price equals average total cost', 'average cost is at its lowest point', 'marginal cost equals marginal revenue', 'total revenue is at its highest point'], answer: 2 },
         { id: 'ec_ce_2', strand: 'Macroeconomics', level: 6, topic: 'Policy trade-offs', stem: 'Using demand-side policy to reduce unemployment may, in the short run, create a tension with the objective of ______.', options: ['increasing economic growth', 'improving the current account', 'reducing the budget deficit', 'controlling inflation'], answer: 3 },
         { id: 'ec_ce_3', strand: 'Microeconomics: Markets', level: 6, topic: 'Welfare / surplus', stem: 'A binding price ceiling set below the equilibrium price in a competitive market is most likely to cause ______.', options: ['a shortage, as quantity supplied exceeds quantity demanded', 'no effect, because the ceiling is below the market price', 'a shortage, as quantity demanded exceeds quantity supplied', 'a surplus, as quantity supplied exceeds quantity demanded'], answer: 2, diagram_pending: true },
-        { id: 'ec_ce_4', strand: 'The Global Economy', level: 6, topic: 'Globalisation evaluation', stem: 'Which of the following is the STRONGEST economic argument AGAINST a country removing all its trade protection at once?', options: ['the country could specialise according to comparative advantage', 'consumers would gain access to cheaper imported goods', 'total world output would tend to rise', 'domestic industries and workers may face rapid structural unemployment before adjusting'], answer: 3 },
-        { id: 'ec_ce_5', strand: 'Foundations & the Economic Problem', level: 6, topic: 'Model critique', stem: 'A limitation of using the production possibility curve to analyse a real economy is that it ______.', options: ['assumes only two goods and a fixed state of technology', 'cannot show opportunity cost', 'cannot represent economic growth', 'shows unattainable points as efficient'], answer: 0 }
+        { id: 'ec_ce_4', strand: 'The Global Economy', level: 6, topic: 'Globalisation evaluation', stem: 'Which of the following is the STRONGEST economic argument AGAINST a country removing all its trade protection at once?', options: ['specialisation follows comparative advantage', 'consumers gain access to cheaper imports', 'world output rises when countries trade', 'adjustment can cause structural unemployment'], answer: 3 },
+        { id: 'ec_ce_5', strand: 'Foundations & the Economic Problem', level: 6, topic: 'Model critique', stem: 'A limitation of using the production possibility curve to analyse a real economy is that it ______.', options: ['assumes two goods and fixed technology', 'cannot show opportunity cost at all', 'cannot represent economic growth', 'shows unattainable points as efficient'], answer: 0 }
       ]
     },
     floor: {
       label: 'Floor probe',
       items: [
-        { id: 'ec_fl_1', strand: 'Foundations & the Economic Problem', level: 1, topic: 'Basic choice', stem: 'You have 10 dollars and can buy either a book or a game, but not both. Choosing the book means you cannot have the game. This simple situation shows that ______.', options: ['prices never matter', 'choices involve giving something up', 'money is unlimited', 'books are always better than games'], answer: 1 },
-        { id: 'ec_fl_2', strand: 'Microeconomics: Markets', level: 1, topic: 'Price intuition', stem: 'A shop finds that a toy is selling out very quickly and many customers still want it. To respond, the shop is most likely to ______.', options: ['give the toys away free', 'raise the price', 'close the shop', 'stop selling toys'], answer: 1 },
-        { id: 'ec_fl_3', strand: 'Macroeconomics', level: 1, topic: 'Prices rising', stem: 'If the prices of most things people buy go up over the year, we say the cost of living has ______.', options: ['stayed the same', 'disappeared', 'risen', 'fallen'], answer: 2 },
-        { id: 'ec_fl_4', strand: 'The Global Economy', level: 1, topic: 'Trade intuition', stem: 'One reason countries buy goods from other countries is that ______.', options: ['they dislike their own workers', 'some goods are cheaper or not made at home', 'money must always leave the country', 'trade is required by law everywhere'], answer: 1 },
-        { id: 'ec_fl_5', strand: 'Microeconomics: Firms, Structure & Failure', level: 2, topic: 'Profit intuition', stem: 'A business makes a profit when ______.', options: ['the money it earns is greater than the money it spends', 'it sells as many items as possible regardless of cost', 'it borrows a large amount of money', 'it has many employees'], answer: 0 }
+        { id: 'ec_fl_1', strand: 'Foundations & the Economic Problem', level: 1, topic: 'Basic choice', stem: 'You have 10 dollars and can buy either a book or a game, but not both. Choosing the book means you cannot have the game. This simple situation shows that ______.', options: ['prices do not matter here', 'choosing means giving something up', 'you can always find more money', 'books are always better than games'], answer: 1 },
+        { id: 'ec_fl_2', strand: 'Microeconomics: Markets', level: 1, topic: 'Price intuition', stem: 'A shop finds that a toy is selling out very quickly and many customers still want it. To respond, the shop is most likely to ______.', options: ['cut the price further', 'raise the price', 'order fewer toys', 'keep the price the same'], answer: 1 },
+        { id: 'ec_fl_3', strand: 'Macroeconomics', level: 1, topic: 'Prices rising', stem: 'If the prices of most things people buy go up over the year, we say the cost of living has ______.', options: ['fallen', 'frozen', 'risen', 'doubled'], answer: 2 },
+        { id: 'ec_fl_4', strand: 'The Global Economy', level: 1, topic: 'Trade intuition', stem: 'One reason countries buy goods from other countries is that ______.', options: ['no country can make anything alone', 'some goods are cheaper abroad', 'imports are always better quality', 'trade makes the currency stronger'], answer: 1 },
+        { id: 'ec_fl_5', strand: 'Microeconomics: Firms, Structure & Failure', level: 2, topic: 'Profit intuition', stem: 'A business makes a profit when ______.', options: ['it earns more than it spends', 'it sells as many items as it can', 'it borrows a large amount of money', 'it employs a lot of people'], answer: 0 }
       ]
     }
   };
@@ -290,12 +294,12 @@
      texture + corroborating evidence to the report. Does NOT re-score the placement band. */
   var INTENT_TAIL = {
     ap_micro: [
-        { id: 'ec_tail_apmi_1', strand: 'Microeconomics: Firms, Structure & Failure', level: 4, topic: 'AP Micro: perfect competition', stem: 'In the AP Microeconomics model, a perfectly competitive firm in long-run equilibrium earns ______.', options: ['negative accounting profit', 'monopoly profit', 'zero economic profit', 'large economic profit'], answer: 2, corroborating: true },
-        { id: 'ec_tail_apmi_2', strand: 'Microeconomics: Markets', level: 4, topic: 'AP Micro: marginal analysis', stem: 'A consumer maximises utility when the marginal utility per dollar spent is ______ across all goods.', options: ['zero', 'maximised for one good only', 'equal', 'rising'], answer: 2, corroborating: true },
-        { id: 'ec_tail_apmi_3', strand: 'Microeconomics: Firms, Structure & Failure', level: 5, topic: 'AP Micro: factor markets', stem: 'A firm hiring labour in a competitive factor market will hire up to the point where the marginal revenue product of labour equals the ______.', options: ['output price', 'average product', 'wage rate', 'total cost'], answer: 2, corroborating: true }
+        { id: 'ec_tail_apmi_1', strand: 'Microeconomics: Firms, Structure & Failure', level: 4, topic: 'AP Micro: perfect competition', stem: 'In the AP Microeconomics model, a perfectly competitive firm in long-run equilibrium earns ______.', options: ['an accounting loss', 'monopoly-level profit', 'zero economic profit', 'large economic profit'], answer: 2, corroborating: true },
+        { id: 'ec_tail_apmi_2', strand: 'Microeconomics: Markets', level: 4, topic: 'AP Micro: marginal analysis', stem: 'A consumer maximises utility when the marginal utility per dollar spent is ______ across all goods.', options: ['at zero', 'rising', 'equal', 'highest'], answer: 2, corroborating: true },
+        { id: 'ec_tail_apmi_3', strand: 'Microeconomics: Firms, Structure & Failure', level: 5, topic: 'AP Micro: factor markets', stem: 'A firm hiring labour in a competitive factor market will hire up to the point where the marginal revenue product of labour equals the ______.', options: ['output price', 'marginal cost', 'wage rate', 'total cost'], answer: 2, corroborating: true }
     ],
     ap_macro: [
-        { id: 'ec_tail_apma_1', strand: 'Macroeconomics', level: 4, topic: 'AP Macro: money market', stem: 'In the AP Macroeconomics money market model, an increase in the money supply, other things equal, tends to ______ the nominal interest rate.', options: ['lower', 'not change', 'raise', 'double'], answer: 0, corroborating: true },
+        { id: 'ec_tail_apma_1', strand: 'Macroeconomics', level: 4, topic: 'AP Macro: money market', stem: 'In the AP Macroeconomics money market model, an increase in the money supply, other things equal, tends to ______ the nominal interest rate.', options: ['lower', 'raise', 'halve', 'steady'], answer: 0, corroborating: true },
         { id: 'ec_tail_apma_2', strand: 'Macroeconomics', level: 4, topic: 'AP Macro: multiplier', stem: 'If the marginal propensity to consume is 0.8, the simple spending multiplier is ______.', options: ['0.8', '8', '1.25', '5'], answer: 3, corroborating: true, quant: true },
         { id: 'ec_tail_apma_3', strand: 'The Global Economy', level: 5, topic: 'AP Macro: open economy', stem: 'In the AP Macroeconomics loanable funds and foreign exchange framework, a higher real interest rate at home tends to cause the domestic currency to ______.', options: ['depreciate', 'appreciate', 'stay fixed', 'disappear'], answer: 1, corroborating: true }
     ],
@@ -305,14 +309,14 @@
         { id: 'ec_tail_igcse_3', strand: 'Microeconomics: Markets', level: 3, topic: 'IGCSE: labour market', stem: 'In IGCSE Economics, a trade union mainly acts to ______.', options: ['represent workers and negotiate pay and conditions', 'print money', 'decide the exchange rate', 'set the national interest rate'], answer: 0, corroborating: true }
     ],
     ib: [
-        { id: 'ec_tail_ib_1', strand: 'The Global Economy', level: 4, topic: 'IB: economic development', stem: 'In IB Economics, a common criticism of using GDP per capita alone to measure development is that it ignores ______.', options: ['the exchange rate', 'the distribution of income and non-material wellbeing', 'the price of oil', 'the number of firms in the country'], answer: 1, corroborating: true },
-        { id: 'ec_tail_ib_2', strand: 'Microeconomics: Firms, Structure & Failure', level: 4, topic: 'IB: market failure', stem: 'In IB Economics, a good that is non-excludable and non-rivalrous, which markets tend to under-provide, is called a ______.', options: ['merit good with high price', 'public good', 'luxury good', 'inferior good'], answer: 1, corroborating: true },
-        { id: 'ec_tail_ib_3', strand: 'Macroeconomics', level: 5, topic: 'IB: evaluation', stem: 'An IB evaluation of expansionary fiscal policy to close a recessionary gap would most likely note the risk of ______.', options: ['the end of international trade', 'an immediate fall in all prices', 'a permanent fall in population', 'a larger government budget deficit'], answer: 3, corroborating: true }
+        { id: 'ec_tail_ib_1', strand: 'The Global Economy', level: 4, topic: 'IB: economic development', stem: 'In IB Economics, a common criticism of using GDP per capita alone to measure development is that it ignores ______.', options: ['the current exchange rate', 'income distribution and wellbeing', 'the world price of oil and gas', 'the number of firms in the country'], answer: 1, corroborating: true },
+        { id: 'ec_tail_ib_2', strand: 'Microeconomics: Firms, Structure & Failure', level: 4, topic: 'IB: market failure', stem: 'In IB Economics, a good that is non-excludable and non-rivalrous, which markets tend to under-provide, is called a ______.', options: ['merit good', 'public good', 'luxury good', 'inferior good'], answer: 1, corroborating: true },
+        { id: 'ec_tail_ib_3', strand: 'Macroeconomics', level: 5, topic: 'IB: evaluation', stem: 'An IB evaluation of expansionary fiscal policy to close a recessionary gap would most likely note the risk of ______.', options: ['an immediate fall in the price level', 'a fall in aggregate demand', 'a rise in the exchange rate peg', 'a larger budget deficit'], answer: 3, corroborating: true }
     ],
     alevel: [
-        { id: 'ec_tail_al_1', strand: 'Microeconomics: Firms, Structure & Failure', level: 5, topic: 'A-Level: theory of the firm', stem: 'In A-Level Economics, in the long run a firm in monopolistic competition tends to earn ______ because of ease of entry.', options: ['supernormal profit permanently', 'the same profit as a pure monopoly', 'normal profit only', 'a guaranteed loss'], answer: 2, corroborating: true },
-        { id: 'ec_tail_al_2', strand: 'Macroeconomics', level: 5, topic: 'A-Level: AD/AS', stem: 'In A-Level analysis, an increase in long-run aggregate supply is best interpreted as ______.', options: ['a rise in unemployment', 'an increase in the economy\'s productive capacity', 'a fall in the price level only', 'a temporary rise in demand'], answer: 1, corroborating: true, diagram_pending: true },
-        { id: 'ec_tail_al_3', strand: 'The Global Economy', level: 6, topic: 'A-Level: evaluation', stem: 'An A-Level evaluation of a currency depreciation to improve the current account would note that success depends partly on ______.', options: ['the current rate of domestic inflation', 'the size of the country\'s foreign currency reserves', 'the price elasticities of demand for exports and imports', 'whether the depreciation happens quickly or slowly'], answer: 2, corroborating: true }
+        { id: 'ec_tail_al_1', strand: 'Microeconomics: Firms, Structure & Failure', level: 5, topic: 'A-Level: theory of the firm', stem: 'In A-Level Economics, in the long run a firm in monopolistic competition tends to earn ______ because of ease of entry.', options: ['supernormal profit forever', 'the profit of a monopoly', 'normal profit only', 'a guaranteed long-run loss'], answer: 2, corroborating: true },
+        { id: 'ec_tail_al_2', strand: 'Macroeconomics', level: 5, topic: 'A-Level: AD/AS', stem: 'In A-Level analysis, an increase in long-run aggregate supply is best interpreted as ______.', options: ['a permanent rise in unemployment', 'a rise in productive capacity', 'a fall in the price level only', 'a temporary rise in demand'], answer: 1, corroborating: true, diagram_pending: true },
+        { id: 'ec_tail_al_3', strand: 'The Global Economy', level: 6, topic: 'A-Level: evaluation', stem: 'An A-Level evaluation of a currency depreciation to improve the current account would note that success depends partly on ______.', options: ['the current rate of domestic inflation', 'the size of the country\'s foreign currency reserves', 'the price elasticities of exports and imports', 'whether the depreciation happens quickly or slowly'], answer: 2, corroborating: true }
     ]
   };
 </script>
@@ -331,6 +335,10 @@
     <h1 class="name-screen-title" id="introHeadingEl"></h1>
     <p class="name-screen-desc" id="introDescEl"></p>
     <div class="info-card" id="infoCardEl"></div>
+    <div class="integrity-notice">
+      <p class="integrity-title">Before you begin.</p>
+      <p class="integrity-body">This diagnostic works best when it sees the real you. Please work on your own, without AI tools, notes, or help from others. There are no grades here and nothing to lose: an answer you guess or get help with can place you in lessons that don't fit, and that costs you time in the classes that follow. Do your best, be honest with yourself, and let the test do its job.</p>
+    </div>
     <div style="margin-bottom: 24px;">
       <label class="field-label" for="studentName" id="nameLabelEl"></label>
       <input class="field-input" type="text" id="studentName" autocomplete="name" spellcheck="false">
@@ -463,6 +471,7 @@
     }
   })();
   document.getElementById('btnStartDiagnostic').onclick = function() {
+    if (SESSION_START_MS === null) { SESSION_START_MS = Date.now(); }
     var name = document.getElementById('studentName').value.trim();
     if (!name) { document.getElementById('nameError').style.display = 'block'; document.getElementById('studentName').focus(); return; }
     document.getElementById('nameError').style.display = 'none';
@@ -947,6 +956,8 @@
     for (var j = 0; j < missingIds.length; j++) { var card = document.getElementById('card_' + missingIds[j]); if (card) card.style.borderColor = '#A32D2D'; }
     if (missingIds.length > 0) { var first = document.getElementById('card_' + missingIds[0]); if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   }
+  var SESSION_START_MS = null;   /* set when the student begins; feeds timing_data + session_duration (P12) */
+
 
   function collectPayload() {
     var studentName = document.getElementById('studentName').value.trim();
@@ -1114,12 +1125,33 @@
       diagnostic_type: DIAGNOSTIC_TYPE, diagnostic_label: DIAGNOSTIC_LABEL,
       raw_responses: rawResponses, mcq_scores: mcqScores,
       self_ratings: selfRatings, preferences: preferences,
+      timing_data: {
+        started_at: (SESSION_START_MS ? new Date(SESSION_START_MS).toISOString() : null),
+        submitted_at: new Date().toISOString(),
+        intent: ASSESSED_FOR,
+        route_path: (ROUTER && ROUTER.path) || [],
+        items_seen: QUESTIONS.length
+      },
+      session_duration: (SESSION_START_MS ? Math.round((Date.now() - SESSION_START_MS) / 1000) : null),
       _analysis: preferences.level_analysis
     };
   }
 
+  /* Hardened three-POST chain (build-standards 7a). Every POST gates on res.ok and throws a
+     labeled error; every body parse is guarded so an empty return=representation body cannot
+     throw; onSuccess fires only after the reports insert returns 2xx. The results POST is NOT
+     best-effort: a results failure now surfaces instead of showing a false success screen.
+     Column whitelists are unchanged, including results.subject = intent().subject, which is the
+     FORKED subject the rubric bands key on. */
   function submitToSupabase(payload, onSuccess, onError) {
     var headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Prefer': 'return=representation' };
+    function parseFirstId(res) {
+      return res.text().then(function(t) {
+        if (!t) { return null; }
+        try { var a = JSON.parse(t); return (a && a[0] && a[0].id) ? a[0].id : null; } catch (e) { return null; }
+      });
+    }
+    var a = payload._analysis || {};
     var diagnosticsBody = {
       student_id: payload.student_id,
       student_name: payload.student_name,
@@ -1129,16 +1161,17 @@
       mcq_scores: payload.mcq_scores,
       self_ratings: payload.self_ratings,
       preferences: payload.preferences,
+      timing_data: payload.timing_data,
+      session_duration: payload.session_duration,
       diagnostic_id: DIAGNOSTIC_TYPE,
       assessment_type: 'diagnostic'
     };
     fetch(SB_URL + '/rest/v1/diagnostics', { method: 'POST', headers: headers, body: JSON.stringify(diagnosticsBody) })
-    .then(function(res) { if (!res.ok) throw new Error('Insert failed: ' + res.status); return res.json(); })
-    .then(function(data) {
-      SUBMISSION_ID = data[0].id;
-      var a = payload._analysis || {};
+    .then(function(res) { if (!res.ok) { throw new Error('diagnostics ' + res.status); } return parseFirstId(res); })
+    .then(function(submissionId) {
+      SUBMISSION_ID = submissionId;
       var resultsPayload = {
-        submission_id: SUBMISSION_ID,
+        submission_id: submissionId,
         student_id: payload.student_id,
         diagnostic_id: DIAGNOSTIC_TYPE,
         assessment_type: 'diagnostic',
@@ -1150,25 +1183,23 @@
         flags: (a.flags || []),
         status: 'computed'
       };
-      /* Step 2 (results) is best-effort: a failure here must not block the report shell. */
       return fetch(SB_URL + '/rest/v1/results', { method: 'POST', headers: headers, body: JSON.stringify(resultsPayload) })
-        .then(function(r) { return r.ok ? r.json() : null; })
-        .catch(function() { return null; })
-        .then(function(resData) {
-          var resultId = (resData && resData[0]) ? resData[0].id : null;
-          var reportPayload = {
-            diagnostic_id: SUBMISSION_ID,
-            result_id: resultId,
-            student_id: payload.student_id,
-            student_name: payload.student_name,
-            diagnostic_label: payload.diagnostic_label,
-            ai_report: 'Pending HT review',
-            status: 'pending'
-          };
-          return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) });
-        });
+      .then(function(r2) { if (!r2.ok) { throw new Error('results ' + r2.status); } return parseFirstId(r2); })
+      .then(function(resultId) {
+        var reportPayload = {
+          diagnostic_id: submissionId,
+          result_id: resultId,
+          student_id: payload.student_id,
+          student_name: payload.student_name,
+          diagnostic_label: payload.diagnostic_label,
+          ai_report: 'Pending HT review',
+          status: 'pending'
+        };
+        return fetch(SB_URL + '/rest/v1/reports', { method: 'POST', headers: headers, body: JSON.stringify(reportPayload) })
+        .then(function(r3) { if (!r3.ok) { throw new Error('reports ' + r3.status); } return true; });
+      });
     })
-    .then(function(res) { if (!res.ok) throw new Error('Report insert failed: ' + res.status); onSuccess(); })
+    .then(function() { onSuccess(); })
     .catch(function(err) { onError(err); });
   }
 
@@ -1181,7 +1212,7 @@
     btn.disabled = true; btn.textContent = 'Submitting...';
     submitToSupabase(collectPayload(),
       function() { document.getElementById('progressWrap').style.display = 'none'; showScreen('screenThankYou'); window.scrollTo(0, 0); },
-      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'Submission failed. Please check your connection and try again. Error: ' + err.message; }
+      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'We could not save your answers just now. They are stored on this device. Please keep this window open and let us know, and our team will make sure they are received.'; }
     );
   };
 
