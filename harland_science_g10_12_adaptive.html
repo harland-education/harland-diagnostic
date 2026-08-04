@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=science_g10_12_adaptive date=2026-07-25 sha256=7dfadd172a94 -->
+<!-- HARLAND-BUILD slug=science_g10_12_adaptive date=2026-08-04 sha256=0de1c1ab1ac6 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -162,7 +162,7 @@
     .q-option.selected { border-color: var(--gold-dark); background: var(--gold-pale); }
     .q-option-letter { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--gold-dark); flex-shrink: 0; width: 18px; }
     .q-option-text { font-size: 15px; line-height: 1.45; color: var(--ink); }
-    .section-head { font-family: var(--font-display); font-weight: 400; font-size: 22px; color: var(--ink); margin: 28px 0 6px; }
+    
     .card-missing { outline: 2px solid var(--error); outline-offset: 2px; border-radius: 12px; }
 
     /* --- science subject/confidence pickers + report bars --- */
@@ -175,12 +175,20 @@
     .sci-pick-sub { font-size:13.5px; color:var(--slate); line-height:1.45; display:block; }
     .sci-check { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:6px; border:2px solid var(--border-soft); margin-right:10px; vertical-align:middle; font-size:14px; color:#FFFFFF; background:transparent; }
     .sci-pick.selected .sci-check { background:var(--gold-dark); border-color:var(--gold-dark); }
-    .profile-row { margin:14px 0; }
-    .profile-label { display:flex; justify-content:space-between; font-size:14px; color:var(--ink); margin-bottom:5px; }
-    .profile-track { height:10px; background:var(--cream-deep); border-radius:6px; overflow:hidden; }
-    .profile-fill { height:100%; background:var(--gold); border-radius:6px; }
-    .readiness-card { background:var(--gold-pale); border:1px solid var(--gold-light); border-radius:12px; padding:18px 20px; margin:16px 0; }
+    
+    
+    
+    
+    
     .readiness-card h4 { font-family:var(--font-display); font-weight:400; font-size:19px; color:var(--gold-dark); margin:0 0 8px; }
+
+    .integrity-card{border-left:3px solid var(--gold-dark);background:#FBF8F0;padding:16px 18px;border-radius:2px}
+    .written-card textarea{width:100%;min-height:120px;font-family:inherit;font-size:15px;line-height:1.6;
+      padding:12px 14px;border:1px solid #d9d0c0;border-radius:2px;background:#fff;color:var(--ink);resize:vertical}
+    .written-card textarea:focus{outline:none;border-color:var(--gold-dark)}
+    .written-hint{font-size:13.5px;color:#6b6257;margin:6px 0 10px;line-height:1.55}
+    .probe-recall{background:#FBF8F0;border:1px solid #EBE2D0;padding:12px 14px;margin:8px 0 12px;border-radius:2px;font-size:14.5px;line-height:1.6}
+    .probe-recall .probe-chose{color:var(--gold-dark);font-weight:500}
 </style><body>
   <header class="masthead">
     <div class="masthead-inner">
@@ -223,16 +231,19 @@
       <div class="field-error" id="subjectError">Please choose at least one option.</div>
     </div>
 
+    <div class="info-card integrity-card" data-integrity-notice style="margin-bottom:22px;">
+      <p><strong>Before you begin.</strong> This diagnostic works best when it sees the real you. Please work on your own, without AI tools, notes, or help from others. There are no grades here and nothing to lose: an answer you guess or get help with can place you in lessons that don't fit, and that costs you time in the classes that follow. Do your best, be honest with yourself, and let the test do its job.</p>
+    </div>
     <div class="field-block">
-      <div class="field-label">HOW DO YOU FEEL ABOUT SCIENCE RIGHT NOW?</div>
-      <div class="field-hint" style="margin-bottom:14px;">This just sets a starting point. The questions adapt to you as you go, so it is fine if you are not sure.</div>
+      <div class="field-label">WHICH GRADE ARE YOU IN?</div>
+      <div class="field-hint" style="margin-bottom:14px;">This just sets a starting point. It is not a guess about how good you are, and there is no wrong choice. The questions adapt to you as you go.</div>
       <div class="sci-pick-group" id="confidenceGroup">
-        <button type="button" class="sci-pick" data-conf="10"><span class="sci-pick-title">Still building my foundation</span><span class="sci-pick-sub">I am working on the core ideas and find some science topics hard.</span></button>
-        <button type="button" class="sci-pick" data-conf="11"><span class="sci-pick-title">Comfortable at my grade level</span><span class="sci-pick-sub">I can handle most of what we cover in class.</span></button>
-        <button type="button" class="sci-pick" data-conf="12"><span class="sci-pick-title">Confident and ready to stretch</span><span class="sci-pick-sub">I find science fairly easy and enjoy harder, multi-step problems.</span></button>
-        <button type="button" class="sci-pick" data-conf="0"><span class="sci-pick-title">I am not sure</span><span class="sci-pick-sub">Let the diagnostic find the best level for me.</span></button>
+        <button type="button" class="sci-pick" data-conf="10"><span class="sci-pick-title">Grade 10</span></button>
+        <button type="button" class="sci-pick" data-conf="11"><span class="sci-pick-title">Grade 11</span></button>
+        <button type="button" class="sci-pick" data-conf="12"><span class="sci-pick-title">Grade 12</span></button>
+        <button type="button" class="sci-pick" data-conf="0"><span class="sci-pick-title">I am not sure</span><span class="sci-pick-sub">Let the diagnostic find the best starting point.</span></button>
       </div>
-      <div class="field-error" id="confError">Please choose where to start.</div>
+      <div class="field-error" id="confError">Please choose one to begin.</div>
     </div>
 
     <button class="btn-primary" id="btnStart">Begin Diagnostic</button>
@@ -246,53 +257,54 @@
   </section>
 
   <section class="screen" id="screenResult">
-    <div class="eyebrow">DIAGNOSTIC COMPLETE</div>
-    <h1 class="screen-title" id="resultTitle">Thank You</h1>
-    <div id="resultBody"></div>
+    <div class="eyebrow">ASSESSMENT COMPLETE</div>
+    <h1 class="screen-title">All done. Thank you.</h1>
+    <p class="lede">Your teaching team will review your responses and prepare a summary with the right starting level for you on the Harland Science ladder.</p>
+    <p class="lede" id="thankyouStatus"></p>
   </section>
 
 <script>
   var ITEM_BANK = [
     { id: 'b_l10_cell', tier: 10, strand: 'Biology', core: false, type: 'mcq', stem: 'Which structure is found in plant cells but NOT in typical animal cells?', options: [ 'Mitochondria', 'Nucleus', 'Cell membrane', 'Cell wall' ], answer: 3 },
-    { id: 'b_l10_photo', tier: 10, strand: 'Biology', core: false, type: 'mcq', stem: 'What are the main inputs a plant uses during photosynthesis?', options: [ 'Oxygen and glucose', 'Nitrogen and water', 'Carbon dioxide and water', 'Glucose and oxygen' ], answer: 2 },
+    { id: 'b_l10_photo', tier: 10, strand: 'Biology', core: false, type: 'mcq', stem: 'What are the main inputs a plant uses during photosynthesis?', options: [ 'Oxygen and glucose from air', 'Nitrogen and water from soil', 'Carbon dioxide and water', 'Glucose and oxygen from light' ], answer: 2 },
     { id: 'c_l10_molarmass_co2', tier: 10, strand: 'Chemistry', core: false, type: 'mcq', stem: 'What is the molar mass of carbon dioxide, CO2? (C = 12 g/mol, O = 16 g/mol)', options: [ '28 g/mol', '32 g/mol', '56 g/mol', '44 g/mol' ], answer: 3 },
     { id: 'c_l10_bond', tier: 10, strand: 'Chemistry', core: false, type: 'mcq', stem: 'A bond formed by the transfer of electrons from a metal to a non-metal is best described as:', options: [ 'Ionic', 'Covalent', 'Hydrogen', 'Metallic' ], answer: 0 },
     { id: 'p_l10_speed', tier: 10, strand: 'Physics', core: false, type: 'mcq', stem: 'A runner travels 100 meters in 20 seconds. What is the average speed?', options: [ '20 m/s', '5 m/s', '2000 m/s', '2 m/s' ], answer: 1 },
-    { id: 'p_l10_newton1', tier: 10, strand: 'Physics', core: false, type: 'mcq', stem: 'A book rests on a table and does not move. This is best explained because:', options: [ 'The forces on the book are balanced', 'No forces act on the book', 'Gravity does not act on the book', 'The book has no mass' ], answer: 0 },
+    { id: 'p_l10_newton1', tier: 10, strand: 'Physics', core: false, type: 'mcq', stem: 'A book rests on a table and does not move. This is best explained because:', options: [ 'The forces on the book are balanced', 'No forces act on a resting object', 'Gravity stops acting once an object rests', 'The book is too light for forces to matter' ], answer: 0 },
     { id: 'd_l10_mean', tier: 10, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A student records these values: 4, 6, 8, 10, 12. What is the mean (average)?', options: [ '40', '8', '10', '6' ], answer: 1 },
     { id: 'd_l10_rate', tier: 10, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A plant grew 12 cm over 4 days. What was its average growth rate?', options: [ '0.33 cm/day', '8 cm/day', '48 cm/day', '3 cm/day' ], answer: 3 },
     { id: 'e_l10_variable', tier: 10, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'A student tests how light color affects plant growth, measuring plant height. The INDEPENDENT variable is:', options: [ 'Plant height', 'The amount of water', 'The type of pot', 'Light color' ], answer: 3 },
-    { id: 'e_l10_control', tier: 10, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'In an experiment testing a new fertilizer, the CONTROL group should be plants that:', options: [ 'Are a different species', 'Get twice the fertilizer', 'Get no fertilizer but are otherwise treated the same', 'Get less water' ], answer: 2 },
-    { id: 'l_l10_central', tier: 10, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A passage states: \'Most of a tree\'s mass comes from carbon the tree pulls out of the air as carbon dioxide, not from the soil.\' The central idea is that a tree\'s mass comes mainly from:', options: [ 'Minerals in the soil', 'Water in the soil', 'Carbon taken from the air', 'Sunlight energy' ], answer: 2 },
+    { id: 'e_l10_control', tier: 10, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'In an experiment testing a new fertilizer, the CONTROL group should be plants that:', options: [ 'Are a different species grown alongside', 'Get twice the fertilizer so the effect is easier to see', 'Get no fertilizer but are otherwise treated the same', 'Get a smaller dose so the effect is milder' ], answer: 2 },
+    { id: 'l_l10_central', tier: 10, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A passage states: \'Most of a tree\'s mass comes from carbon the tree pulls out of the air as carbon dioxide, not from the soil.\' The central idea is that a tree\'s mass comes mainly from:', options: [ 'Minerals absorbed from the soil', 'Water drawn up from the soil', 'Carbon taken from the air', 'Sunlight stored directly as mass' ], answer: 2 },
     { id: 'b_l11_punnett', tier: 11, strand: 'Biology', core: false, type: 'mcq', stem: 'Two organisms heterozygous for a trait (Aa x Aa) are crossed. What fraction of offspring are expected to show the recessive phenotype?', options: [ '0', '3/4', '1/4', '1/2' ], answer: 2 },
     { id: 'b_l11_dogma', tier: 11, strand: 'Biology', core: false, type: 'mcq', stem: 'During protein synthesis, the correct flow of genetic information is:', options: [ 'Protein to RNA to DNA', 'DNA to RNA to protein', 'RNA to DNA to protein', 'DNA to protein to RNA' ], answer: 1 },
     { id: 'b_l11_enzyme', tier: 11, strand: 'Biology', core: false, type: 'mcq', stem: 'An enzyme-controlled reaction slows sharply when the temperature rises far above the enzyme\'s optimum. The best explanation is that the enzyme has:', options: [ 'It has been denatured, so its active site no longer fits the substrate', 'It has been used up, since enzymes are consumed in the reactions they speed up', 'It has run out of substrate', 'It has become saturated with product' ], answer: 0 },
     { id: 'c_l11_stoich_h2o', tier: 11, strand: 'Chemistry', core: false, type: 'mcq', stem: 'For the reaction 2 H2 + O2 -> 2 H2O, how many moles of water form from 4.0 mol of H2 with excess oxygen?', options: [ '4.0 mol', '2.0 mol', '8.0 mol', '1.0 mol' ], answer: 0 },
     { id: 'c_l11_molarity', tier: 11, strand: 'Chemistry', core: false, type: 'mcq', stem: 'What is the molarity of a solution made by dissolving 0.50 mol of NaCl in enough water to make 250 mL of solution?', options: [ '1.25 M', '0.125 M', '2.0 M', '0.50 M' ], answer: 2 },
-    { id: 'c_l11_trend', tier: 11, strand: 'Chemistry', core: false, type: 'mcq', stem: 'Moving left to right across a period in the periodic table, atomic radius generally:', options: [ 'Decreases, because increasing nuclear charge pulls electrons in', 'Stays the same', 'Increases, because more shells are added', 'Decreases, because electrons are removed' ], answer: 0 },
+    { id: 'c_l11_trend', tier: 11, strand: 'Chemistry', core: false, type: 'mcq', stem: 'Moving left to right across a period in the periodic table, atomic radius generally:', options: [ 'Decreases, because increasing nuclear charge pulls electrons in', 'Stays the same, since the period does not change shell count', 'Increases, because each added electron pushes the others outward', 'Decreases, because electrons are lost across a period' ], answer: 0 },
     { id: 'p_l11_fma', tier: 11, strand: 'Physics', core: false, type: 'mcq', stem: 'A net force is applied to a 2.0 kg cart, giving it an acceleration of 3.0 m/s^2. What is the net force?', options: [ '0.67 N', '6.0 N', '5.0 N', '1.5 N' ], answer: 1 },
     { id: 'p_l11_ke', tier: 11, strand: 'Physics', core: false, type: 'mcq', stem: 'What is the kinetic energy of a 4.0 kg object moving at 3.0 m/s?', options: [ '18 J', '12 J', '6 J', '36 J' ], answer: 0 },
     { id: 'p_l11_ohms', tier: 11, strand: 'Physics', core: false, type: 'mcq', stem: 'A current of 2.0 A flows through a 5.0 ohm resistor. What is the voltage across it?', options: [ '7 V', '2.5 V', '10 V', '0.4 V' ], answer: 2 },
     { id: 'd_l11_pctchange', tier: 11, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A population rises from 200 to 250. What is the percent increase?', options: [ '20%', '125%', '50%', '25%' ], answer: 3 },
-    { id: 'd_l11_corr', tier: 11, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A scatter plot shows points rising together except one point far below the trend. That single point is best described as:', options: [ 'The slope', 'The mean', 'A control', 'An outlier' ], answer: 3 },
-    { id: 'e_l11_confound', tier: 11, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'A study finds students who eat breakfast score higher on tests. Before concluding breakfast causes higher scores, the biggest concern is:', options: [ 'Nothing important, since the two groups clearly differ in their scores', 'Other factors (like sleep, income, or study habits) may differ between the two groups', 'The study should have measured students\' weight instead of test scores', 'Breakfast must contain a chemical that directly boosts memory' ], answer: 1 },
-    { id: 'l_l11_claim_evidence', tier: 11, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A report says: \'The drug group improved more than the placebo group, but the study had only 8 participants.\' The note about 8 participants is best read as:', options: [ 'Irrelevant to the conclusion', 'Evidence the placebo worked', 'Strong proof the drug works', 'A limitation that weakens how much we can conclude' ], answer: 3 },
+    { id: 'd_l11_corr', tier: 11, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A scatter plot shows points rising together except one point far below the trend. That single point is best described as:', options: [ 'The slope of the line of best fit', 'The mean of the y values', 'A control point used for comparison', 'An outlier' ], answer: 3 },
+    { id: 'e_l11_confound', tier: 11, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'A study finds students who eat breakfast score higher on tests. Before concluding breakfast causes higher scores, the biggest concern is:', options: [ 'Nothing important, because the difference in scores is large and consistent enough to trust', 'Other factors (like sleep, income, or study habits) may differ between the two groups', 'The study should have measured how much students ate rather than whether they ate', 'Breakfast must contain a chemical that directly boosts memory recall' ], answer: 1 },
+    { id: 'l_l11_claim_evidence', tier: 11, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A report says: \'The drug group improved more than the placebo group, but the study had only 8 participants.\' The note about 8 participants is best read as:', options: [ 'Irrelevant, since the drug group still improved more', 'Evidence that the placebo itself worked', 'Strong proof that the drug is effective', 'A limitation that weakens how much we can conclude' ], answer: 3 },
     { id: 'b_l12_feedback', tier: 12, strand: 'Biology', core: false, type: 'mcq', stem: 'When blood glucose rises, insulin is released and glucose is taken into cells, lowering blood glucose. This is an example of:', options: [ 'Positive feedback amplifying the change', 'A genetic mutation', 'Negative feedback restoring a set point', 'Random fluctuation' ], answer: 2 },
-    { id: 'b_l12_mutation', tier: 12, strand: 'Biology', core: false, type: 'mcq', stem: 'A point mutation changes a single DNA base within a protein-coding gene, yet the protein produced is unchanged. The best explanation is:', options: [ 'The mutation was repaired instantly', 'The genetic code is redundant, so different codons can specify the same amino acid', 'Proteins are not made from DNA', 'The cell skipped translation' ], answer: 1 },
+    { id: 'b_l12_mutation', tier: 12, strand: 'Biology', core: false, type: 'mcq', stem: 'A point mutation changes a single DNA base within a protein-coding gene, yet the protein produced is unchanged. The best explanation is:', options: [ 'The cell detected the error and repaired the gene before that protein was assembled', 'The genetic code is redundant, so different codons can specify the same amino acid', 'Proteins are built from RNA alone, so DNA changes do not matter', 'The cell skipped translation for that gene' ], answer: 1 },
     { id: 'c_l12_limiting_nh3', tier: 12, strand: 'Chemistry', core: false, type: 'mcq', stem: 'For N2 + 3 H2 -> 2 NH3, you start with 1.0 mol N2 and 2.0 mol H2. How many moles of NH3 can form?', options: [ '2.00 mol', '1.33 mol', '0.67 mol', '3.00 mol' ], answer: 1 },
     { id: 'c_l12_dilution', tier: 12, strand: 'Chemistry', core: false, type: 'mcq', stem: 'Using M1V1 = M2V2, 50 mL of 6.0 M HCl is diluted to a final volume of 300 mL. The final concentration is:', options: [ '1.0 M', '2.0 M', '0.5 M', '36 M' ], answer: 0 },
-    { id: 'c_l12_equilibrium', tier: 12, strand: 'Chemistry', core: false, type: 'mcq', stem: 'For the exothermic equilibrium N2 + 3H2 <-> 2NH3, increasing the temperature will:', options: [ 'Shift the equilibrium toward products (more NH3)', 'Shift the equilibrium toward reactants (less NH3)', 'Have no effect on the equilibrium', 'Stop the reaction entirely' ], answer: 1 },
-    { id: 'p_l12_energy_v', tier: 12, strand: 'Physics', core: false, type: 'mcq', stem: 'A ball is dropped from rest at a height of 5.0 m. Using energy conservation (g = 10 m/s^2, ignore air resistance), its speed just before hitting the ground is about:', options: [ '10.0 m/s', '7.1 m/s', '5.0 m/s', '100 m/s' ], answer: 0 },
+    { id: 'c_l12_equilibrium', tier: 12, strand: 'Chemistry', core: false, type: 'mcq', stem: 'For the exothermic equilibrium N2 + 3H2 <-> 2NH3, increasing the temperature will:', options: [ 'Shift the equilibrium toward products, since heat speeds it up', 'Shift the equilibrium toward reactants (less NH3)', 'Have no effect, because heat is not a reactant', 'Stop the reaction once equilibrium is reached' ], answer: 1 },
+    { id: 'p_l12_energy_v', tier: 12, strand: 'Physics', core: false, type: 'mcq', stem: 'A ball is dropped from rest at a height of 5.0 m. Using energy conservation (g = 10 m/s^2, ignore air resistance), its speed just before hitting the ground is about:', options: [ '10.0 m/s', '7.1 m/s', '5.0 m/s', '100.0 m/s' ], answer: 0 },
     { id: 'p_l12_momentum', tier: 12, strand: 'Physics', core: false, type: 'mcq', stem: 'A 2.0 kg cart moving at 3.0 m/s collides with and sticks to a stationary 4.0 kg cart. Their common speed after the collision is:', options: [ '0.5 m/s', '1.0 m/s', '3.0 m/s', '1.5 m/s' ], answer: 1 },
     { id: 'd_l12_slope', tier: 12, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'A best-fit line passes through the points (0, 2) and (4, 10). What does its slope represent and equal?', options: [ 'The rate of change; slope = 2', 'The starting value; slope = 2', 'The total; slope = 8', 'The rate of change; slope = 0.5' ], answer: 0 },
-    { id: 'd_l12_error', tier: 12, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'Repeated measurements of the same length give 5.1, 5.2, 5.0, 5.1 cm. The small spread between repeated readings is best described as:', options: [ 'A systematic error shifting all readings one way', 'The independent variable', 'Proof the ruler is broken', 'Random error (limited precision) in the measurements' ], answer: 3 },
-    { id: 'e_l12_causal', tier: 12, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'Which design gives the strongest evidence that a treatment CAUSES an effect?', options: [ 'Observing people who already chose the treatment', 'Asking experts their opinion', 'A randomized controlled trial with a comparable control group', 'A single dramatic case study' ], answer: 2 },
-    { id: 'l_l12_evaluate', tier: 12, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'Two studies disagree: one with 30 subjects finds an effect, one with 3000 subjects finds none. Which is the more reasonable preliminary conclusion?', options: [ 'Both are equally strong', 'The 30-subject study is more trustworthy because it found something', 'Neither study can tell us anything', 'The larger study carries more weight, though the conflict warrants further investigation' ], answer: 3 },
-    { id: 'l_l10_procedure', tier: 10, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A lab procedure reads: \'Add the acid to the water slowly, never the reverse.\' Following the text, a student should:', options: [ 'Pour water into the acid quickly', 'Heat the acid before adding water', 'Add acid to water in small amounts', 'Mix equal amounts all at once' ], answer: 2 },
+    { id: 'd_l12_error', tier: 12, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'Repeated measurements of the same length give 5.1, 5.2, 5.0, 5.1 cm. The small spread between repeated readings is best described as:', options: [ 'A systematic error shifting every reading the same way', 'The independent variable being changed', 'Proof that the ruler is faulty', 'Random error (limited precision) in the measurements' ], answer: 3 },
+    { id: 'e_l12_causal', tier: 12, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'Which design gives the strongest evidence that a treatment CAUSES an effect?', options: [ 'Comparing people who already chose the treatment with those who did not', 'Asking experienced experts for their opinion', 'A randomized controlled trial with a comparable control group', 'A single dramatic and well documented case' ], answer: 2 },
+    { id: 'l_l12_evaluate', tier: 12, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'Two studies disagree: one with 30 subjects finds an effect, one with 3000 subjects finds none. Which is the more reasonable preliminary conclusion?', options: [ 'Both studies are equally strong evidence', 'The 30-subject study is more trustworthy, because finding an effect is harder than missing one', 'Neither study can tell us anything useful', 'The larger study carries more weight, though the conflict warrants further investigation' ], answer: 3 },
+    { id: 'l_l10_procedure', tier: 10, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A lab procedure reads: \'Add the acid to the water slowly, never the reverse.\' Following the text, a student should:', options: [ 'Pour the water into the acid quickly', 'Heat the acid first to speed up mixing', 'Add acid to water in small amounts', 'Mix equal amounts of both at once' ], answer: 2 },
     { id: 'e_l11_repeat', tier: 11, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'A student measures a reaction rate once and gets a value. To make the result more reliable, the best next step is to:', options: [ 'Change the equipment and try a different reaction', 'Ask a classmate for their number instead', 'Report the single value as final', 'Repeat the measurement several times and average' ], answer: 3 },
-    { id: 'd_l11_bio_context', tier: 11, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'An enzyme experiment records product formed (mg) at five temperatures, peaking at 37 C then falling. The pattern in the data is best described as:', options: [ 'No relationship with temperature', 'A peak at an optimum, then a decline', 'A straight-line decrease', 'A steady increase with temperature' ], answer: 1 },
-    { id: 'e_l12_replicate', tier: 12, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'Two labs run the same experiment and reach the same result independently. This independent replication mainly strengthens the result\'s:', options: [ 'Convenience', 'Reading level', 'Reliability and credibility', 'Cost' ], answer: 2 },
-    { id: 'l_l12_conflict', tier: 12, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A news article claims a food \'boosts brain power,\' citing one company-funded study. The most important critical question is:', options: [ 'Whether the funding source or single study could bias the claim', 'Whether the food tastes good', 'How long the article is', 'What font the article used' ], answer: 0 }
+    { id: 'd_l11_bio_context', tier: 11, strand: 'Data Analysis and Quantitative Skills', core: true, type: 'mcq', stem: 'An enzyme experiment records product formed (mg) at five temperatures, peaking at 37 C then falling. The pattern in the data is best described as:', options: [ 'No relationship between rate and temperature', 'A peak at an optimum, then a decline', 'A straight-line decrease as it warms', 'A steady increase as temperature rises' ], answer: 1 },
+    { id: 'e_l12_replicate', tier: 12, strand: 'Experimental Design and Scientific Reasoning', core: true, type: 'mcq', stem: 'Two labs run the same experiment and reach the same result independently. This independent replication mainly strengthens the result\'s:', options: [ 'Convenience for the researchers', 'Reading level of the write-up', 'Reliability and credibility', 'Cost effectiveness of the method' ], answer: 2 },
+    { id: 'l_l12_conflict', tier: 12, strand: 'Science Literacy', core: true, type: 'mcq', stem: 'A news article claims a food \'boosts brain power,\' citing one company-funded study. The most important critical question is:', options: [ 'Whether the funding source or single study could bias the claim', 'Whether the food tastes good enough for people to keep buying it', 'How long the article spends describing the study', 'What other health foods the article mentions' ], answer: 0 },
   ];
   var SB_URL = 'https://takuuqvpyqvomcfmcjoz.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRha3V1cXZweXF2b21jZm1jam96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODM2MDYsImV4cCI6MjA5MDI1OTYwNn0.X_9VXsZBO5pKlNtvP5-AL6d5LlSfjNxDSb8NZB9vO7M';
@@ -308,6 +320,14 @@
   var SUBJECT_SET = {};           /* map of subject -> true for quick lookup */
   var CORE_STRANDS = { 'Data Analysis and Quantitative Skills':1, 'Experimental Design and Scientific Reasoning':1, 'Science Literacy':1 };
 
+  /* ---- ENGINE-CONTRACT v2 (canon v5 P2) ----------------------------------
+     Evidence floor: no placement rests on fewer than EVIDENCE_FLOOR scored MCQs.
+     This instrument's exposure is subject selection, not self-selection depth: a
+     student taking ONE subject sees core(6) + that subject's items (2-3) = 8-9,
+     well under the floor. The confirmation extension is therefore FLOOR-GUARANTEED
+     (top up until the floor is met), not a fixed size. */
+  var EVIDENCE_FLOOR = 12;
+  var TIMING = { started:null, sectionStart:null, sections:[] };
   var ROUTER = {
     phase: 0,                 /* 0 none, 1 core, 2 modules, 99 done */
     selfSelected: null,
@@ -316,7 +336,7 @@
     path: [],
     tailShown: false
   };
-  var THRESH = { up: 0.75, down: 0.45 };
+  var THRESH = { up: 0.75, down: 0.40 };
 
   /* ===================== ITEM POOLS ===================== */
   function poolCore(tier) {
@@ -407,6 +427,9 @@
   function startRouter() {
     QUESTIONS = []; ROUTER.path = []; ROUTER.corrected = false; ROUTER.tailShown = false;
     ROUTER.selfSelected = SELECTED_CONF;
+    ROUTER.scoredCount = 0; ROUTER.extension = null; ROUTER.writtenShown = false;
+    ROUTER.entryMode = (SELECTED_CONF === 0) ? 'not_sure' : 'self_selected';
+    TIMING.started = new Date().getTime(); TIMING.sectionStart = TIMING.started;
     /* Phase 1: the practices core. Start tier = self-selected, or 11 (on-level) if 'not sure'. */
     var startTier = (SELECTED_CONF === 0) ? 11 : SELECTED_CONF;
     ROUTER.coreTier = startTier;
@@ -480,8 +503,138 @@
   }
 
   function enterTail() {
+    markSectionTime('modules');
+    ROUTER.scoredCount = QUESTIONS.length;   /* every QUESTIONS entry so far is a scored MCQ */
+    if (ROUTER.scoredCount < EVIDENCE_FLOOR && !ROUTER.extension) { confirmationExtension(); return; }
+    enterWritten();
+  }
+
+  /* CONFIRMATION EXTENSION (canon v5 P2), FLOOR-GUARANTEED.
+     Tops up from the ADJACENT tier until the evidence floor is met - adjacent-tier
+     core items first, then module items for the subjects the student selected, then
+     any remaining adjacent-tier item. Never re-asks an item already shown. */
+  function confirmationExtension() {
+    var need = EVIDENCE_FLOOR - ROUTER.scoredCount;
+    if (need < 4) need = 4;
+    var coreSc = scoreOf(coreItemsShown());
+    var dir = (coreSc.pct < 0.55) ? 'lower' : 'upper';
+    var tier = ROUTER.coreTier;
+    var adj = (dir === 'upper') ? (tier < 12 ? tier + 1 : tier - 1)
+                                : (tier > 10 ? tier - 1 : tier + 1);
+    var seen = {};
+    for (var i = 0; i < QUESTIONS.length; i++) seen[QUESTIONS[i].id] = true;
+    var picked = [], j;
+    var pools = [ poolCore(adj), poolModule(adj) ];
+    for (var p = 0; p < pools.length && picked.length < need; p++) {
+      for (j = 0; j < pools[p].length && picked.length < need; j++) {
+        if (seen[pools[p][j].id]) continue;
+        seen[pools[p][j].id] = true; picked.push(pools[p][j]);
+      }
+    }
+    if (picked.length < need) {           /* last resort: any unseen adjacent-tier item */
+      for (j = 0; j < ITEM_BANK.length && picked.length < need; j++) {
+        if (ITEM_BANK[j].tier !== adj || seen[ITEM_BANK[j].id]) continue;
+        seen[ITEM_BANK[j].id] = true; picked.push(ITEM_BANK[j]);
+      }
+    }
+    if (picked.length === 0) { enterWritten(); return; }
+    var copies = [];
+    for (j = 0; j < picked.length; j++) {
+      var src = picked[j];
+      copies.push({ id:src.id, tier:src.tier, strand:src.strand, core:src.core, type:src.type,
+                    stem:src.stem, options:src.options, answer:src.answer, _ext:true });
+    }
+    picked = copies;
+    ROUTER.extension = { dir: dir, from_tier: tier, probe_tier: adj,
+                         core_pct: coreSc.pct, size: picked.length, verdict: 'hold' };
+    ROUTER.path.push('extension_T' + adj);
+    for (j = 0; j < picked.length; j++) QUESTIONS.push(picked[j]);
+    ROUTER.phase = 3;
+    renderQuestions(); showStageControls();
+    var f = document.getElementById('card_' + picked[0].id);
+    if (f) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function coreItemsShown() {
+    var out = [];
+    for (var i = 0; i < QUESTIONS.length; i++) if (QUESTIONS[i].core === true) out.push(QUESTIONS[i]);
+    return out;
+  }
+  function resolveExtension() {
+    var ext = ROUTER.extension; if (!ext) return;
+    var items = [];
+    for (var i = 0; i < QUESTIONS.length; i++) if (QUESTIONS[i].tier === ext.probe_tier && QUESTIONS[i]._ext) items.push(QUESTIONS[i]);
+    var sc = scoreOf(items); ext.pct = sc.pct;
+    if (ext.dir === 'upper' && sc.pct >= THRESH.up && ROUTER.coreTier < 12) { ext.verdict = 'promote'; ROUTER.coreTier++; }
+    else if (ext.dir === 'lower' && sc.pct < THRESH.down && ROUTER.coreTier > 10) { ext.verdict = 'demote'; ROUTER.coreTier--; }
+    else ext.verdict = 'hold';
+  }
+  /* REASONING PROBES (canon v5 P2, tie-back) */
+  function buildProbes() {
+    var pool = [], i;
+    for (i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type !== 'mcq' || typeof ANSWERS[q.id] === 'undefined') continue;
+      pool.push(q);
+    }
+    if (!pool.length) return [];
+    var wrong = null, right = null;
+    for (i = pool.length - 1; i >= 0; i--) {          /* prefer the most recent items */
+      var ok = (ANSWERS[pool[i].id] === pool[i].answer);
+      if (!ok && !wrong) wrong = pool[i];
+      if (ok && !right) right = pool[i];
+    }
+    var picks = [];
+    if (wrong) picks.push(wrong);
+    if (right && picks.length < 2) picks.push(right);
+    for (i = pool.length - 1; i >= 0 && picks.length < 2; i--) {
+      var dup = false; for (var k = 0; k < picks.length; k++) if (picks[k].id === pool[i].id) dup = true;
+      if (!dup) picks.push(pool[i]);
+    }
+    var out = [];
+    for (i = 0; i < picks.length; i++) {
+      var src = picks[i];
+      out.push({ id: 'probe_' + src.id, type: 'reasoning_probe', _written: true, strand: src.strand,
+                 srcId: src.id, srcStem: src.stem, srcChoice: src.options[ANSWERS[src.id]],
+                 stem: '<strong>Explain your thinking.</strong> In a sentence or two, say why you chose that answer.',
+                 placeholder: 'Because...' });
+    }
+    return out;
+  }
+  /* PRODUCTION TASK. Keyed to the resolved tier, in the genre senior science works in:
+     short explain-and-justify reasoning. Each prompt targets a misconception this bank
+     probes. Never auto-scored; corroborates, never re-scores placement (P11). */
+  var PRODUCTION_PROMPTS = {
+    10: { id:'prod_s10_conservation',
+          stem:'<strong>Explain and justify.</strong> A student burns a piece of magnesium ribbon in air and finds the white powder left behind weighs MORE than the ribbon did. They conclude that mass was created. Explain what actually happened to the mass, and why the powder is heavier. Then explain what you would measure to show that mass was conserved.' },
+    11: { id:'prod_s11_enzyme',
+          stem:'<strong>Explain and justify.</strong> An enzyme-controlled reaction speeds up as temperature rises, peaks near 37 degrees Celsius, then falls sharply. A student says the enzyme "gets used up" at high temperature. Explain what is really happening to the enzyme, and why the rate falls rather than levelling off.' },
+    12: { id:'prod_s12_causation',
+          stem:'<strong>Explain and justify.</strong> A study reports that people who take a supplement have fewer colds than people who do not. The manufacturer claims the supplement prevents colds. Explain whether the study supports that claim. Then describe the study design that WOULD support it, and say why that design is stronger.' }
+  };
+  function buildProduction() {
+    var lv = ROUTER.coreTier || 11;
+    var p = PRODUCTION_PROMPTS[lv] || PRODUCTION_PROMPTS[11];
+    return { id: p.id, type: 'production', _written: true, bandAtPrompt: lv, stem: p.stem,
+             placeholder: 'Write your explanation here.',
+             hint: 'Aim for about 10 to 15 minutes. Write as much as you need - taking longer is fine and is never counted against you.' };
+  }
+  function enterWritten() {
+    if (ROUTER.writtenShown) { return; }
+    markSectionTime(ROUTER.extension ? 'extension' : 'modules');
+    ROUTER.scoredCount = QUESTIONS.length;
+    ROUTER.writtenShown = true;
+    var probes = buildProbes();
+    for (var i = 0; i < probes.length; i++) QUESTIONS.push(probes[i]);
+    QUESTIONS.push(buildProduction());
     ROUTER.phase = 99; ROUTER.tailShown = true;
-    showStageControls();
+    renderQuestions(); showStageControls();
+    if (probes.length) { var a = document.getElementById('card_' + probes[0].id); if (a) a.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  }
+
+  function markSectionTime(label) {
+    var now = new Date().getTime();
+    if (TIMING.sectionStart !== null) TIMING.sections.push({ section: label, seconds: Math.round((now - TIMING.sectionStart) / 1000) });
+    TIMING.sectionStart = now;
   }
 
   function showStageControls() {
@@ -493,7 +646,11 @@
 
   function missingInVisible() {
     var miss = [];
-    for (var i = 0; i < QUESTIONS.length; i++) { var q = QUESTIONS[i]; if (q.type === 'mcq' && typeof ANSWERS[q.id] === 'undefined') miss.push(q.id); }
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq' && typeof ANSWERS[q.id] === 'undefined') miss.push(q.id);
+      else if (q._written && (typeof ANSWERS[q.id] !== 'string' || ANSWERS[q.id].replace(/^\s+|\s+$/g,'').length < 15)) miss.push(q.id);
+    }
     return miss;
   }
   function flashMissing(ids) {
@@ -507,6 +664,7 @@
     if (ROUTER.phase === 1) advanceCore();
     else if (ROUTER.phase === 15) enterModules();
     else if (ROUTER.phase === 2) enterTail();
+    else if (ROUTER.phase === 3) { resolveExtension(); enterWritten(); }
   };
 
   /* ===================== RENDER ===================== */
@@ -516,6 +674,21 @@
     var n = 0;
     for (var i = 0; i < QUESTIONS.length; i++) {
       var q = QUESTIONS[i]; n++;
+      if (q._written) {
+        n--;
+        html += '<div class="question-card written-card" id="card_' + q.id + '">';
+        html += '<div class="q-number">WRITTEN RESPONSE</div>';
+        html += '<div class="q-stem">' + q.stem + '</div>';
+        if (q.type === 'reasoning_probe' && q.srcStem) {
+          html += '<div class="probe-recall">Earlier you were asked: ' + q.srcStem +
+                  '<br>You chose: <span class="probe-chose">' + q.srcChoice + '</span></div>';
+        }
+        if (q.hint) html += '<div class="written-hint">' + q.hint + '</div>';
+        var wv = (typeof ANSWERS[q.id] === 'string') ? ANSWERS[q.id] : '';
+        html += '<textarea data-wq="' + q.id + '" placeholder="' + q.placeholder + '">' + wv + '</textarea>';
+        html += '</div>';
+        continue;
+      }
       html += '<div class="question-card" id="card_' + q.id + '">';
       html += '<div class="q-number">QUESTION ' + n + '</div>';
       html += '<div class="q-stem">' + q.stem + '</div>';
@@ -529,6 +702,10 @@
       html += '</div></div>';
     }
     host.innerHTML = html;
+    var areas = host.querySelectorAll('.written-card textarea');
+    for (var w = 0; w < areas.length; w++) {
+      (function(el){ el.oninput = function(){ ANSWERS[el.getAttribute('data-wq')] = el.value; }; })(areas[w]);
+    }
     var opts = host.querySelectorAll('.q-option');
     for (var k = 0; k < opts.length; k++) {
       (function(el) {
@@ -637,6 +814,30 @@
         rawResponses[q.id] = chosen;
       }
     }
+    /* written evidence: never auto-scored, corroborates but never re-scores (P11) */
+    var probesOut = [], productionOut = null;
+    for (var w = 0; w < QUESTIONS.length; w++) {
+      var wq = QUESTIONS[w];
+      if (wq.type === 'reasoning_probe') {
+        probesOut.push({ probe_id: wq.id, source_item: wq.srcId, source_stem: wq.srcStem,
+                         student_chose: wq.srcChoice, strand: wq.strand,
+                         response: (typeof ANSWERS[wq.id] === 'string') ? ANSWERS[wq.id] : '' });
+      } else if (wq.type === 'production') {
+        productionOut = { prompt_id: wq.id, band_at_prompt: wq.bandAtPrompt,
+                          response: (typeof ANSWERS[wq.id] === 'string') ? ANSWERS[wq.id] : '' };
+      }
+    }
+    markSectionTime('written');
+    rawResponses.reasoning_probes = probesOut;
+    rawResponses.production = productionOut;
+    rawResponses.timing = { total_seconds: TIMING.started ? Math.round((new Date().getTime() - TIMING.started) / 1000) : null,
+                            sections: TIMING.sections };
+    rawResponses.entry_mode = ROUTER.entryMode;
+    rawResponses.selected_grade = (SELECTED_CONF === 0) ? 'unsure' : String(SELECTED_CONF);
+    rawResponses.subjects_selected = SELECTED_SUBJECTS;
+    rawResponses.evidence_floor = EVIDENCE_FLOOR;
+    rawResponses.scored_mcq_count = ROUTER.scoredCount;
+    rawResponses.confirmation_extension = ROUTER.extension;
     preferences.level_analysis = buildLevelAnalysis();
     return {
       student_id: STUDENT_ID, student_name: studentName,
@@ -646,26 +847,7 @@
     };
   }
 
-  function renderResult(la) {
-    var html = '';
-    html += '<p class="lede">Thank you for completing the Harland Science Diagnostic. Your responses have been recorded and your teacher will review them. Here is a summary of what this diagnostic found.</p>';
-    html += '<div class="readiness-card"><h4>Overall science level</h4><p style="margin:0;">Your work placed you at the <strong>' + la.routed_tier + '</strong> across the science competencies. ' + la.anchor_vs_routed + '</p></div>';
-
-    /* per-dimension profile bars */
-    html += '<h3 class="section-head">Your competency profile</h3>';
-    var order = ['Biology','Chemistry','Physics','Data Analysis and Quantitative Skills','Experimental Design and Scientific Reasoning','Science Literacy'];
-    for (var i = 0; i < order.length; i++) {
-      var s = order[i]; var d = la.by_dimension[s];
-      if (!d) continue;
-      var pct = Math.round(d.pct * 100);
-      html += '<div class="profile-row"><div class="profile-label"><span>' + s + '</span><span>' + d.correct + ' / ' + d.total + '</span></div>' +
-              '<div class="profile-track"><div class="profile-fill" style="width:' + pct + '%;"></div></div></div>';
-    }
-
-    html += '<div class="readiness-card"><h4>AP and IB readiness</h4><p style="margin:0;">' + la.ap_ib_readiness + '</p></div>';
-    html += '<p class="field-hint" style="margin-top:18px;">This is a starting point for a conversation with your teacher, not a final placement. The diagnostic measures the core reasoning skills that every science depends on, alongside your knowledge in the subjects you chose.</p>';
-    document.getElementById('resultBody').innerHTML = html;
-  }
+  
 
   document.getElementById('btnSubmit').onclick = function() {
     var miss = missingInVisible();
@@ -673,12 +855,15 @@
     var btn = document.getElementById('btnSubmit');
     btn.disabled = true; btn.textContent = 'Submitting...';
     var payload = collectPayload();
-    var la = payload.preferences.level_analysis;
     submitToSupabase(payload, function() {
-      renderResult(la); showScreen('screenResult');
+      var t = document.getElementById('thankyouStatus');
+      if (t) t.textContent = 'Your responses have been received. You may close this window.';
+      showScreen('screenResult');
     }, function(err) {
-      /* even if submission fails, show the student their result; log nothing sensitive */
-      renderResult(la); showScreen('screenResult');
+      /* honest failure: never report success the data did not achieve */
+      var t = document.getElementById('thankyouStatus');
+      if (t) t.textContent = 'Your answers are saved on this device. Our team will follow up to complete the submission.';
+      showScreen('screenResult');
     });
   };
 
