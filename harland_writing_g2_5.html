@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- HARLAND-BUILD slug=writing_g2_5 date=2026-08-04 sha256=4f23dc55a46d -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -132,6 +133,7 @@
     .rec-stop:hover { background: #862020; }
     .rec-status { color: var(--slate); font-size: 13px; letter-spacing: 0.02em; }
     .writing-alt { margin-top: 14px; }
+    .integrity-card { border-left: 3px solid var(--gold-dark); background: var(--gold-pale); }
     .lvl-pick-group { display: flex; flex-direction: column; gap: 12px; }
     .lvl-pick { text-align: left; background: #FFFFFF; border: 2px solid var(--border-soft); border-radius: 12px; padding: 15px 18px; cursor: pointer; transition: border-color 0.12s, background 0.12s; display: block; }
     .lvl-pick:hover { border-color: var(--gold); }
@@ -248,25 +250,43 @@
   };
 
   var QUESTIONS = [];               /* grows as blocks are revealed */
+  /* ---- ENGINE-CONTRACT v2 (canon v5 P2) ----------------------------------
+     Evidence floor: no placement rests on fewer than EVIDENCE_FLOOR scored MCQs.
+     Self-selection is the economy play; the floor and the confirmation extension are
+     what make the shorter path trustworthy. The "I am not sure" path keeps the proven
+     neutral routing block, so nothing calibrated is lost.
+     ADAPTATION: our blocks are 6 and our edge pools are 3, so every edge band lands at
+     9 - three short. A fixed-size extension would resolve a placement on 9 scored items
+     while still passing the H7 grep. This extension tops up TO the floor, drawing the
+     nearest boundary first and falling back to the level-mixed routing pool, never
+     re-asking an item. */
+  var EVIDENCE_FLOOR = 12;
+  var TIMING = { started: null, sectionStart: null, sections: [] };
   var ROUTER = {
     thresholds: { up: 0.75, down: 0.40 },   /* TUNABLE: route up at >=75%, down at <40% */
     path: [],                                /* ordered list of block keys taken */
     blockScores: {},                         /* key -> {correct,total,pct} */
     stage: 0,
     currentBlock: null,
+    entryBlock: null,                        /* the block the student self-selected into */
+    entryMode: null,                         /* 'self_selected' | 'not_sure' */
+    corrected: false,                        /* one confirmation correction max */
+    extension: null,                         /* v2: confirmation-extension record */
+    lastScoredBlock: null,                   /* v2: for probe selection */
+    writtenShown: false,                     /* v2: written section entered */
     finalProductionShown: false              /* writing+speaking appended yet? */
   };
 
   var WRITING_TIERS = {
     narrative: { id: 'w1_wg25', tier: 'narrative', band: 'Grades 2-3', domain: 'Writing Sample', topic: 'a favorite animal', type: 'text',
       text: 'Write one or two sentences. Tell which animal is your favorite and give one reason why you like it.',
-      hint: 'One or two sentences: your opinion and one reason.', required: true },
+      hint: 'One or two sentences: your opinion and one reason. Take about 10 to 15 minutes. Write as much as you want - taking longer is fine and is never counted against you.', required: true },
     opinion: { id: 'w1_wg25', tier: 'opinion', band: 'Grades 3-4', domain: 'Writing Sample', topic: 'the best season', type: 'text',
       text: 'Write a few sentences. Tell which season you think is best, give two reasons, and use a linking word like \'because\' or \'and\'.',
-      hint: 'A few sentences: your opinion, two reasons, and a linking word.', required: true },
+      hint: 'A few sentences: your opinion, two reasons, and a linking word. Take about 10 to 15 minutes. Write as much as you want - taking longer is fine and is never counted against you.', required: true },
     argument: { id: 'w1_wg25', tier: 'argument', band: 'Grades 4-5', domain: 'Writing Sample', topic: 'a change at your school', type: 'text',
       text: 'Write a short paragraph. Tell one thing you think your school should change, give reasons for your opinion, and end with a strong closing sentence.',
-      hint: 'A short paragraph: opinion, reasons, and a strong closing sentence.', required: true }
+      hint: 'A short paragraph: opinion, reasons, and a strong closing sentence. Take about 10 to 15 minutes. Write as much as you want - taking longer is fine and is never counted against you.', required: true }
   };
   var CHOSEN_WRITING_TIER = 'opinion';
 
@@ -298,19 +318,22 @@
     <p class="name-screen-desc" id="introDescEl"></p>
     <div class="info-card" id="infoCardEl"></div>
     <div style="margin-bottom: 24px;">
+      <div class="info-card integrity-card" data-integrity-notice>
+        <p><strong>Before you begin.</strong> This diagnostic works best when it sees the real you. Please work on your own, without AI tools, notes, or help from others. There are no grades here and nothing to lose: an answer you guess or get help with can place you in lessons that don't fit, and that costs you time in the classes that follow. Do your best, be honest with yourself, and let the test do its job.</p>
+      </div>
       <label class="field-label" for="studentName" id="nameLabelEl"></label>
       <input class="field-input" type="text" id="studentName" autocomplete="name" spellcheck="false">
       <div class="field-error" id="nameError">Please enter your name before continuing.</div>
       <div style="font-size:13px; color:var(--grey); margin-top:8px;" id="nameHintEl"></div>
     </div>
       <div style="margin-bottom: 26px;">
-        <div class="field-label">How much writing can you do right now?</div>
+        <div class="field-label">Which grade are you in?</div>
         <div style="font-size:13px; color:var(--slate); margin:6px 0 14px; line-height:1.5;">Pick the one that feels closest to you. It is just a starting point - the questions adjust to you as you go, so it is fine if you are not sure. If you really do not know, choose "I am not sure".</div>
         <div class="lvl-pick-group" id="lvlPickGroup">
-        <button type="button" class="lvl-pick" data-block="beginner"><span class="lvl-pick-title">I am just starting</span><span class="lvl-pick-sub">I can write a sentence and tell an opinion with a reason.</span></button>
-        <button type="button" class="lvl-pick" data-block="middle"><span class="lvl-pick-title">I can write a few sentences</span><span class="lvl-pick-sub">I can give reasons for my opinion and put my sentences in order.</span></button>
-        <button type="button" class="lvl-pick" data-block="advanced"><span class="lvl-pick-title">I can write a paragraph</span><span class="lvl-pick-sub">I can write a paragraph with reasons, linking words, and a closing.</span></button>
-        <button type="button" class="lvl-pick" data-block="routing"><span class="lvl-pick-title">I am not sure</span><span class="lvl-pick-sub">Let the questions find the best level for me.</span></button>
+        <button type="button" class="lvl-pick" data-block="beginner"><span class="lvl-pick-title">Grade 2 or Grade 3</span><span class="lvl-pick-sub">I am in Grade 2 or Grade 3.</span></button>
+        <button type="button" class="lvl-pick" data-block="middle"><span class="lvl-pick-title">Grade 4</span><span class="lvl-pick-sub">I am in Grade 4.</span></button>
+        <button type="button" class="lvl-pick" data-block="advanced"><span class="lvl-pick-title">Grade 5</span><span class="lvl-pick-sub">I am in Grade 5.</span></button>
+        <button type="button" class="lvl-pick" data-block="routing"><span class="lvl-pick-title">I am not sure</span><span class="lvl-pick-sub">Or my school is different. The questions will find the right place to start.</span></button>
         </div>
         <div class="field-error" id="lvlPickError">Please choose where to start.</div>
       </div>
@@ -438,6 +461,119 @@
 
   /* ================= ADAPTIVE ROUTER CONTROLLER ================= */
 
+  /* ---- v2 evidence floor + confirmation extension (canon v5 P2) ---------- */
+  function scoredMcqCount() {
+    var n = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq' && q._block !== 'tail' && typeof ANSWERS[q.id] !== 'undefined') n++;
+    }
+    return n;
+  }
+  function alreadyAsked(id) {
+    for (var i = 0; i < QUESTIONS.length; i++) { if (QUESTIONS[i].id === id) return true; }
+    return false;
+  }
+  function markSectionTime() {
+    var now = Date.now();
+    if (TIMING.sectionStart) TIMING.sections.push({ block: ROUTER.currentBlock, ms: now - TIMING.sectionStart });
+    TIMING.sectionStart = now;
+  }
+  /* Aim the extension at the ADJACENT band, not the global edge. Blocks group levels
+     (beginner 2-3, middle 3-4, advanced 4-5), so the map is at BLOCK granularity. */
+  var EXT_ADJACENT = {
+    beginner: { lower: 'floor',    upper: 'middle'   },
+    middle:   { lower: 'beginner', upper: 'advanced' },
+    advanced: { lower: 'middle',   upper: 'ceiling'  }
+  };
+  function confirmationExtension(pct) {
+    var need = EVIDENCE_FLOOR - scoredMcqCount();
+    if (need < 4) need = 4;                              /* canon: 4-6 targeted items */
+    var dir = (pct < 0.55) ? 'lower' : 'upper';          /* canon split, not the midpoint */
+    var map = EXT_ADJACENT[ROUTER.entryBlock];
+    var pools = [];
+    if (map && map[dir] && BLOCKS[map[dir]]) pools.push(map[dir]);
+    if (BLOCKS['routing']) pools.push('routing');        /* top-up pool, never the entry block */
+    var picked = [], seen = {};
+    for (var p = 0; p < pools.length && picked.length < need; p++) {
+      var items = BLOCKS[pools[p]].items;
+      for (var i = 0; i < items.length && picked.length < need; i++) {
+        if (seen[items[i].id]) continue;
+        if (alreadyAsked(items[i].id)) continue;
+        seen[items[i].id] = true; picked.push(items[i]);
+      }
+    }
+    if (!picked.length) { enterTail(); return; }
+    ROUTER.extension = { dir: dir, pool: pools[0], entryPct: pct, verdict: 'hold', size: picked.length };
+    loadExtension(picked);
+  }
+  function loadExtension(picked) {
+    markSectionTime();
+    ROUTER.stage++; ROUTER.currentBlock = 'extension';
+    var label = 'Section ' + ROUTER.stage;
+    for (var i = 0; i < picked.length; i++) {
+      var raw = picked[i];
+      QUESTIONS.push({
+        id: raw.id, domain: label, strand: raw.strand, level: raw.level,
+        topic: raw.topic, type: 'mcq', _block: 'extension', stem: raw.stem,
+        text: '<p><strong>Question.</strong> ' + raw.stem + '</p>',
+        source: raw.source || null, options: raw.options, answer: raw.answer
+      });
+    }
+    renderQuestions(); updateProgress();
+    var f = document.getElementById('card_' + picked[0].id);
+    if (f) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function maybeExtendThenTail(pct) {
+    ROUTER.lastScoredBlock = ROUTER.currentBlock;
+    if (!ROUTER.extension && scoredMcqCount() < EVIDENCE_FLOOR) { confirmationExtension(pct); return; }
+    enterTail();
+  }
+  /* REASONING PROBES (canon v5 P2, tie-back). Wording pitched for Grades 2-5:
+     short, concrete, and asking only for a reason. Never auto-scored (P11). */
+  function buildProbes() {
+    var pool = [], i;
+    for (i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type !== 'mcq' || q._block === 'tail') continue;
+      if (typeof ANSWERS[q.id] === 'undefined') continue;
+      if (!q.stem) continue;
+      pool.push(q);
+    }
+    if (!pool.length) return [];
+    var last = ROUTER.lastScoredBlock, inLast = [], others = [];
+    for (i = 0; i < pool.length; i++) { if (pool[i]._block === last) inLast.push(pool[i]); else others.push(pool[i]); }
+    var ordered = inLast.concat(others);
+    var wrong = null, right = null;
+    for (i = 0; i < ordered.length; i++) {
+      var ok = (ANSWERS[ordered[i].id] === ordered[i].answer);
+      if (!ok && !wrong) wrong = ordered[i];
+      if (ok && !right) right = ordered[i];
+    }
+    var picks = [];
+    if (wrong) picks.push(wrong);
+    if (right && picks.length < 2) picks.push(right);
+    for (i = 0; i < ordered.length && picks.length < 2; i++) {
+      var dup = false;
+      for (var k = 0; k < picks.length; k++) { if (picks[k].id === ordered[i].id) dup = true; }
+      if (!dup) picks.push(ordered[i]);
+    }
+    var out = [];
+    for (i = 0; i < picks.length; i++) {
+      var s = picks[i];
+      out.push({
+        id: 'probe_' + s.id, domain: 'Last part', type: 'text', _block: 'written',
+        probe: true, required: true, strand: s.strand, srcId: s.id, srcStem: s.stem,
+        srcChoice: s.options[ANSWERS[s.id]],
+        text: '<p><strong>Tell us why.</strong> Before, you were asked: <em>' + s.stem +
+              '</em> You picked: <em>' + s.options[ANSWERS[s.id]] +
+              '</em></p><p>Why did you pick that one? One or two sentences is plenty.</p>',
+        placeholder: 'I picked it because...'
+      });
+    }
+    return out;
+  }
+
   function blockToItems(blockKey, sectionLabel) {
     var blk = BLOCKS[blockKey];
     var items = [];
@@ -446,6 +582,7 @@
       items.push({
         id: raw.id, domain: sectionLabel, strand: raw.strand, level: raw.level,
         topic: raw.topic, type: 'mcq', _block: blockKey,
+        stem: raw.stem,                                   /* v2: probes tie back to the stem */
         text: '<p><strong>Question.</strong> ' + raw.stem + '</p>',
         source: raw.source || null,
         options: raw.options, answer: raw.answer
@@ -459,7 +596,10 @@
     ROUTER.path = []; ROUTER.blockScores = {}; ROUTER.stage = 0;
     ROUTER.finalProductionShown = false;
     ROUTER.selfSelected = SELECTED_START_BLOCK;   /* recorded for the report */
-    ROUTER.entryBlock = SELECTED_START_BLOCK;     /* where the student chose to start */
+    ROUTER.entryBlock = SELECTED_START_BLOCK;
+    ROUTER.entryMode = (SELECTED_START_BLOCK === 'routing') ? 'not_sure' : 'self_selected';
+    ROUTER.extension = null; ROUTER.writtenShown = false; ROUTER.corrected = false;
+    TIMING.started = Date.now(); TIMING.sectionStart = Date.now(); TIMING.sections = [];     /* where the student chose to start */
     loadBlock(SELECTED_START_BLOCK);              /* 'routing' = neutral fallback */
   }
 
@@ -530,7 +670,7 @@
       else if (pct < down && ROUTER.entryBlock === 'advanced' && !ROUTER.corrected) {
         ROUTER.corrected = true; loadBlock('middle');   /* self-selected too high -> step down to confirm */
       }
-      else enterTail();
+      else maybeExtendThenTail(pct);
       return;
     }
     if (key === 'middle') {
@@ -540,7 +680,7 @@
       else if (pct < down && ROUTER.entryBlock === 'middle' && !ROUTER.corrected) {
         ROUTER.corrected = true; loadBlock('beginner');  /* self-selected high -> step down to confirm */
       }
-      else enterTail();
+      else maybeExtendThenTail(pct);
       return;
     }
     if (key === 'beginner') {
@@ -548,11 +688,20 @@
       else if (pct >= up && ROUTER.entryBlock === 'beginner' && !ROUTER.corrected) {
         ROUTER.corrected = true; loadBlock('middle');   /* self-selected low -> step up to confirm */
       }
-      else enterTail();
+      else maybeExtendThenTail(pct);
       return;
     }
-    if (key === 'ceiling' || key === 'floor') { enterTail(); return; }
-    enterTail();
+    /* Edge probes and the extension itself also honour the floor before the tail. */
+    if (key === 'ceiling' || key === 'floor') { maybeExtendThenTail(pct); return; }
+    if (key === 'extension') {
+      if (ROUTER.extension) {
+        ROUTER.extension.verdict = (pct >= up) ? 'promote' : ((pct < down) ? 'demote' : 'hold');
+        ROUTER.extension.pct = pct;
+      }
+      ROUTER.lastScoredBlock = 'extension';
+      enterTail(); return;
+    }
+    maybeExtendThenTail(pct);
   }
 
   /* Append writing + speaking + profile, hide Next, reveal Submit. */
@@ -567,7 +716,11 @@
   }
   function enterTail() {
     if (!ROUTER.finalProductionShown) {
+      markSectionTime();
+      ROUTER.writtenShown = true;
       CHOSEN_WRITING_TIER = pickWritingTier();
+      var probes = buildProbes();                          /* v2: tie-back probes first */
+      for (var p = 0; p < probes.length; p++) QUESTIONS.push(probes[p]);
       QUESTIONS.push(WRITING_TIERS[CHOSEN_WRITING_TIER]);   /* writing first */
       for (var i = 0; i < TAIL_ITEMS.length; i++) QUESTIONS.push(TAIL_ITEMS[i]);
       ROUTER.finalProductionShown = true;
@@ -843,7 +996,7 @@
     for (var i = 0; i < QUESTIONS.length; i++) {
       var q = QUESTIONS[i];
       if (q.type === 'mcq') { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
-      else if (q.type === 'text' && q.required) { var v = ANSWERS[q.id] || ''; if (v.length < 1) missing.push(q.id); }
+      else if (q.type === 'text' && q.required) { var v = ANSWERS[q.id] || ''; if (v.trim().length < 10) missing.push(q.id); }   /* v2 P12: anti-blank. 10 not 15 - age-appropriate for Grades 2-5 */
       else if (q.type === 'scale' && q.required) { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
     }
     return missing;
@@ -859,6 +1012,7 @@
   function collectPayload() {
     var studentName = document.getElementById('studentName').value.trim();
     var mcqScores = {}; var selfRatings = {}; var preferences = {}; var rawResponses = {};
+    markSectionTime();   /* v2: close the final section before capture */
     for (var i = 0; i < QUESTIONS.length; i++) {
       var q = QUESTIONS[i];
       if (q.type === 'mcq') {
@@ -950,7 +1104,30 @@
     }
     if (cumT < 10) confidence = (confidence === 'high') ? 'medium' : confidence;
 
+    /* ---- v2 evidence capture (canon v5 P2/P12) -------------------------- */
+    var probesOut = [];
+    for (var pi = 0; pi < QUESTIONS.length; pi++) {
+      var pq = QUESTIONS[pi];
+      if (pq.type === 'text' && pq.probe) {
+        probesOut.push({ id: pq.id, source_item: pq.srcId, source_stem: pq.srcStem,
+          chose: pq.srcChoice, response: ANSWERS[pq.id] || '' });
+      }
+    }
+    rawResponses.reasoning_probes = probesOut;
+    rawResponses.production = { id: WRITING_TIERS[CHOSEN_WRITING_TIER].id,
+      tier: CHOSEN_WRITING_TIER, response: ANSWERS[WRITING_TIERS[CHOSEN_WRITING_TIER].id] || '' };
+    rawResponses.entry_mode = ROUTER.entryMode;
+    rawResponses.evidence_floor = EVIDENCE_FLOOR;
+    rawResponses.scored_mcq_count = scoredMcqCount();
+    rawResponses.confirmation_extension = ROUTER.extension;
+    rawResponses.timing = { total_ms: TIMING.started ? (Date.now() - TIMING.started) : null,
+      sections: TIMING.sections };
+
     preferences.level_analysis = {
+      evidence_floor: EVIDENCE_FLOOR,
+      scored_mcq_count: scoredMcqCount(),
+      entry_mode: ROUTER.entryMode,
+      confirmation_extension: ROUTER.extension,
       spine: 'common_core_ela',
       instrument: 'adaptive_router',
       recommended_band: band,
@@ -1113,7 +1290,7 @@
     btn.disabled = true; btn.textContent = 'Submitting...';
     submitToSupabase(collectPayload(),
       function() { document.getElementById('progressWrap').style.display = 'none'; showScreen('screenThankYou'); window.scrollTo(0, 0); },
-      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'Submission failed. Please check your connection and try again. Error: ' + err.message; }
+      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'We could not save your answers just now. They are saved on this device, so please keep this window open and tell your teacher - we will make sure they are received.'; }
     );
   };
 
