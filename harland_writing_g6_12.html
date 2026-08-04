@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=writing_g6_12 date=2026-08-04 sha256=2c785469d891 -->
+<!-- HARLAND-BUILD slug=writing_g6_12 date=2026-08-04 sha256=5269f394d05e -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -535,17 +535,23 @@
     var pools = [];
     if (map && map[dir] && BLOCKS[map[dir]]) pools.push(map[dir]);
     if (BLOCKS['routing']) pools.push('routing');        /* top-up pool, never the entry block */
-    var picked = [], seen = {};
+    /* Record where items ACTUALLY came from, not just where we aimed. When the target
+       pool is exhausted (its items were already asked) the top-up falls back to routing -
+       reporting the target as the source overstates how much of the placement rests on
+       boundary-targeted evidence. */
+    var picked = [], seen = {}, drawn = {};
     for (var p = 0; p < pools.length && picked.length < need; p++) {
       var items = BLOCKS[pools[p]].items;
       for (var i = 0; i < items.length && picked.length < need; i++) {
         if (seen[items[i].id]) continue;
         if (alreadyAsked(items[i].id)) continue;         /* routing overlaps level blocks */
         seen[items[i].id] = true; picked.push(items[i]);
+        drawn[pools[p]] = (drawn[pools[p]] || 0) + 1;   /* actual source pool */
       }
     }
     if (!picked.length) { enterTail(); return; }
-    ROUTER.extension = { dir: dir, pool: pools[0], entryPct: pct, verdict: 'hold', size: picked.length };
+    ROUTER.extension = { dir: dir, target_pool: pools[0], drawn_from: drawn,
+      entryPct: pct, verdict: 'hold', size: picked.length };
     loadExtension(picked);
   }
   function loadExtension(picked) {
