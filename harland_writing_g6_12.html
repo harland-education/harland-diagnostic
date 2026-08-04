@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=writing_g6_12 date=2026-08-04 sha256=ed03f061941d -->
+<!-- HARLAND-BUILD slug=writing_g6_12 date=2026-08-04 sha256=2c785469d891 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -298,15 +298,15 @@
     narrative: { id: 'w1_wg612', tier: 'persuasive', band: 'Grades 6-7', domain: 'Writing Sample',
       topic: 'Persuasive paragraph', type: 'text',
       text: 'Write one well-developed paragraph arguing for a change you would like to see at your school (for example, a longer lunch, a new club, or a different schedule). State your opinion clearly in a topic sentence, give at least two reasons with support, briefly acknowledge one objection, and end with a concluding sentence.',
-      hint: 'Topic sentence with your claim, two supported reasons, one objection, a conclusion.', required: true },
+      hint: 'Topic sentence with your claim, two supported reasons, one objection, a conclusion. Aim for about 10 to 15 minutes. Write as much as you need - taking longer is fine and is never counted against you.', required: true },
     opinion: { id: 'w1_wg612', tier: 'expository_analytical', band: 'Grades 8-10', domain: 'Writing Sample',
       topic: 'Analytical / expository paragraph', type: 'text',
       text: 'Choose a book, film, article, or public issue you know well. In one to two well-organized paragraphs, make a clear analytical claim about it (for example, what a work reveals, or what position a debate should take) and develop it with specific evidence. Use transitions to connect your ideas, acknowledge a reasonable opposing view, and maintain a formal style throughout.',
-      hint: 'Clear analytical claim, specific evidence, transitions, one fair counterview, formal style.', required: true },
+      hint: 'Clear analytical claim, specific evidence, transitions, one fair counterview, formal style. Aim for about 10 to 15 minutes. Write as much as you need - taking longer is fine and is never counted against you.', required: true },
     argument: { id: 'w1_wg612', tier: 'analytical_argument', band: 'Grades 11-12', domain: 'Writing Sample',
       topic: 'Sustained analytical argument', type: 'text',
       text: 'Write a sustained argument (two to three paragraphs) on a debatable question of your choice. Introduce a precise claim and establish why it matters, develop it with the most relevant evidence and reasoning, fairly represent and then rebut a significant counterargument, and close with a conclusion that articulates the wider implications. Sustain a formal, objective style and use transitions that clarify the logic of your argument.',
-      hint: 'Precise claim with significance, strongest evidence, a fair counter then rebuttal, implications in the conclusion.', required: true }
+      hint: 'Precise claim with significance, strongest evidence, a fair counter then rebuttal, implications in the conclusion. Aim for about 10 to 15 minutes. Write as much as you need - taking longer is fine and is never counted against you.', required: true }
   };
   var CHOSEN_WRITING_TIER = 'opinion';
 
@@ -1318,7 +1318,7 @@
     btn.disabled = true; btn.textContent = 'Submitting...';
     submitToSupabase(collectPayload(),
       function() { document.getElementById('progressWrap').style.display = 'none'; showScreen('screenThankYou'); window.scrollTo(0, 0); },
-      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'Submission failed. Please check your connection and try again. Error: ' + err.message; }
+      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'We could not save your answers just now. They are stored on this device, so please keep this window open and let us know - our team will make sure they are received.'; }
     );
   };
 
