@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=economics_readiness date=2026-08-04 sha256=7a76033fd9b8 -->
+<!-- HARLAND-BUILD slug=economics_readiness date=2026-08-04 sha256=fa2536bd5e00 -->
 <!-- build: TRUNK-PILOT-v1 (IB Math AA HL+SL intents) 2026-07-06 -->
 <html lang="en">
 <head>
@@ -365,9 +365,9 @@
         <div class="field-label">How much economics have you studied so far?</div>
         <div style="font-size:13px; color:var(--slate); margin:6px 0 14px; line-height:1.5;">Pick the one that feels closest to you. It is just a starting point - the questions adjust to you as you go, so it is fine if you are not sure. If you really do not know, choose "I am not sure".</div>
         <div class="lvl-pick-group" id="lvlPickGroup">
-        <button type="button" class="lvl-pick" data-block="beginner"><span class="lvl-pick-title">New to economics</span><span class="lvl-pick-sub">I am just starting out, or have picked up ideas here and there.</span></button>
-        <button type="button" class="lvl-pick" data-block="middle"><span class="lvl-pick-title">Comfortable with the basics</span><span class="lvl-pick-sub">I understand demand and supply, and basic ideas about the wider economy.</span></button>
-        <button type="button" class="lvl-pick" data-block="advanced"><span class="lvl-pick-title">Ready to be stretched</span><span class="lvl-pick-sub">I handle elasticity, market structures, and policy analysis with confidence.</span></button>
+        <button type="button" class="lvl-pick" data-block="beginner"><span class="lvl-pick-title">I have not studied economics before</span><span class="lvl-pick-sub">This would be my first course in the subject.</span></button>
+        <button type="button" class="lvl-pick" data-block="middle"><span class="lvl-pick-title">I have studied it for less than a year</span><span class="lvl-pick-sub">Part of a course, a term or two, or a related subject.</span></button>
+        <button type="button" class="lvl-pick" data-block="advanced"><span class="lvl-pick-title">I have studied it for a year or more</span><span class="lvl-pick-sub">A full course or longer, at school or elsewhere.</span></button>
         <button type="button" class="lvl-pick" data-block="routing"><span class="lvl-pick-title">I am not sure</span><span class="lvl-pick-sub">Let the diagnostic figure out the best level for me.</span></button>
         </div>
         <div class="field-error" id="lvlPickError">Please choose where to start.</div>
@@ -542,6 +542,140 @@
     return items;
   }
 
+  /* ==========================================================
+     ENGINE CONTRACT v2 (build-standards 5b) - built to spec, not cloned.
+     Rationale, recorded so future builds inherit the reasoning and not just the code:
+     self-selection is FACTUAL, never ability-framed, because P2 economy says a
+     well-placed student should pay for their own block plus a targeted extension
+     rather than the full routing block. The evidence floor and the confirmation
+     extension are what make that shorter path trustworthy.
+     ========================================================== */
+  var EVIDENCE_FLOOR = 12;   /* no placement resolves on fewer than 12 scored MCQs */
+
+  /* Adjacency at BLOCK granularity (blocks already group levels). Keys and target
+     pool names below must all name real BLOCKS entries - this instrument calls its
+     middle block 'middle', but the fleet also uses 'intermediate' and short codes,
+     so these were checked against BLOCKS rather than assumed. */
+  var EXT_ADJACENT = {
+    beginner: { lower: 'floor',    upper: 'middle'   },
+    middle:   { lower: 'beginner', upper: 'advanced' },
+    advanced: { lower: 'middle',   upper: 'ceiling'  }
+  };
+
+  function scoredMcqCount() {
+    var n = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type === 'mcq' && q.corroborating !== true) n++;
+    }
+    return n;
+  }
+
+  function alreadyAsked(id) {
+    for (var i = 0; i < QUESTIONS.length; i++) if (QUESTIONS[i].id === id) return true;
+    return false;
+  }
+
+  /* Draw unseen items from a pool. Never re-asks: re-asking corrupts both the score
+     and the student's trust in the instrument. */
+  function drawFromPool(poolKey, need, out) {
+    var blk = BLOCKS[poolKey];
+    if (!blk) return out;
+    for (var i = 0; i < blk.items.length && out.length < need; i++) {
+      var raw = blk.items[i];
+      if (alreadyAsked(raw.id)) continue;
+      out.push({ raw: raw, from: poolKey });
+    }
+    return out;
+  }
+
+  /* Floor-guaranteed top-up (5b remedy 1). Size is COMPUTED from this instrument's
+     own block sizes - a fixed size that closes the floor here would leave other
+     instruments resolving a band on 9 or 10 items while still passing the H7 grep. */
+  function confirmationExtension(blockKey, pct) {
+    var need = EVIDENCE_FLOOR - scoredMcqCount();
+    if (need < 4) need = 4;                       /* canon: extension is 4-6 items */
+    var adj = EXT_ADJACENT[blockKey] || {};
+    var target = (pct < 0.55) ? adj.lower : adj.upper;   /* canon split at 0.55, not the midpoint */
+    var picked = [];
+    if (target) picked = drawFromPool(target, need, picked);
+    if (picked.length < need) picked = drawFromPool('routing', need, picked);  /* neutral fallback */
+    var drawnFrom = {};
+    var items = [];
+    for (var i = 0; i < picked.length; i++) {
+      var raw = picked[i].raw, from = picked[i].from;
+      drawnFrom[from] = (drawnFrom[from] || 0) + 1;
+      items.push({
+        id: raw.id, domain: 'Section ' + (ROUTER.stage + 1), strand: raw.strand, level: raw.level,
+        topic: raw.topic, type: 'mcq', _block: 'extension', _drawnFrom: from,
+        text: '<p><strong>Question.</strong> ' + raw.stem + '</p>',
+        source: raw.source || null, options: raw.options, answer: raw.answer
+      });
+    }
+    /* Record where items ACTUALLY came from, not only where the extension aimed:
+       a record claiming the floor pool when nothing came from floor is false
+       teacher-facing evidence. */
+    ROUTER.extensionRecord = {
+      fired: true, from_block: blockKey, band_pct: Math.round(pct * 1000) / 1000,
+      target_pool: target || null, drawn_from: drawnFrom,
+      requested: need, drawn: items.length,
+      fell_back_to_routing: !!drawnFrom.routing
+    };
+    if (items.length === 0) { enterTail(); return; }
+    BLOCKS.extension = { label: 'Confirmation extension', items: [] };
+    ROUTER.stage++;
+    ROUTER.currentBlock = 'extension';
+    ROUTER.path.push('extension');
+    for (var j = 0; j < items.length; j++) QUESTIONS.push(items[j]);
+    renderQuestions(); updateProgress();
+    var first = document.getElementById('card_' + items[0].id);
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* Single exit from the MCQ phase. The band has already resolved on MCQ evidence
+     before anything written renders (P11). */
+  function finishMcqPhase(blockKey, pct) {
+    if (scoredMcqCount() < EVIDENCE_FLOOR && EXT_ADJACENT[blockKey]) {
+      confirmationExtension(blockKey, pct); return;
+    }
+    enterTail();
+  }
+
+  /* Reasoning probes (P2 v2 / H9). Both are tie-back items aimed at the two
+     misconceptions our own distractor_logic records as the most persistent in this
+     bank: the zero-sum view of trade (ec_rt_5 [3]) and money-cost-for-opportunity-cost
+     substitution (ec_rt_1 [2]). Written reasoning is most diagnostically legible where
+     a misconception is already known to live. These CORROBORATE only - the band has
+     resolved on MCQ evidence before this section renders (P11). */
+  var REASONING_PROBES = [
+    { id: 'probe_trade_tieback', reasoning_probe: true, tie_back: 'ec_rt_5',
+      text: '<p><strong>Explain your thinking.</strong> Earlier you were asked what happens when two countries specialise in what they produce best and then trade with each other.</p><p>Some students believe that if one country gains from trade, the other one must lose. In your own words, explain why that belief is mistaken, or what you think really happens.</p>',
+      hint: 'Write at least 15 characters. There is no single right answer, and your teacher wants to see how you reason, not a textbook definition.' },
+    { id: 'probe_oppcost_tieback', reasoning_probe: true, tie_back: 'ec_rt_1',
+      text: '<p><strong>Explain your thinking.</strong> A government uses all its available resources to build extra hospitals, and as a result builds fewer schools.</p><p>An economist would say the real cost of those hospitals is not simply the money spent. Explain what you think the real cost is, and why the money figure does not capture it.</p>',
+      hint: 'Write at least 15 characters. Explain it the way you would to a classmate.' }
+  ];
+
+  /* enterTail hands off to the written section; only the written section reveals
+     Submit, so a student cannot submit before the production evidence is asked for. */
+  function enterWritten() {
+    if (ROUTER.writtenShown) return;
+    ROUTER.writtenShown = true;
+    var firstId = null;
+    for (var i = 0; i < REASONING_PROBES.length; i++) {
+      var p = REASONING_PROBES[i];
+      QUESTIONS.push({ id: p.id, domain: 'Explain your reasoning', type: 'text', required: true,
+        reasoning_probe: true, tie_back: p.tie_back, corroborating: true,
+        text: p.text, hint: p.hint });
+      if (firstId === null) firstId = p.id;
+    }
+    renderQuestions(); updateProgress();
+    var sr = document.getElementById('submitRow');
+    if (sr) sr.style.display = 'flex';
+    var a = document.getElementById('card_' + firstId);
+    if (a) a.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function startRouter() {
     QUESTIONS = [];
     ROUTER.path = []; ROUTER.blockScores = {}; ROUTER.stage = 0;
@@ -618,7 +752,7 @@
       else if (pct < down && ROUTER.entryBlock === 'advanced' && !ROUTER.corrected) {
         ROUTER.corrected = true; loadBlock('middle');   /* self-selected too high -> step down to confirm */
       }
-      else enterTail();
+      else finishMcqPhase(key, pct);
       return;
     }
     if (key === 'middle') {
@@ -628,7 +762,7 @@
       else if (pct < down && ROUTER.entryBlock === 'middle' && !ROUTER.corrected) {
         ROUTER.corrected = true; loadBlock('beginner');  /* self-selected high -> step down to confirm */
       }
-      else enterTail();
+      else finishMcqPhase(key, pct);
       return;
     }
     if (key === 'beginner') {
@@ -636,11 +770,12 @@
       else if (pct >= up && ROUTER.entryBlock === 'beginner' && !ROUTER.corrected) {
         ROUTER.corrected = true; loadBlock('middle');   /* self-selected low -> step up to confirm */
       }
-      else enterTail();
+      else finishMcqPhase(key, pct);
       return;
     }
-    if (key === 'ceiling' || key === 'floor') { enterTail(); return; }
-    enterTail();
+    if (key === 'extension') { enterTail(); return; }   /* extension never re-routes */
+    if (key === 'ceiling' || key === 'floor') { finishMcqPhase(key, pct); return; }
+    finishMcqPhase(key, pct);
   }
 
   /* Append writing + speaking + profile, hide Next, reveal Submit. */
@@ -673,8 +808,7 @@
     }
     renderQuestions();
     updateProgress();
-    var sr = document.getElementById('submitRow');
-    if (sr) sr.style.display = 'flex';
+    /* Submit stays hidden here by design - enterWritten reveals it. */
     if (ROUTER.firstTailId) {
       var anchor = document.getElementById('card_' + ROUTER.firstTailId);
       if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -690,8 +824,15 @@
     row.id = 'stageControlRow';
     row.className = 'btn-row';
     row.style.marginTop = '8px';
+    if (ROUTER.writtenShown) { return; }   /* Submit is revealed; nothing more to offer */
     if (ROUTER.finalProductionShown) {
-      /* submit button lives in its own area already; show nothing here */
+      var wbtn = document.createElement('button');
+      wbtn.className = 'btn-primary';
+      wbtn.id = 'btnEnterWritten';
+      wbtn.textContent = 'Continue to the written section';
+      wbtn.onclick = enterWritten;
+      row.appendChild(wbtn);
+      container.appendChild(row);
       return;
     }
     var btn = document.createElement('button');
@@ -912,7 +1053,7 @@
       if (!q.required && q.type !== 'mcq') continue;
       total++;
       if (q.type === 'mcq' && typeof ANSWERS[q.id] !== 'undefined') answered++;
-      else if (q.type === 'text' && ANSWERS[q.id] && ANSWERS[q.id].length >= 1) answered++;
+      else if (q.type === 'text' && ANSWERS[q.id] && ANSWERS[q.id].trim().length >= 15) answered++;
       else if (q.type === 'scale' && typeof ANSWERS[q.id] !== 'undefined') answered++;
       else if (q.type === 'ranking') answered++;
     }
@@ -944,7 +1085,7 @@
     for (var i = 0; i < QUESTIONS.length; i++) {
       var q = QUESTIONS[i];
       if (q.type === 'mcq') { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
-      else if (q.type === 'text' && q.required) { var v = ANSWERS[q.id] || ''; if (v.length < 1) missing.push(q.id); }
+      else if (q.type === 'text' && q.required) { var v = ANSWERS[q.id] || ''; if (v.trim().length < 15) missing.push(q.id); }
       else if (q.type === 'scale' && q.required) { if (typeof ANSWERS[q.id] === 'undefined') missing.push(q.id); }
     }
     return missing;
@@ -978,6 +1119,19 @@
         preferences[q.id] = order;
         rawResponses[q.id] = order;
       }
+    }
+
+    /* P2 v2 runtime assertion. H7 only greps that EVIDENCE_FLOOR is declared; it cannot
+       tell whether the engine achieved it. This records the achieved count against the
+       floor on every single submission, so a shortfall is visible in the data rather than
+       inferred from the code. */
+    var _scored = scoredMcqCount();
+    rawResponses.scored_mcq_count = _scored;
+    rawResponses.evidence_floor = EVIDENCE_FLOOR;
+    rawResponses.floor_met = (_scored >= EVIDENCE_FLOOR);
+    rawResponses.extension_record = ROUTER.extensionRecord || { fired: false };
+    if (_scored < EVIDENCE_FLOOR) {
+      try { console.error('P2 EVIDENCE FLOOR NOT MET: ' + _scored + ' scored MCQs against a floor of ' + EVIDENCE_FLOOR + ' (path ' + (ROUTER.path || []).join(' -> ') + ')'); } catch (e) {}
     }
 
     /* ===== ADAPTIVE ROUTER PLACEMENT ENGINE (economics, levels 1-6) =====
@@ -1101,7 +1255,20 @@
       estimated_readiness_level: indicatedLabel + ' (provisional, to be confirmed by teacher)',
       confidence: confidence,
       confirm_with_teacher: true,
-      flags: flags,
+      flags: (function(){
+        var f = flags.slice();
+        if (rawResponses.floor_met === false) {
+          f.push('EVIDENCE FLOOR NOT MET: band resolved on ' + rawResponses.scored_mcq_count +
+                 ' scored items against a floor of ' + EVIDENCE_FLOOR + ' - treat the level as unconfirmed');
+        }
+        if (rawResponses.extension_record && rawResponses.extension_record.fired) {
+          var er = rawResponses.extension_record;
+          f.push('Confirmation extension fired from ' + er.from_block + ' at ' +
+                 Math.round(er.band_pct * 100) + '%, aimed at ' + (er.target_pool || 'routing') +
+                 ', drew ' + er.drawn + ' item(s)');
+        }
+        return f;
+      })(),
       report_emphasis: intent().emphasis,
       report_emphasis_note: (EMPHASIS_NOTE[intent().emphasis] || EMPHASIS_NOTE.even),
       self_selected_start: ROUTER.selfSelected || 'not recorded',
