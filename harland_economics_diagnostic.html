@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=economics_readiness date=2026-08-04 sha256=fa2536bd5e00 -->
+<!-- HARLAND-BUILD slug=economics_readiness date=2026-08-05 sha256=2c4b423ab3dc -->
 <!-- build: TRUNK-PILOT-v1 (IB Math AA HL+SL intents) 2026-07-06 -->
 <html lang="en">
 <head>
@@ -589,6 +589,45 @@
     return out;
   }
 
+  /* Which way is the missing evidence?
+
+     The flat 0.55 split assumes the open question is "which side of this band is the
+     student on". That only holds once the band itself is secure. If the placement
+     ladder's cumulative gate ALREADY FAILS at the lowest level this student has been
+     tested at, the open question is not how much further they can stretch - it is how
+     far down their foundation actually sits, and harder items cannot answer it.
+
+     Aiming upward in that state spends the whole extension confirming a ceiling the
+     student has not reached, and then reports "below the emerging level" - i.e. below
+     Level 1 - on zero foundational evidence, because levels 1 and 2 were never
+     presented. Observed on a real run: 5/8 at Level 3 and 2/4 at Level 4 rendered as
+     "Below the emerging level (foundational consolidation strongly advised)".
+
+     At the lowest tested level the cumulative set IS that level's own set, so this
+     mirrors the placement engine's 70% cumulative gate exactly rather than
+     approximating it.
+
+     Ratified by Phil 2026-08-04. Routed to the orchestrator as a proposed
+     generalisation of the flat 0.55 split in build-standards 5b, not a silent
+     divergence from it. */
+  function lowestTestedLevelGateFails() {
+    var per = {}, i, lv;
+    for (i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      if (q.type !== 'mcq' || !q.level || q.corroborating === true) continue;
+      if (!per[q.level]) per[q.level] = { c: 0, t: 0 };
+      per[q.level].t++;
+      if (typeof ANSWERS[q.id] !== 'undefined' && ANSWERS[q.id] === q.answer) per[q.level].c++;
+    }
+    var levels = [];
+    for (lv in per) { if (per.hasOwnProperty(lv)) levels.push(parseInt(lv, 10)); }
+    if (!levels.length) return null;
+    levels.sort(function (a, b) { return a - b; });
+    var lowest = levels[0], o = per[lowest];
+    return { level: lowest, correct: o.c, total: o.t,
+             fails: (o.t > 0 && (o.c / o.t) < 0.70) };
+  }
+
   /* Floor-guaranteed top-up (5b remedy 1). Size is COMPUTED from this instrument's
      own block sizes - a fixed size that closes the floor here would leave other
      instruments resolving a band on 9 or 10 items while still passing the H7 grep. */
@@ -596,7 +635,19 @@
     var need = EVIDENCE_FLOOR - scoredMcqCount();
     if (need < 4) need = 4;                       /* canon: extension is 4-6 items */
     var adj = EXT_ADJACENT[blockKey] || {};
-    var target = (pct < 0.55) ? adj.lower : adj.upper;   /* canon split at 0.55, not the midpoint */
+    var low = lowestTestedLevelGateFails();
+    var target, aimReason;
+    if (low && low.fails && adj.lower) {
+      target = adj.lower;
+      aimReason = 'cumulative gate failed at the lowest level tested (L' + low.level + ' ' +
+                  low.correct + '/' + low.total + ') - aimed downward for foundational evidence';
+    } else if (pct < 0.55) {
+      target = adj.lower;
+      aimReason = 'band below the 0.55 split - aimed at the lower boundary';
+    } else {
+      target = adj.upper;
+      aimReason = 'band at or above the 0.55 split - aimed at the upper boundary';
+    }
     var picked = [];
     if (target) picked = drawFromPool(target, need, picked);
     if (picked.length < need) picked = drawFromPool('routing', need, picked);  /* neutral fallback */
@@ -618,6 +669,8 @@
     ROUTER.extensionRecord = {
       fired: true, from_block: blockKey, band_pct: Math.round(pct * 1000) / 1000,
       target_pool: target || null, drawn_from: drawnFrom,
+      aim_reason: aimReason,
+      lowest_tested_level: low ? { level: low.level, correct: low.correct, total: low.total, gate_failed: low.fails } : null,
       requested: need, drawn: items.length,
       fell_back_to_routing: !!drawnFrom.routing
     };
@@ -1265,7 +1318,7 @@
           var er = rawResponses.extension_record;
           f.push('Confirmation extension fired from ' + er.from_block + ' at ' +
                  Math.round(er.band_pct * 100) + '%, aimed at ' + (er.target_pool || 'routing') +
-                 ', drew ' + er.drawn + ' item(s)');
+                 ', drew ' + er.drawn + ' item(s). Reason: ' + (er.aim_reason || 'n/a'));
         }
         return f;
       })(),
