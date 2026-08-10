@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=economics_readiness date=2026-08-05 sha256=2c4b423ab3dc -->
+<!-- HARLAND-BUILD slug=economics_readiness date=2026-08-10 sha256=7a361b1168cc -->
 <!-- build: TRUNK-PILOT-v1 (IB Math AA HL+SL intents) 2026-07-06 -->
 <html lang="en">
 <head>
@@ -501,7 +501,15 @@
       html += '<div class="question-card" id="card_' + escHtml(q.id) + '">';
       html += '<div class="question-number">Question ' + qNum + (q.required || q.type === 'mcq' ? ' <span class="req">*</span>' : '') + '</div>';
       /* Question text -- allow HTML for emphasis and line breaks */
-      html += '<div class="question-text">' + q.text + '</div>';
+      /* Defence in depth. A missing question body must never reach a student as the literal
+         word "undefined". Fall back to the raw stem, and make the authoring fault loud rather
+         than silent - a fallback that hides the defect is worse than no fallback. */
+      var qBody = q.text;
+      if (!qBody) {
+        qBody = q.stem ? ('<p><strong>Question.</strong> ' + q.stem + '</p>') : '';
+        try { console.error('QUESTION BODY MISSING for item ' + q.id + ' - rendered from stem fallback. This is an authoring defect, not a display quirk.'); } catch (e) {}
+      }
+      html += '<div class="question-text">' + qBody + '</div>';
       if (q.source) {
         html += '<div class="source-block">' + q.source;
         if (q.sourceAttr) { html += '<div class="source-attr">' + escHtml(q.sourceAttr) + '</div>'; }
@@ -842,7 +850,13 @@
       var firstTailId = null;
       for (var t = 0; t < tailItems.length; t++) {
         var ti = tailItems[t];
+        /* The renderer reads q.text. Trunk items get it from blockToItems, which wraps
+           raw.stem; the tail items are pushed straight through, so they must do the same
+           wrapping here. Omitting it rendered the literal string "undefined" as the
+           question for all three corroborating items, on every intent. Caught by a student,
+           not by any gate - see the changelog note. */
         QUESTIONS.push({ id: ti.id, strand: ti.strand, level: ti.level, topic: ti.topic,
+          text: '<p><strong>Question.</strong> ' + ti.stem + '</p>',
           stem: ti.stem, options: ti.options, answer: ti.answer, type: 'mcq',
           corroborating: true, domain: intent().courseLabel + ' (corroborating)' });
         if (firstTailId === null) firstTailId = ti.id;
