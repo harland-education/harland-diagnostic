@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=science_g6_9 date=2026-08-04 sha256=6d657a7130f6 -->
+<!-- HARLAND-BUILD slug=science_g6_9 date=2026-09-30 sha256=e9777fd83ff3 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -50,6 +50,7 @@
   .mcq-options label:hover{border-color:var(--gold);background:var(--cream-warm)}
   .mcq-options input[type="radio"]{display:none}
   .mcq-options input[type="radio"]:checked+label{border-color:var(--obsidian);background:var(--gold-pale);font-weight:500}
+  .mcq-options input[type="radio"]:disabled+label{cursor:default;opacity:.85}
   .option-letter{font-weight:600;color:var(--gold-dark);flex-shrink:0;min-width:18px}
   .btn-primary{display:inline-block;background:var(--gold);color:var(--obsidian);font-family:var(--font-body);font-size:15px;font-weight:500;padding:16px 38px;border:none;cursor:pointer;letter-spacing:.04em;transition:background-color .2s,transform .1s}
   .btn-primary:hover{background:var(--gold-light)} .btn-primary:active{transform:scale(.98)}
@@ -286,13 +287,21 @@
     attachListeners();
   }
 
+  /* Engine contract (orchestrator ruling 2026-09-30, from the art_history build): the
+     render path reapplies stored state AND locks inputs in blocks the router has already
+     scored. This file already restored the visible selection (the checked attribute below);
+     what it lacked was the lock, so a student could scroll back and change an answer the
+     routing decision had already used, and the band would then be computed on answers that
+     differ from the ones that routed them. Tail items are never scored by the router and
+     stay editable; written probes are unaffected. */
   function renderMCQ(q){
     var letters=['A','B','C','D','E'];
     var html='<ul class="mcq-options">';
     for(var i=0;i<q.options.length;i++){
       var iid='mcq_'+q.id+'_'+i;
       var checked = (ANSWERS[q.id]===i) ? ' checked' : '';
-      html+='<li><input type="radio" name="mcq_'+escHtml(q.id)+'" id="'+iid+'" value="'+i+'"'+checked+'><label for="'+iid+'"><span class="option-letter">'+letters[i]+'</span>'+q.options[i]+'</label></li>';
+      var locked = (q._block && ROUTER.blockScores && ROUTER.blockScores[q._block]) ? ' disabled' : '';
+      html+='<li><input type="radio" name="mcq_'+escHtml(q.id)+'" id="'+iid+'" value="'+i+'"'+checked+locked+'><label for="'+iid+'"><span class="option-letter">'+letters[i]+'</span>'+q.options[i]+'</label></li>';
     }
     html+='</ul>'; return html;
   }
@@ -835,13 +844,19 @@
         window.scrollTo(0,0);
       },
       function(err){
-        /* GENUINE failure: a fetch reject or a non-2xx status. Answers are held locally on
-           this device; the Harland team is alerted through the dashboard, so recovery does
-           not depend on the family chasing anyone. */
+        /* GENUINE failure: a fetch reject or a non-2xx status. P6 (canon v5): a failed
+           submission must never show the completion screen. The previous version of this
+           branch showed "Assessment Complete ... We have received your answers" plus a line
+           saying the answers were saved on this device; nothing was saved anywhere, and if the
+           diagnostics POST itself failed, nothing reached the team either. The student now
+           stays on the page with the fleet-standard failure copy and can retry; the answers
+           remain in the open page. (Humanities, 2026-09-30, found while applying the
+           scored-block lock under the orchestrator's exemplar-first ruling.) */
         btn.disabled=false; btn.textContent='Submit my answers';
-        el('progressWrap').style.display='none'; showScreen('screenThankYou');
-        el('thankyouStatus').textContent='Your answers are saved on this device. Our team will follow up to complete the submission.';
-        window.scrollTo(0,0);
+        var se=el('submitError'); se.style.display='block';
+        se.textContent='We could not save your answers just now. They are stored on this device. Please keep this window open and let us know, and our team will make sure they are received.';
+        se.scrollIntoView({behavior:'smooth',block:'center'});
+        try{ console.error('SUBMIT FAILED: '+(err && err.message ? err.message : err)); }catch(e){}
       }
     );
   };
