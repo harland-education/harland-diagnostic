@@ -332,7 +332,12 @@ var RUBRIC_MAP={science_g6_9:{spine:'ngss_science',subject:'science_g6_9',levels
                  ib_history:{spine:'ib_history',subject:'ib_history',levels:[1,2,3]},
                  pre_ib_diploma:{spine:'pre_ib_diploma',subject:'pre_ib_diploma',levels:[1,2,3]},
                  ielts_academic:{spine:'ielts_academic',subject:'ielts_academic',levels:[1,2,3]},
-                 economics_readiness:{spine:'economics',allowed_subjects:['economics_ib','economics_igcse','economics_ap_micro','economics_ap_macro','economics_alevel','economics'],defaultSubject:'economics_ib',levels:[1,2,3,4,5,6]} };
+                 economics_readiness:{spine:'economics',allowed_subjects:['economics_ib','economics_igcse','economics_ap_micro','economics_ap_macro','economics_alevel','economics'],defaultSubject:'economics_ib',levels:[1,2,3,4,5,6]},
+                 chemistry:{spine:'chemistry',allowed_subjects:['chemistry','chemistry_core','chemistry_igcse','chemistry_ib_sl','chemistry_ib_hl','chemistry_ap','chemistry_alevel'],defaultSubject:'chemistry',levels:[1,2,3,4,5,6]},
+                 business:{spine:'business',allowed_subjects:['business_ib_sl','business_ib_hl','business'],defaultSubject:'business',levels:[1,2,3,4,5,6]},
+                 psychology:{spine:'psychology',allowed_subjects:['psychology_ap','psychology_ib_sl','psychology_ib_hl','psychology'],defaultSubject:'psychology',levels:[1,2,3,4,5,6]},
+                 research_literacy:{spine:'research_literacy',allowed_subjects:['research_literacy_ib_ee','research_literacy'],defaultSubject:'research_literacy',levels:[1,2,3,4,5,6]},
+                 art_history:{spine:'art_history',allowed_subjects:['art_history_ap','art_history'],defaultSubject:'art_history_ap',levels:[1,2,3,4,5,6]} };
 var RUBRICS={}, activeRubric=null;
 
 function doConnect(){
@@ -825,8 +830,9 @@ function detFormatItem(it, mcq){
   var optStr=opts.map(function(o,i){return detLetter(i)+') '+o;}).join('   ');
   var correctL=(it.correct_index!=null?detLetter(it.correct_index):'?');
   var chosenL=(s.chosen!=null?detLetter(s.chosen):'-');
-  var chosenTxt=(s.chosen!=null && opts[s.chosen]!=null?opts[s.chosen]:'(no answer)');
-  var verdict=(s.correct===true?'CORRECT':(s.correct===false?'INCORRECT':'unscored'));
+  var presented=Object.prototype.hasOwnProperty.call(mcq,it.item_id);
+  var chosenTxt=!presented?'(not presented)':(s.chosen!=null && opts[s.chosen]!=null?opts[s.chosen]:'(no answer)');
+  var verdict=!presented?'NOT PRESENTED (adaptive route did not reach this item)':(s.correct===true?'CORRECT':(s.correct===false?'INCORRECT':'unscored'));
   return '['+it.item_id+' | '+it.strand+' L'+(it.target_level||'?')+' | '+(it.assesses||'')+']\n'
     +'Q: '+it.stem+'\n'
     +'Options: '+optStr+'\n'
@@ -958,6 +964,58 @@ function buildDetailedPrompt(diag, result, items, rubric, name, label){
     if(tpass){ L.push('TRANSCRIPT:'); L.push(tpass); L.push(''); }
     secItems.forEach(function(it){ L.push(detFormatItem(it,mcq)); L.push(''); });
   });
+  // PLATFORM 2026-09-30: every item outside the six English strands was silently dropped here,
+  // so the model invented questions for 14+ instruments. Emit them, grouped by strand.
+  var shownStrands={Reading:1,Grammar:1,Vocabulary:1,Writing:1,Speaking:1,Listening:1};
+  var probeList=Array.isArray(raw.reasoning_probes)?raw.reasoning_probes:[];
+  function probeText(id){
+    if(raw[id]!=null && typeof raw[id]!=='object' && String(raw[id]).trim()) return String(raw[id]);
+    for(var i=0;i<probeList.length;i++){ var p=probeList[i]||{}; if(p.probe_id===id||p.id===id) return String(p.response||''); }
+    return '';
+  }
+  var other=items.filter(function(it){return !shownStrands[it.strand];}).slice();
+  other.sort(function(a,b){return (a.item_order||0)-(b.item_order||0);});
+  var byStrand={}, strandOrder=[];
+  other.forEach(function(it){ var st=it.strand||'Unassigned'; if(!byStrand[st]){byStrand[st]=[];strandOrder.push(st);} byStrand[st].push(it); });
+  var notPresented=[];
+  strandOrder.forEach(function(st){
+    var block=[];
+    byStrand[st].forEach(function(it){
+      var isWritten=(it.format==='written')||!(it.options&&it.options.length);
+      if(isWritten){
+        block.push('WRITTEN ['+it.item_id+' | '+st+' L'+(it.target_level||'?')+']');
+        if(it.passage) block.push('STIMULUS: '+it.passage);
+        block.push('PROMPT: '+it.stem);
+        if(it.rubric) block.push('RUBRIC: '+it.rubric);
+        var resp=probeText(it.item_id);
+        block.push('STUDENT RESPONSE: '+(resp.trim()?resp:'(no response submitted)'));
+        block.push('NOTE: written response, teacher-assessed, not auto-scored.');
+        block.push('');
+        return;
+      }
+      if(!Object.prototype.hasOwnProperty.call(mcq,it.item_id)){ notPresented.push(it.item_id); return; }
+      if(it.passage) block.push('STIMULUS: '+it.passage);
+      block.push(detFormatItem(it,mcq)); block.push('');
+    });
+    if(block.length){ L.push('=== '+st+' ==='); L=L.concat(block); }
+  });
+  if(notPresented.length){ L.push('NOT PRESENTED (the adaptive route did not reach these; do not analyze them): '+notPresented.join(', ')); L.push(''); }
+  // Reasoning probes (explain-your-answer follow-ups) that are not banked items: two storage shapes.
+  var banked={}; items.forEach(function(it){banked[it.item_id]=1;});
+  var loose=[];
+  var seenProbe={};
+  probeList.forEach(function(p){ p=p||{}; var pid=p.probe_id||p.id; if(pid) seenProbe[pid]=1; if(!banked[pid]) loose.push({id:pid||'probe', strand:p.strand, src:p.source_item, stem:p.source_stem, chose:p.student_chose||p.chose, resp:p.response}); });
+  Object.keys(raw).forEach(function(k){ if(/probe/i.test(k) && k!=='reasoning_probes' && !banked[k] && !seenProbe[k] && typeof raw[k]==='string' && raw[k].trim()) loose.push({id:k, resp:raw[k]}); });
+  if(loose.length){
+    L.push('=== Reasoning probes (the student explains an answer in their own words) ===');
+    loose.forEach(function(p){
+      L.push('['+p.id+(p.strand?(' | '+p.strand):'')+']'+(p.src?(' follows '+p.src):''));
+      if(p.stem) L.push('Q: '+p.stem);
+      if(p.chose) L.push('Student chose: '+p.chose);
+      L.push('STUDENT EXPLANATION: '+((p.resp&&String(p.resp).trim())?p.resp:'(no response)'));
+      L.push('');
+    });
+  }
   return L.join('\n');
 }
 
@@ -1076,16 +1134,16 @@ function generateDetailed(){
   var r=reports.find(function(x){return x.id===activeId;}); if(!r) return;
   if(!AK||!PROXY){alert('Connect with your Anthropic key and Worker URL to generate.');return;}
   if(!activeDiag){alert('Diagnostic data is still loading. Please wait a moment.');return;}
-  if(!activeItems||!activeItems.length){alert('No item bank found for this diagnostic. The detailed report needs an item bank; currently only the Grade 8-10 English diagnostic has one.');return;}
+  if(!activeItems||!activeItems.length){alert('No item bank found for this diagnostic. The detailed report needs its diagnostic_items bank loaded under this slug.');return;}
   var btn=document.getElementById('det-gen-btn'); if(btn){btn.disabled=true;btn.textContent='Generating...';}
   var dataBlock=buildDetailedPrompt(activeDiag, activeResult, activeItems, activeRubric, r.student_name||'the student', r.diagnostic_label||'Diagnostic');
-  var userPrompt='You are writing the DETAILED, TEACHER-FACING analysis for a Harland diagnostic. Below is the full item bank with the student\'s actual answers, grounded in the real questions, and the Common Core criterion ladder the level read is anchored to.\n\n'
+  var userPrompt='You are writing the DETAILED, TEACHER-FACING analysis for a Harland diagnostic. Below are the items this student was presented, with their actual answers, grounded in the real questions, and the criterion ladder the level read is anchored to. Items listed as NOT PRESENTED were skipped by the adaptive route.\n\n'
     +dataBlock
     +'\n\nReturn ONLY a JSON object (no markdown fences, no preamble) with this exact shape:\n'
     +'{"items":[{"id":"<item_id>","strand":"<strand>","assesses":"<topic>","student_answer":"<the option text the student chose, or a short phrase>","correct":<true|false>,"interpretation":"<If the answer is WRONG: 1-2 full sentences naming the specific misconception the chosen distractor implies, grounded in THIS item. If the answer is CORRECT: a brief phrase of roughly 4-10 words confirming the skill (e.g. \\"Secure on the colon-before-list rule.\\"). Reserve the detail for the misses; keep correct-answer notes short.>"}],'
-    +'"strand_directions":[{"strand":"<Reading|Grammar|Vocabulary|Writing>","direction":"<2-3 sentences: where this student sits on the criterion ladder for this strand and what to teach first. Reference the relevant Common Core level descriptor and the pattern of answers above.>"}],'
-    +'"synthesis":"<2 to 4 short paragraphs: the teacher\'s working read - where the student sits against the Common Core criterion ladder, clearest strengths and gaps, and how to open the first units. Reference specific evidence and the level descriptors. Plain, direct, professional, not AI-sounding.>"}\n'
-    +'Include every item in "items", grounded in the actual question and the actual answer, but concentrate the analysis on the wrong answers; correct answers get only a brief confirmation. Anchor the level read and teaching directions to the criterion ladder, naming the Harland level / Common Core band where it helps.';
+    +'"strand_directions":[{"strand":"<one of the strand names shown above>","direction":"<2-3 sentences: where this student sits on the criterion ladder for this strand and what to teach first. Reference the relevant level descriptor and the pattern of answers above.>"}],'
+    +'"synthesis":"<2 to 4 short paragraphs: the teacher\'s working read - where the student sits against the criterion ladder, clearest strengths and gaps, and how to open the first units. Reference specific evidence and the level descriptors. Plain, direct, professional, not AI-sounding.>"}\n'
+    +'Include every PRESENTED item in "items" and nothing else: never an item marked NOT PRESENTED, never an id that does not appear above, and never a reasoning probe (use probe explanations as evidence in strand_directions and synthesis). Ground each in the actual question and the actual answer, but concentrate the analysis on the wrong answers; correct answers get only a brief confirmation. Anchor the level read and teaching directions to the criterion ladder, naming the Harland level / Common Core band where it helps.';
   fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({_apiKey:AK,model:STREAM_MODEL,max_tokens:8000,
       system:'You are a Head Teacher at Harland Education, an academic tutoring academy in Taipei serving international-school students. You write precise, evidence-grounded teacher-facing analysis, interpreting each answer in terms of the specific skill or misconception it reveals. You never invent facts unsupported by the data. When asked for JSON, output strictly valid JSON only.',
@@ -1095,7 +1153,18 @@ function generateDetailed(){
     var text=(d.content&&d.content[0]&&d.content[0].text)||'';
     var parsed=parseModelJSON(text);
     if(!parsed){ alert('The model did not return valid JSON. Its raw output is in the synthesis box for manual use.'); renderDetailed(null, text); renderFooter('detailed'); return; }
-    var di={items:parsed.items||[], strand_directions:parsed.strand_directions||[]};
+    var bankIds={}; (activeItems||[]).forEach(function(it){bankIds[it.item_id]=it;});
+    var seenMcq=(activeDiag&&activeDiag.mcq_scores)||{};
+    var kept=[], invented=0, unseen=0;
+    (Array.isArray(parsed.items)?parsed.items:[]).forEach(function(row){
+      var bi=row&&bankIds[row.id]; if(!bi){invented++;return;}
+      var isMcq=bi.format!=='written' && bi.options && bi.options.length;
+      if(isMcq && !Object.prototype.hasOwnProperty.call(seenMcq,row.id)){unseen++;return;}
+      kept.push(row);
+    });
+    var di={items:kept, strand_directions:parsed.strand_directions||[]};
+    if(invented||unseen){ di.discarded={invented:invented, not_presented:unseen};
+      setTimeout(function(){ alert('Discarded '+invented+' row(s) naming questions that are not in this diagnostic, and '+unseen+' row(s) for questions this student was never shown. Review the remaining analysis before saving.'); },0); }
     var prose=parsed.synthesis||'';
     api('reports?id=eq.'+activeId,'PATCH',{ai_detailed:prose, detailed_items:di}).then(function(dd){
       if(dd&&dd.length){var idx=reports.findIndex(function(x){return x.id===activeId;}); if(idx>-1) reports[idx]=dd[0];}
