@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=psychology date=2026-09-04 sha256=a07708ae2bf4 -->
+<!-- HARLAND-BUILD slug=psychology date=2026-09-30 sha256=0fbfab050593 -->
 <!-- build: TRUNK-PILOT-v1 (IB Math AA HL+SL intents) 2026-07-06 -->
 <html lang="en">
 <head>
@@ -76,6 +76,7 @@
     .mcq-options label sup { font-size: 12px; }
     .mcq-options input[type="radio"] { display: none; }
     .mcq-options input[type="radio"]:checked + label { border-color: var(--obsidian); background-color: var(--gold-pale); font-weight: 500; }
+    .mcq-options input[type="radio"]:disabled + label { cursor: default; opacity: 0.85; }
     .option-letter { font-weight: 600; color: var(--gold-dark); flex-shrink: 0; min-width: 18px; }
     .text-response { width: 100%; min-height: 220px; padding: 13px 16px; border: 1.5px solid var(--border-soft); font-family: var(--font-body); font-size: 15px; color: var(--ink); background: var(--white); resize: vertical; outline: none; transition: border-color 0.2s; line-height: 1.55; }
     .text-response:focus { border-color: var(--gold); }
@@ -519,6 +520,7 @@
     container.innerHTML = mathHtml(html);
     typesetMath();
     attachListeners();
+    restoreAnswers();
     initSpeakingRecorder();
     renderStageControl();
   }
@@ -1464,6 +1466,33 @@
   function typesetMath() {
     if (window.MathJax && window.MathJax.typesetPromise) {
       window.MathJax.typesetPromise();
+    }
+  }
+
+  /* Re-rendering rebuilds every card from QUESTIONS, which used to leave earlier answers
+     showing as blank while ANSWERS still held them. Restore the visible state from ANSWERS,
+     and lock blocks the router has already scored, so a student cannot change an answer the
+     routing decision was based on (the band must be computed on the same answers that
+     routed the student). */
+  function restoreAnswers() {
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      var q = QUESTIONS[i];
+      var v = ANSWERS[q.id];
+      if (q.type === 'mcq') {
+        var locked = !!(q._block && ROUTER.blockScores[q._block]);
+        for (var k = 0; k < q.options.length; k++) {
+          var r = document.getElementById('mcq_' + q.id + '_' + k);
+          if (!r) { continue; }
+          if (typeof v !== 'undefined' && v === k) { r.checked = true; }
+          if (locked) { r.disabled = true; }
+        }
+      } else if (q.type === 'text' && typeof v === 'string') {
+        var ta = document.getElementById('txt_' + q.id);
+        if (ta) { ta.value = v; var cc = document.getElementById('cc_' + q.id); if (cc) { cc.textContent = v.length + ' characters'; } }
+      } else if (q.type === 'scale' && typeof v !== 'undefined') {
+        var b = document.querySelector('.scale-btn[data-qid="' + q.id + '"][data-val="' + v + '"]');
+        if (b) { b.classList.add('selected'); }
+      }
     }
   }
 
