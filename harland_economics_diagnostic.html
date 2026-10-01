@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- HARLAND-BUILD slug=economics_readiness date=2026-09-30 sha256=fde1ea791780 -->
+<!-- HARLAND-BUILD slug=economics_readiness date=2026-09-30 sha256=2221aca0fa57 -->
 <!-- build: TRUNK-PILOT-v1 (IB Math AA HL+SL intents) 2026-07-06 -->
 <html lang="en">
 <head>
@@ -401,6 +401,302 @@
 <footer class="site-footer">
   Harland Education &nbsp;&middot;&nbsp; Da'an District, Taipei &nbsp;&middot;&nbsp; Confidential assessment material
 </footer>
+<script>
+/* HARLAND-SUBMIT-SAVE v1.2 (Platform 2026-09-30; orchestrator ruling 2026-09-30 applied). Shared across every diagnostic; do not edit per instrument.
+   What it does: when the student presses Submit, it runs the instrument's own submitToSupabase once
+   against a fake backend to record the exact requests it would send, saves that plan in this browser,
+   then sends the plan step by step, remembering which steps went through. If sending fails, pressing
+   Submit again resumes from the failed step (no duplicate rows). If the tab is closed, reopening the
+   diagnostic on the same device shows a banner that sends the saved answers. The plan is deleted as
+   soon as every step succeeds. If anything about the dry run is unexpected, it steps aside and the
+   instrument's original submit runs exactly as before.
+   v1.1: (a) a step that links to an earlier row whose id the server did not return is never sent;
+   the submit fails loudly instead of filing an orphan behind a success screen. (b) During the dry run,
+   nothing outside /rest/v1/ is sent, and after it, any request still carrying a dry-run placeholder id
+   is blocked, so a late dry-run step can never reach the network. (c) A dry-run timeout reports failure
+   instead of running the original alongside it. (d) Ruled copy.
+   v1.2: every failed submit leaves the answers in this browser, not only the plan path.
+   (e) When the dry run steps aside (unexpected request) or times out, the submit payload itself is
+   saved before anything is sent (kind 'payload'). It is deleted if the original submit succeeds; if it
+   fails, the answers stay saved and the banner offers them on the next visit. Sending a saved payload
+   first tries to turn it into a resumable plan, and only runs the original submit if that is not possible.
+   (f) If the browser refuses the write (storage full), the attempt is still kept in this tab's memory, so
+   Submit-again resumes instead of re-sending from step 1, and the failure text only claims "saved in this
+   browser" when the write actually landed. (g) Attempts finished in this tab are never re-sent from a
+   stale stored copy. Storage format unchanged (v:1); 'payload' records are ignored by v1.1 pages. */
+var HarlandSave = (function () {
+  'use strict';
+  var V = 1, PREFIX = 'harland_submit_save:v1:', TTL = 30 * 864e5, MAXQ = 5;
+  var SESSION = String(Date.now()) + '-' + Math.random().toString(16).slice(2, 8);
+  var lastStored = null;
+  var MEM = [];   /* this tab's copy of every attempt: survives a refused write, so same-tab retries still resume */
+  var SENT = {};  /* ids of attempts that finished in this tab: never re-sent from a stale stored copy */
+  var ORIG = null, seq = 0;
+
+  function ph(n) { var s = String(n); while (s.length < 12) { s = '0' + s; } return PH_PREFIX + s; }
+  function key() { return PREFIX + location.pathname; }
+  function rid(r) { return r.rid || (r.session + '@' + r.saved_at); }
+  function store() {
+    try { var t = '__hs_probe'; window.localStorage.setItem(t, '1'); window.localStorage.removeItem(t); return window.localStorage; }
+    catch (e) { return null; }
+  }
+  function readQ() {
+    var s = store(), q = [];
+    try { q = s ? JSON.parse(s.getItem(key()) || '[]') : []; if (!Array.isArray(q)) { q = []; } } catch (e) { q = []; }
+    /* this tab's copies win over stored ones (they carry the latest step progress) */
+    var byId = {};
+    MEM.forEach(function (r) { byId[rid(r)] = r; });
+    q = q.map(function (r) { return (r && byId[rid(r)]) || r; });
+    MEM.forEach(function (r) { if (q.indexOf(r) < 0) { q.push(r); } });
+    var now = Date.now();
+    q = q.filter(function (r) {
+      return r && r.v === V && Array.isArray(r.steps) && now - r.saved_at < TTL && !SENT[rid(r)] &&
+             (r.kind !== 'payload' || r.payload != null);
+    });
+    q.sort(function (a, b) { return a.saved_at - b.saved_at; });
+    return q;
+  }
+  function writeQ(q) {
+    MEM = q.slice(-MAXQ);
+    var s = store(); if (!s) { return false; }
+    try { if (q.length) { s.setItem(key(), JSON.stringify(q.slice(-MAXQ))); } else { s.removeItem(key()); } return true; }
+    catch (e) { return false; }
+  }
+  function drop(q, r) { SENT[rid(r)] = true; var k = q.indexOf(r); if (k >= 0) { q.splice(k, 1); } return writeQ(q); }
+  function progressed(r) { return r.steps.some(function (st) { return st.done; }); }
+  function finished(r) { return r.kind !== 'payload' && r.steps.every(function (st) { return st.done; }); }
+  function newRecord(payload, extra) {
+    var r = { v: V, rid: SESSION + '#' + (++seq), session: SESSION, saved_at: Date.now(),
+              student: (payload && payload.student_name) || '',
+              label: (payload && payload.diagnostic_label) || document.title, steps: [], ids: {} };
+    Object.keys(extra).forEach(function (k) { r[k] = extra[k]; });
+    return r;
+  }
+  /* A new attempt from this visit replaces this visit's earlier attempts that sent nothing trackable. */
+  function pushMine(q, r) {
+    for (var i = q.length - 1; i >= 0; i--) {
+      var o = q[i];
+      if (o.session === SESSION && (o.kind === 'payload' || !progressed(o))) { q.splice(i, 1); }
+    }
+    q.push(r);
+    return writeQ(q);
+  }
+  function clonePayload(p) { try { return JSON.parse(JSON.stringify(p)); } catch (e) { return null; } }
+
+  var PH_PREFIX = 'fffffffe-5a5e-4000-8000-';
+  var guardInstalled = false;
+  /* Installed once: any request still carrying a dry-run placeholder id is refused, so a dry-run chain
+     that outlives its capture window can never write a row with a placeholder link. */
+  function installGuard() {
+    if (guardInstalled || typeof window.fetch !== 'function') { return; }
+    guardInstalled = true;
+    var base = window.fetch;
+    window.fetch = function (url, init) {
+      var u = String(url && url.url ? url.url : url), b = init && typeof init.body === 'string' ? init.body : '';
+      if (u.indexOf(PH_PREFIX) >= 0 || b.indexOf(PH_PREFIX) >= 0) {
+        return Promise.reject(new Error('blocked: dry-run request outside the capture window'));
+      }
+      return base.apply(window, arguments);
+    };
+  }
+  function plainHeaders(h) {
+    var o = {}; if (!h) { return o; }
+    if (typeof Headers !== 'undefined' && h instanceof Headers) { h.forEach(function (v, k) { o[k] = v; }); return o; }
+    Object.keys(h).forEach(function (k) { o[k] = h[k]; }); return o;
+  }
+
+  /* Dry run: the instrument's own chain, answered by a fake backend that returns placeholder ids. */
+  function capture(orig, payload) {
+    return new Promise(function (resolve, reject) {
+      var realFetch = window.fetch, steps = [], n = 0, done = false, bad = null;
+      function finish(err) {
+        if (done) { return; } done = true; clearTimeout(timer); window.fetch = realFetch;
+        if (err && err.harlandTimeout) { reject(err); return; }
+        if (err || bad || !steps.length) { reject(err || new Error(bad || 'no requests captured')); } else { resolve(steps); }
+      }
+      window.fetch = function (url, init) {
+        var u = String(url && url.url ? url.url : url);
+        if (u.indexOf('/rest/v1/') < 0) {
+          bad = 'request outside /rest/v1/ during dry run';
+          return Promise.resolve(new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+        }
+        init = init || {};
+        var m = String(init.method || 'GET').toUpperCase();
+        if (m !== 'POST') { bad = 'non-POST request ' + m; }
+        if (init.body != null && typeof init.body !== 'string') { bad = 'non-string body'; }
+        var id = ph(++n);
+        steps.push({ url: u, method: m, headers: plainHeaders(init.headers), body: init.body == null ? null : init.body, ph: id, done: false });
+        return Promise.resolve(new Response(JSON.stringify([{ id: id }]), { status: 201, headers: { 'Content-Type': 'application/json' } }));
+      };
+      var timer = setTimeout(function () { var t = new Error('dry run timed out'); t.harlandTimeout = true; finish(t); }, 8000);
+      try { orig(payload, function () { finish(null); }, function (e) { finish(e || new Error('dry run error')); }); }
+      catch (e) { finish(e); }
+    });
+  }
+
+  /* Send one saved plan, resuming after the last step that went through. */
+  function sendPlan(r, q) {
+    function sub(str, json) {
+      if (str == null) { return str; }
+      Object.keys(r.ids).forEach(function (p) {
+        var real = r.ids[p];
+        if (json) { str = str.split('"' + p + '"').join(JSON.stringify(real)); }
+        str = str.split(p).join(real == null ? '' : String(real));
+      });
+      return str;
+    }
+    function next(i) {
+      while (i < r.steps.length && r.steps[i].done) { i++; }
+      if (i >= r.steps.length) { return Promise.resolve(); }
+      var st = r.steps[i];
+      var table = (st.url.split('/rest/v1/')[1] || 'request').split('?')[0];
+      /* Never send a step that links to an earlier row whose id the server did not return:
+         it would file an orphaned row and still report success. Fail loudly instead. */
+      var missing = Object.keys(r.ids).filter(function (p) {
+        return r.ids[p] == null && ((st.url + (st.body || '')).indexOf(p) >= 0);
+      });
+      if (missing.length) { return Promise.reject(new Error(table + ' needs an id the server did not return')); }
+      return fetch(sub(st.url, false), { method: st.method, headers: st.headers, body: sub(st.body, true) })
+        .then(function (res) {
+          if (!(res.status >= 200 && res.status < 300)) { throw new Error(table + ' ' + res.status); }
+          return res.text();
+        })
+        .then(function (t) {
+          var id = null;
+          try { var a = JSON.parse(t); id = (a && a[0] && a[0].id) ? a[0].id : null; } catch (e) { id = null; }
+          r.ids[st.ph] = id; st.done = true; writeQ(q);
+          return next(i + 1);
+        });
+    }
+    if (!r.ids) { r.ids = {}; }
+    return next(0);
+  }
+
+  function runOrig(payload) {
+    return new Promise(function (res, rej) {
+      try { ORIG(payload, function () { res(); }, function (e) { rej(e || new Error('submit failed')); }); }
+      catch (e) { rej(e); }
+    });
+  }
+
+  /* Send a saved attempt. A saved payload is first turned into a resumable plan; if the dry run steps
+     aside, the original submit runs with the saved payload. */
+  function send(r, q) {
+    if (r.kind !== 'payload') { return sendPlan(r, q); }
+    if (!ORIG) { return Promise.reject(new Error('diagnostic not ready')); }
+    return capture(ORIG, r.payload).then(function (steps) {
+      r.kind = 'plan'; r.steps = steps; r.ids = {}; delete r.payload; writeQ(q);
+      return sendPlan(r, q);
+    }, function (err) {
+      if (err && err.harlandTimeout) { throw err; }
+      return runOrig(r.payload);
+    });
+  }
+
+  /* Send every saved attempt from earlier visits in order; stop at the first failure. */
+  function drain(q) {
+    var chain = Promise.resolve();
+    q.slice().forEach(function (r) {
+      chain = chain.then(function () {
+        if (finished(r) || r.session === SESSION) { return; }
+        return send(r, q).then(function () { drop(q, r); });
+      });
+    });
+    return chain.then(function () { writeQ(q); });
+  }
+
+  function wrap(orig) {
+    if (typeof orig !== 'function' || orig.__harlandSave) { return orig; }
+    installGuard();
+    ORIG = orig;
+    var w = function (payload, onSuccess, onError) {
+      var q = readQ(), last = null;
+      for (var i = q.length - 1; i >= 0; i--) { if (q[i].session === SESSION) { last = q[i]; break; } }
+      var resumeOnly = last && last.kind !== 'payload' && progressed(last) && !finished(last);
+      function succeeded(mine) {
+        drop(q, mine);
+        onSuccess();
+        if (q.some(function (r) { return r.session !== SESSION; })) { drain(q).then(hideBanner, function () {}); } else { hideBanner(); }
+      }
+      function failer(mine) {
+        return function (err) { var ok = writeQ(q); lastStored = ok && !!mine && q.indexOf(mine) >= 0; onError(err); };
+      }
+      /* This visit's attempt goes first and alone decides success. Older saved attempts are then
+         sent best-effort, so a stuck old attempt can never block today's submission. */
+      function go(mine) { sendPlan(mine, q).then(function () { succeeded(mine); }, failer(mine)); }
+      if (resumeOnly) { go(last); return; }
+      capture(orig, payload).then(function (steps) {
+        var mine = newRecord(payload, { kind: 'plan', steps: steps });
+        pushMine(q, mine);
+        go(mine);
+      }, function (err) {
+        /* The dry run stepped aside or timed out: save the answers themselves before anything else. */
+        var saved = clonePayload(payload), mine = null;
+        if (saved != null) { mine = newRecord(payload, { kind: 'payload', payload: saved }); pushMine(q, mine); }
+        /* A timed-out dry run may still be running: never start the original alongside it. */
+        if (err && err.harlandTimeout) { failer(mine)(err); return; }
+        orig(payload, function () { if (mine) { succeeded(mine); } else { onSuccess(); } }, failer(mine));
+      });
+    };
+    w.__harlandSave = true;
+    return w;
+  }
+
+  function failureText() {
+    if (lastStored) {
+      return 'We could not send your answers to Harland just now. They are saved in this browser, so nothing is lost. ' +
+             'Please press Submit again in a moment. If you have to close this page, open this diagnostic again ' +
+             'on this device to send them.';
+    }
+    /* Storage unavailable: the ruled build-standards 7a line, verbatim. */
+    return 'We could not save your answers just now. They are still on this page, so please keep this window open ' +
+           'and press Submit again in a moment.';
+  }
+
+  /* Banner for answers saved in an earlier visit that never reached Harland. */
+  var bannerEl = null;
+  function hideBanner() { if (bannerEl && bannerEl.parentNode) { bannerEl.parentNode.removeChild(bannerEl); } bannerEl = null; }
+  function showBanner() {
+    var q = readQ().filter(function (r) { return r.session !== SESSION && !finished(r); });
+    if (!q.length || bannerEl) { return; }
+    var r = q[0], when = new Date(r.saved_at);
+    var who = r.student ? (' for ' + r.student) : '';
+    var el = document.createElement('div');
+    el.id = 'harlandSaveBanner';
+    el.setAttribute('role', 'status');
+    el.style.cssText = 'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:99999;max-width:560px;width:calc(100% - 32px);' +
+      'box-sizing:border-box;background:#FBF8F1;color:#1A1A1A;border:1px solid #B8923A;border-radius:6px;padding:14px 16px;' +
+      'font-family:inherit;font-size:15px;line-height:1.45;box-shadow:0 4px 18px rgba(0,0,0,.12)';
+    var msg = document.createElement('div');
+    msg.textContent = (q.length > 1 ? q.length + ' sets of answers' : 'Answers') + who + ' from ' + when.toLocaleDateString() + ' ' +
+      when.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' have not reached Harland yet.';
+    var row = document.createElement('div'); row.style.cssText = 'margin-top:10px;display:flex;gap:10px;flex-wrap:wrap';
+    var btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 'Send them now';
+    btn.style.cssText = 'background:#1A1A1A;color:#FBF8F1;border:0;border-radius:4px;padding:8px 14px;font:inherit;cursor:pointer';
+    var later = document.createElement('button'); later.type = 'button'; later.textContent = 'Not now';
+    later.style.cssText = 'background:transparent;color:#7A5F22;border:1px solid #B8923A;border-radius:4px;padding:8px 14px;font:inherit;cursor:pointer';
+    var note = document.createElement('div'); note.style.cssText = 'margin-top:8px;font-size:13px;color:#555';
+    btn.onclick = function () {
+      btn.disabled = true; btn.textContent = 'Sending...'; note.textContent = '';
+      var all = readQ();
+      drain(all).then(function () {
+        msg.textContent = 'Sent. Harland has received your answers.'; row.style.display = 'none';
+        setTimeout(hideBanner, 6000);
+      }, function () {
+        btn.disabled = false; btn.textContent = 'Try again';
+        note.textContent = 'Still could not reach Harland. Your answers stay saved on this device. Check your connection and try again.';
+      });
+    };
+    later.onclick = hideBanner;
+    row.appendChild(btn); row.appendChild(later);
+    el.appendChild(msg); el.appendChild(row); el.appendChild(note);
+    document.body.appendChild(el); bannerEl = el;
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', showBanner); } else { setTimeout(showBanner, 0); }
+
+  return { wrap: wrap, failureText: failureText, _pending: readQ, _version: '1.2' };
+})();
+</script>
 <script>
   function showScreen(id) {
     var screens = document.querySelectorAll('.screen');
@@ -1438,6 +1734,7 @@
     .then(function() { onSuccess(); })
     .catch(function(err) { onError(err); });
   }
+  submitToSupabase = HarlandSave.wrap(submitToSupabase); /* HARLAND-SUBMIT-SAVE v1.2 */
 
   document.getElementById('btnSubmit').onclick = function() {
     if (!ROUTER.finalProductionShown) { return; }
@@ -1448,7 +1745,7 @@
     btn.disabled = true; btn.textContent = 'Submitting...';
     submitToSupabase(collectPayload(),
       function() { document.getElementById('progressWrap').style.display = 'none'; showScreen('screenThankYou'); window.scrollTo(0, 0); },
-      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = 'We could not save your answers just now. They are stored on this device. Please keep this window open and let us know, and our team will make sure they are received.'; }
+      function(err) { btn.disabled = false; btn.textContent = CONFIG.submitButtonLabel; var errBox = document.getElementById('submitError'); errBox.style.display = 'block'; errBox.textContent = HarlandSave.failureText(); }
     );
   };
 
